@@ -33,3 +33,4 @@ This document contains the complete readings from the [SUMMARY.md](../book/SUMMA
 Explore the technical details of the project:
 * **[Theory & Cochain Substrate](Theory-and-Cochain-Substrate.md)**: Visualizations and details of the cochain boundary operators and normal form hierarchies.
 * **[Observer-Relative Ontology](Observer-Relative-Ontology.md)**: Details on epistemic observer states, lightcone causality, and data locality.
+* **[Concrete Examples](Concrete-Examples.md)**: Three demonstration scenarios (incremental repair, certificate validation, and freshness budgets).
