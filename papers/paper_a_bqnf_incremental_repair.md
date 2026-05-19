@@ -16,7 +16,7 @@
 | `0_relvar_relation_table_and_boundary_relvar.md` | **Base ontology** — relvar, boundary relvar, observer relvar |
 | `normal_form_contracts/contracts/nf.change.bqnf.yaml` | **Contract** — checkable BQNF obligations |
 | `1_normal_forms.md` | Full taxonomy atlas (shape forms, certificates, authority pointers) |
-| `000_Quotient Normal Form and Boundary-Certified Databases.md` | Product wedge summary |
+| `paper_0_quotient_normal_form_boundary_certified_databases` | Product wedge summary |
 | `000_SmplCache Simplex In-Memory Database and CDC.md` | Reference implementation |
 | `1b_gtmur_representation_transport.md` | Paper B — representation transport (GTMUR) |
 | `1c_*` (planned) | Paper C — finite-shadow authority (GTTC) |
