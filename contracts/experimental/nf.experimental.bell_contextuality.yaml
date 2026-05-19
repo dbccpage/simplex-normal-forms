@@ -1,0 +1,69 @@
+id: nf.experimental.bell_contextuality
+title: Bell Contextuality Observer Contract
+short_name: BellCNF
+version: v1
+status: experimental_conjecture
+category: experimental_regime
+subcategory: observer_ontology_contract
+normalized_object: distributed_observer_claim
+anomaly_excluded:
+  - illicit_global_state
+  - local_validity_laundered_into_global_authority
+required_declarations:
+  - local_observer_packets
+  - measurement_contexts
+  - pairwise_comparison_rules
+  - gluing_or_comparison_envelope
+  - residual_policy
+required_evidence:
+  - local_probability_or_claim_packets
+  - comparison_witnesses_when_claimed
+  - terminal_event_or_refusal
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_local_relabelings_or_gluing_witnesses
+  C1: local_to_global_promotion_defects
+  C2: global_section_closure_failures
+  d0: gluing_witness_to_promotion_defect
+  d1: promotion_defect_to_no_global_section
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - local_observer_packets_do_not_authorize_global_state_without_gluing_witness
+  - pairwise_validity_does_not_imply_global_authority
+  - global_joint_packet_requires_comparison_or_gluing_envelope
+terminal_routes:
+  - Preserve
+  - Lift
+  - Refuse
+  - Reject
+local_terminal_routes:
+  - LocalOnly
+  - ComparisonRequired
+  - NoGlobalSection
+  - BellResidual
+  - LiftRequired
+  - RefuseGlobalClaim
+terminal_route_map:
+  LocalOnly: Preserve
+  ComparisonRequired: Lift
+  NoGlobalSection: Refuse
+  BellResidual: Lift
+  LiftRequired: Lift
+  RefuseGlobalClaim: Refuse
+certificate_requirements:
+  required: true
+  shape: bell_contextuality_observer_packet
+  verifier_required: true
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Experimental conjecture
+    item: define executable finite gluing/comparison check before any promotion
+non_claims:
+  - does_not_settle_quantum_interpretation
+  - does_not_replace_physics
+  - does_not_conflict_with_boyce_codd_normal_form_because_it_is_quarantined_and_not_core_bcnf
+  - only_disciplines_local_packet_to_global_authority_promotion
+examples:
+  - book/06_gauge_and_higher_data_regimes.md

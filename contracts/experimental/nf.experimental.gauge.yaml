@@ -1,0 +1,52 @@
+id: nf.experimental.gauge
+title: Gauge Experimental Extension
+version: v1
+status: quarantined
+category: experimental_regime
+normalized_object: data_under_gauge_or_higher_regime
+anomaly_excluded: gauge drift
+required_declarations:
+  - source_regime
+  - target_regime
+  - protected_skeleton
+  - allowed_gauge_transformations
+  - loss_ledger_policy
+required_evidence:
+  - transformation_trace
+  - preserved_skeleton_witness
+  - loss_ledger_when_distinctions_are_erased
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_gauge_transformations
+  C1: gauge_drift_defects
+  C2: noncommuting_gauge_closure_failures
+  d0: gauge_witness_to_defect
+  d1: gauge_defect_to_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - protected_skeleton_must_be_declared_before_transport
+  - erased_distinctions_require_loss_ledger
+  - experimental_claims_must_remain_quarantined
+terminal_routes:
+  - Preserve
+  - Lift
+  - Escalate
+  - Unsupported
+  - ClosureFailure
+  - BudgetUnknown
+  - Quarantine
+  - Refuse
+certificate_requirements:
+  required: true
+  shape: experimental_gauge_certificate
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Experimental conjecture
+    item: identify finite verifier obligations for each higher data regime
+non_claims:
+  - does not make quantum market legal or physical domain claims part of the core taxonomy
+  - does not promote experimental data regimes to normal forms
+examples:
+  - book/06_gauge_and_higher_data_regimes.md

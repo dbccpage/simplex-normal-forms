@@ -1,0 +1,125 @@
+id: nf.experimental.quantum_observer_ontology
+title: Quantum Observer-Ontology Contract
+version: v1
+status: experimental_conjecture
+category: experimental_regime
+subcategory: observer_ontology_contract
+normalized_object: observer_relative_physical_claim
+anomaly_excluded:
+  - ontology_laundering
+  - illicit_global_state
+  - hidden_state_smuggling
+  - unmeasured_property_laundering
+  - branch_ontology_laundering
+  - information_ontology_laundering
+required_declarations:
+  - observer
+  - representation_regime
+  - measurement_or_projection_boundary
+  - finite_observable_packet
+  - comparison_or_gluing_rule
+  - residual_policy
+required_evidence:
+  - terminal_event_or_refusal
+  - projection_witness
+  - loss_or_branch_ledger_if_applicable
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_observer_projection_measurement_witnesses
+  C1: ontology_promotion_defects
+  C2: cross_context_closure_failures
+  d0: witness_to_ontology_promotion_defect
+  d1: promotion_defect_to_cross_context_failure
+  Q1: ontology_residual_classes
+validation_rules:
+  - local_observer_packets_do_not_authorize_global_state_without_gluing_witness
+  - hidden_state_explanations_require_projection_dynamics_and_nonlocality_ledgers
+  - unmeasured_representations_do_not_count_as_measured_authority
+  - branch_decompositions_require_observer_localization_decoherence_and_measure_rules
+  - information_claims_require_encoding_observer_record_and_realization_maps
+terminal_routes:
+  - Lift
+  - Quarantine
+  - Refuse
+  - Abstain
+local_terminal_routes:
+  - LocalOnly
+  - ComparisonRequired
+  - NoGlobalSection
+  - BellResidual
+  - LiftRequired
+  - RefuseGlobalClaim
+  - HiddenPacketDeclared
+  - ProjectionLedgerRequired
+  - NonlocalityLedgerRequired
+  - NoHiddenStateAuthority
+  - RefuseHiddenMechanism
+  - ContextDeclared
+  - MeasurementTerminalized
+  - ObserverBoundaryRequired
+  - NoCounterfactualAuthority
+  - RefuseOnticPromotion
+  - BranchDeclared
+  - ObserverLocalized
+  - DecoherenceWitnessed
+  - MeasureRuleMissing
+  - BranchAmbiguityResidual
+  - RefuseCrossBranchAuthority
+  - BitDeclared
+  - EncodingDeclared
+  - ObserverDeclared
+  - RealizationMapMissing
+  - RecordTerminalized
+  - RefuseItFromBitPromotion
+terminal_route_map:
+  LocalOnly: Abstain
+  ComparisonRequired: Lift
+  NoGlobalSection: Refuse
+  BellResidual: Lift
+  LiftRequired: Lift
+  RefuseGlobalClaim: Refuse
+  HiddenPacketDeclared: Quarantine
+  ProjectionLedgerRequired: Lift
+  NonlocalityLedgerRequired: Lift
+  NoHiddenStateAuthority: Refuse
+  RefuseHiddenMechanism: Refuse
+  ContextDeclared: Quarantine
+  MeasurementTerminalized: Quarantine
+  ObserverBoundaryRequired: Lift
+  NoCounterfactualAuthority: Refuse
+  RefuseOnticPromotion: Refuse
+  BranchDeclared: Quarantine
+  ObserverLocalized: Quarantine
+  DecoherenceWitnessed: Quarantine
+  MeasureRuleMissing: Lift
+  BranchAmbiguityResidual: Lift
+  RefuseCrossBranchAuthority: Refuse
+  BitDeclared: Quarantine
+  EncodingDeclared: Quarantine
+  ObserverDeclared: Quarantine
+  RealizationMapMissing: Lift
+  RecordTerminalized: Quarantine
+  RefuseItFromBitPromotion: Refuse
+certificate_requirements:
+  required: true
+  shape: observer_ontology_packet
+  note: local terminal routes must map to canonical terminal routes before a verifier emits authority-bearing output
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Experimental conjecture
+    item: define executable finite packet checks for each observer-ontology regime
+  - status: Domain extension
+    item: keep physics interpretation claims out of the database core
+non_claims:
+  - does_not_settle_quantum_interpretation
+  - does_not_claim_bohm_is_true
+  - does_not_claim_copenhagen_is_true
+  - does_not_claim_everett_is_true
+  - does_not_claim_hidden_variables_are_true
+  - does_not_claim_many_worlds_is_false
+  - does_not_replace_physics
+  - only_disciplines_authority_transfer_between_observer_packets_and_ontology_claims
+examples:
+  - book/06_gauge_and_higher_data_regimes.md
