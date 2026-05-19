@@ -6,7 +6,7 @@ from typing import Any, Dict
 DATA_PATH = os.path.join(os.path.dirname(__file__), "data", "cdc_events.json")
 
 def evaluate_bqnf(case: Dict[str, Any]) -> Dict[str, Any]:
-    view_name = case.get("view", "unknown")
+    #view_name = case.get("view", "unknown")
     boundary = case.get("boundary", {})
     event = case.get("event", {})
     

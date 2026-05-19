@@ -29,6 +29,14 @@ This document contains the complete readings from the [SUMMARY.md](../book/SUMMA
 
 ---
 
+## Interactive Demo Dashboard
+An interactive browser-based dashboard has been created to simulate before/after states for the three demos:
+* **Local Link**: [examples/index.html](file:///C:/Users/a343o/source/repos/simplex-normal-forms/examples/index.html)
+
+This interface implements the cochain boundary and observer-relative freshness rules locally in the browser to evaluate data state changes in real time.
+
+---
+
 ## Wiki Navigation
 Explore the technical details of the project:
 * **[Theory & Cochain Substrate](Theory-and-Cochain-Substrate.md)**: Visualizations and details of the cochain boundary operators and normal form hierarchies.

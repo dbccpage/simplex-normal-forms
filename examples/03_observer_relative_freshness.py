@@ -9,8 +9,8 @@ def evaluate_freshness(scenario: Dict[str, Any]) -> List[Dict[str, Any]]:
     packet = scenario.get("packet", {})
     observers = scenario.get("observers", [])
     
-    value = packet.get("value")
-    read_at = packet.get("read_at")
+    #value = packet.get("value")
+    #read_at = packet.get("read_at")
     lag = packet.get("replica_lag_seconds")
     packet_scope = packet.get("packet_scope", "public") # default to public if not specified
     
