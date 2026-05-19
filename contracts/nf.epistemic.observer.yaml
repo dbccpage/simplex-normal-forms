@@ -1,0 +1,51 @@
+id: nf.epistemic.observer
+title: Observer Normal Form
+version: v1
+status: draft
+category: observer_epistemic_form
+normalized_object: observer_relative_claim
+anomaly_excluded: observer overreach
+required_declarations:
+  - observer_id
+  - measurement_context
+  - equivalence_relation
+  - visibility_boundary
+  - comparison_envelope
+  - challenge_terminal
+required_evidence:
+  - observer_packet
+  - measurement_trace
+  - comparison_witness_when_crossing_observers
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_observer_repairs_or_gauge_transformations
+  C1: observer_distinguishability_defects
+  C2: gluing_or_contextuality_failures
+  d0: repair_to_observer_defect
+  d1: observer_defect_to_gluing_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - every_claim_declares_by_whom
+  - cross_observer_sameness_requires_comparison_witness
+  - missing_visibility_boundary_terminalizes
+terminal_routes:
+  - Preserve
+  - Lift
+  - Escalate
+  - Quarantine
+  - Decompose
+  - Refuse
+  - Abstain
+certificate_requirements:
+  required: true
+  shape: observer_claim_certificate
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Proof obligation
+    item: define finite comparison envelope for supported observer classes
+non_claims:
+  - does not claim observer-independent global sameness
+examples:
+  - papers/paper_c_epistemic_observer_normal_forms.md

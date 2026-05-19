@@ -1,0 +1,70 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.4nf
+  name: Fourth Normal Form
+  short_name: 4NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: nontrivial multivalued dependency with non-superkey determinant
+  preserves_invariant: independent multivalued facts are not co-stored as tuple-combinatorial redundancy
+  protected_skeleton: [candidate_keys, superkeys, multivalued_dependencies]
+  erased_structure: []
+  non_claims:
+    - does not resolve all join dependencies
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - superkeys
+  - multivalued_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - every nontrivial multivalued dependency X ->-> Y has X as a superkey
+  - independent multivalued facts are decomposed into separate relvars
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectMultivaluedDependency
+  - RequireDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: employee skills and employee languages are stored in one relvar, creating all pairwise combinations
+    diagnosis: independent multivalued dependencies share a non-superkey determinant
+    terminal: RejectMultivaluedDependency
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

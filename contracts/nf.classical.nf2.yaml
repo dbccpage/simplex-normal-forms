@@ -1,0 +1,85 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.nf2
+  name: Nested Relation Form
+  short_name: NF2
+  version: v0
+  status: draft
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: undeclared nested or repeating-group structure
+  preserves_invariant: nested relation structure is explicit, keyed, and governed by declared extended dependencies
+  protected_skeleton: [heading, domains, nested_groups, extended_functional_dependencies, basic_dependencies]
+  erased_structure: []
+  non_claims:
+    - NF2 here means non-first-normal-form nested relation discipline, not second normal form
+    - does not claim nested relation bodies are classical 1NF relation bodies
+    - does not replace normalization to 1NF when flat relational decomposition is required
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - heading
+  - domains
+  - primary_key
+  - nested_groups
+  - group_keys
+  - extended_functional_dependencies
+  - basic_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - nested or repeating groups are declared as part of the relation type, not hidden in scalar attributes
+  - primary key determines the single-valued attributes and declared first-level repeating groups
+  - each repeating group declares its key relative to the enclosing relation key
+  - extended functional dependencies are derivable from declared basic dependencies or terminalize
+  - single-valued attributes of the nested relation satisfy the declared 3NF baseline
+
+proof_obligations: []
+
+terminal_routes:
+  - AcceptNestedCarrier
+  - RejectUndeclaredRepeatingGroup
+  - RejectUnkeyedNestedGroup
+  - RequireUnnesting
+  - RequireBasicDependencyDeclaration
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: invoice lines are stored as an untyped blob while the schema claims a single-valued attribute
+    diagnosis: undeclared repeating group
+    terminal: RejectUndeclaredRepeatingGroup
+  - symptom: salary history is nested but date or equivalent group key is not declared
+    diagnosis: unkeyed nested group
+    terminal: RejectUnkeyedNestedGroup
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+    note: NF2/N3 nested relation baseline; source note uses employee children and salary history examples
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md
+  - https://www.comp.nus.edu.sg/~lingtw/cs4221/nested.relation.pdf

@@ -1,0 +1,72 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.etnf
+  name: Essential Tuple Normal Form
+  short_name: ETNF
+  version: v0
+  status: draft
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: essential tuple redundancy from tuple-generating or embedded dependencies
+  preserves_invariant: tuple-generating constraints do not create avoidable essential redundancy
+  protected_skeleton: [candidate_keys, join_dependencies, tuple_generating_dependencies, embedded_dependencies]
+  erased_structure: []
+  non_claims:
+    - precise Simplex verifier semantics are not fixed
+    - does not replace 5NF/PJNF
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - tuple_generating_dependencies
+  - embedded_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - tuple-generating dependencies are declared before ETNF claims
+  - essential tuple redundancy is analyzed under declared embedded dependencies
+  - unresolved semantics terminalize as join dependency analysis rather than acceptance
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectTupleGeneratingRedundancy
+  - RequireJoinDependencyAnalysis
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: tuple-generating constraint recreates redundant tuples after apparent decomposition
+    diagnosis: essential tuple redundancy
+    terminal: RequireJoinDependencyAnalysis
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

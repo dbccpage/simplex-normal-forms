@@ -1,0 +1,72 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.2nf
+  name: Second Normal Form
+  short_name: 2NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: partial dependency of a non-prime attribute on a proper subset of a candidate key
+  preserves_invariant: non-prime facts depend on whole candidate keys, not key fragments
+  protected_skeleton: [first_normal_form, candidate_keys, functional_dependencies, prime_attributes]
+  erased_structure: []
+  non_claims:
+    - does not resolve transitive dependencies
+    - does not imply Boyce-Codd Normal Form
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - first_normal_form
+  - heading
+  - candidate_keys
+  - functional_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - relation satisfies 1NF
+  - every non-prime attribute is fully functionally dependent on each candidate key it depends on
+  - no non-prime attribute depends on a proper subset of a composite candidate key
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectPartialDependency
+  - RequireDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: order_line relvar keyed by order_id and line_no stores order_date depending only on order_id
+    diagnosis: non-prime attribute depends on a proper subset of a composite key
+    terminal: RejectPartialDependency
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

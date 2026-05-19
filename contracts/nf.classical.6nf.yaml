@@ -1,0 +1,72 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.6nf
+  name: Sixth Normal Form
+  short_name: 6NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: further nonloss decomposition into irreducible facts
+  preserves_invariant: relvars represent irreducible facts under the declared predicate and keys
+  protected_skeleton: [irreducible_facts, candidate_keys, lossless_decomposition]
+  erased_structure: []
+  non_claims:
+    - does not imply practical performance or universal desirability
+    - does not require every production schema to decompose to 6NF
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - irreducible_fact_predicate
+  - decomposition_policy
+  - temporal_semantics_when_applicable
+
+evidence_required: []
+
+validation_criteria:
+  - no further nonloss decomposition is available under declared predicate semantics
+  - temporal attributes are separated when the temporal model requires irreducible fact history
+  - decomposition preserves the declared relation predicate under lossless reconstruction
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectFurtherNonlossDecomposition
+  - RequireIrreducibleFactDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: temporal salary and department facts share one relvar despite independent change histories
+    diagnosis: further nonloss decomposition into irreducible temporal facts is available
+    terminal: RequireIrreducibleFactDecomposition
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

@@ -1,0 +1,70 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.5nf
+  name: Fifth Normal Form / Projection-Join Normal Form
+  short_name: 5NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: non-key-implied join dependency
+  preserves_invariant: every nontrivial join dependency is implied by candidate keys
+  protected_skeleton: [candidate_keys, join_dependencies, projections]
+  erased_structure: []
+  non_claims:
+    - does not imply practical performance benefit
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - join_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - every nontrivial join dependency is implied by candidate keys
+  - non-key join dependencies require projection-join decomposition
+  - decompositions preserve the declared predicate under lossless join
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectNonKeyJoinDependency
+  - RequireProjectionJoinDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: supplier-part-project facts are stored with a join dependency not implied by keys
+    diagnosis: non-key join dependency
+    terminal: RejectNonKeyJoinDependency
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

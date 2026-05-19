@@ -1,0 +1,72 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.eknf
+  name: Elementary Key Normal Form
+  short_name: EKNF
+  version: v0
+  status: draft
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: elementary key dependency anomaly
+  preserves_invariant: elementary key dependencies are represented without avoidable redundancy while preserving declared dependencies where possible
+  protected_skeleton: [candidate_keys, elementary_key_dependencies, functional_dependencies]
+  erased_structure: []
+  non_claims:
+    - does not replace BCNF
+    - does not guarantee every BCNF decomposition preserves dependencies
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - functional_dependencies
+  - elementary_key_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - elementary key dependencies are declared explicitly
+  - decomposition obligations preserve declared dependency intent where possible
+  - elementary key anomalies terminalize rather than being hidden as implementation choices
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectElementaryKeyAnomaly
+  - RequireDependencyPreservingDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: dependency-preserving design keeps an elementary key redundancy with no declared decomposition policy
+    diagnosis: elementary key anomaly
+    terminal: RejectElementaryKeyAnomaly
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

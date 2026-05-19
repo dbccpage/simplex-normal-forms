@@ -1,0 +1,94 @@
+id: nf.change.bqnf
+title: Boundary-Quotient Normal Form
+version: v1
+status: draft
+category: change_normal_form
+normalized_object: boundary_relvar_update
+anomaly_excluded: boundary violation
+required_declarations:
+  - boundary_declared
+  - delta_computable
+  - quotient_class_computable
+  - repair_image_declared
+  - terminal_route_declared
+required_evidence:
+  - cdc_evidence_packet
+  - boundary_fingerprint
+  - delta_program
+  - repair_witness_when_exact
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_cache_or_view_repairs
+  C1: write_event_boundary_defects
+  C2: aggregate_or_observer_closure_failures
+  d0: repair_to_boundary_defect
+  d1: boundary_defect_to_closure_failure
+  Q1: "C^1 / im(d0)"
+  omega: write_event_defect
+  obstruction_class: "[omega]"
+validation_rules:
+  - if_event_disjoint_from_boundary_then_preserve
+  - if_omega_equals_d0_alpha_then_repair
+  - if_cdc_status_or_predicate_evidence_missing_then_invalidate
+  - if_evidence_missing_then_conservative_invalidate
+  - if_max_without_extremum_witness_then_unsupported_or_lift
+  - if_d1_omega_nonzero_then_closure_failure
+terminal_routes:
+  - Preserve
+  - Repair
+  - Invalidate
+  - Recompute
+  - Serialize
+  - Lift
+  - Escalate
+  - Unsupported
+  - ClosureFailure
+  - BudgetUnknown
+  - ConservativeInvalidate
+certificate_requirements:
+  required: true
+  shape: bqnf_repair_certificate
+  fields:
+    - boundary_fingerprint
+    - omega
+    - obstruction_class
+    - alpha
+    - terminal_route
+    - verifier_id
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Conditional theorem
+    item: supported SPJA repairs are sound when omega equals d0(alpha)
+  - status: Mechanization target
+    item: implement verifier for Orders paid_revenue_by_customer
+non_claims:
+  - does not prove source data is true
+  - does not authorize side effects
+  - does not transport representation changes without GTMUR
+examples:
+  - examples/01_bqnf_orders_paid_revenue.md
+examples_inline:
+  orders_paid_revenue:
+    source_relation: Orders(order_id, customer_id, status, amount, updated_at)
+    observer: paid_revenue_by_customer(customer_id, paid_revenue)
+    boundary:
+      relations: [Orders]
+      attributes: [customer_id, status, amount]
+      predicate: "status = 'paid'"
+      group: customer_id
+      aggregate: "SUM(amount)"
+    cases:
+      - name: supported_sum_delta
+        evidence: before_after_status_amount_customer_present
+        terminal_route: Repair
+      - name: missing_cdc_status
+        evidence: missing_predicate_membership
+        terminal_route: Invalidate
+      - name: unrelated_column
+        evidence: updated_at_only
+        terminal_route: Preserve
+      - name: max_without_witness
+        evidence: no_extremum_witness
+        terminal_route: Unsupported_or_Lift

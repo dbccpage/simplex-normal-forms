@@ -1,0 +1,51 @@
+id: nf.epistemic.authority
+title: Authority Normal Form
+version: v1
+status: draft
+category: observer_epistemic_form
+normalized_object: authority_status_packet
+anomaly_excluded: authority laundering
+required_declarations:
+  - available
+  - valid
+  - certified
+  - authorized
+  - actionable
+  - authority_scope
+required_evidence:
+  - validation_record
+  - certificate_ref
+  - authority_verifier_record
+  - policy_scope
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_authority_witnesses
+  C1: authority_gate_defects
+  C2: policy_scope_closure_failures
+  d0: authority_witness_to_gate_defect
+  d1: gate_defect_to_scope_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - every_gate_is_distinct
+  - certified_does_not_imply_authorized
+  - actionable_requires_authorized_with_scope
+terminal_routes:
+  - Preserve
+  - Lift
+  - Escalate
+  - Quarantine
+  - Refuse
+  - Reject
+certificate_requirements:
+  required: true
+  shape: authority_gate_packet
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Mechanization target
+    item: gate transition verifier
+non_claims:
+  - does not treat availability as truth
+examples:
+  - examples/02_certificate_table_without_verifier.md

@@ -1,0 +1,70 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.3nf
+  name: Third Normal Form
+  short_name: 3NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: transitive non-key dependency
+  preserves_invariant: non-key facts depend on keys, not other non-key facts
+  protected_skeleton: [candidate_keys, functional_dependencies]
+  erased_structure: []
+  non_claims:
+    - does not certify runtime repair
+    - does not imply authorization
+    - does not imply Boyce-Codd Normal Form
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - functional_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - every nontrivial dependency has key determinant or prime dependent
+  - no non-key attribute determines another non-key attribute
+  - transitive non-key dependencies require decomposition
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectTransitiveDependency
+  - RequireDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: customer_name stored on an order relvar via order_id -> customer_id -> customer_name
+    diagnosis: transitive dependency
+    terminal: RequireDecomposition
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

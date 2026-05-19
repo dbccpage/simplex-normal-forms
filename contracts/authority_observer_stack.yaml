@@ -1,0 +1,55 @@
+id: contract.authority.observer_stack
+title: Authority Observer Stack
+version: v1
+status: draft
+category: authority_contract
+normalized_object: authority-bearing observer claim
+anomaly_excluded: authority laundering
+required_declarations:
+  - observer_id
+  - claim_scope
+  - available_gate
+  - valid_gate
+  - certified_gate
+  - authorized_gate
+  - actionable_gate
+required_evidence:
+  - verifier_record
+  - policy_scope
+  - lineage_trace
+  - trust_boundary
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_authority_witnesses
+  C1: gate_mismatch_defects
+  C2: policy_lineage_closure_failures
+  d0: witness_to_gate_defect
+  d1: gate_defect_to_authority_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - available_does_not_imply_valid
+  - valid_does_not_imply_certified
+  - certified_does_not_imply_authorized
+  - authorized_does_not_imply_actionable_outside_scope
+terminal_routes:
+  - Preserve
+  - Lift
+  - Escalate
+  - Quarantine
+  - Refuse
+  - Reject
+certificate_requirements:
+  required: true
+  shape: authority_observer_certificate
+  verifier_required: true
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Operational semantics
+    item: define replay checks for each gate transition
+non_claims:
+  - does not authorize data because it is reachable
+  - does not authorize action outside declared scope
+examples:
+  - examples/02_certificate_table_without_verifier.md

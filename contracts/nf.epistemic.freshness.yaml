@@ -1,0 +1,52 @@
+id: nf.epistemic.freshness
+title: Freshness Normal Form
+version: v1
+status: draft
+category: observer_epistemic_form
+normalized_object: distributed_read_claim
+anomaly_excluded: stale authority
+required_declarations:
+  - read_timestamp
+  - source_epoch
+  - replica_lag
+  - cache_age
+  - invalidation_status
+  - freshness_sla
+required_evidence:
+  - freshness_packet
+  - replica_or_cache_epoch
+  - invalidation_log_ref
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_refresh_or_invalidation_witnesses
+  C1: stale_read_defects
+  C2: inconsistent_freshness_closure_failures
+  d0: refresh_witness_to_staleness_defect
+  d1: staleness_defect_to_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - reads_must_carry_temporal_boundary
+  - stale_or_unknown_status_cannot_be_presented_as_fresh
+  - freshness_sla_miss_terminalizes
+terminal_routes:
+  - Preserve
+  - Invalidate
+  - Recompute
+  - Escalate
+  - BudgetUnknown
+  - ConservativeInvalidate
+  - Refuse
+certificate_requirements:
+  required: true
+  shape: freshness_packet
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Operational semantics
+    item: define freshness verifier for cache and replica reads
+non_claims:
+  - does not prove value correctness
+  - does not repair cache state without BQNF
+examples:
+  - examples/03_observer_relative_freshness.md

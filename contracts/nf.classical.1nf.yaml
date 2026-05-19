@@ -1,0 +1,71 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.1nf
+  name: Atomic Carrier Normal Form
+  short_name: 1NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: hidden nested structure / repeated groups
+  preserves_invariant: relation body is a set of tuples over declared atomic domains
+  protected_skeleton: [heading, domains, tuple_atomicity]
+  erased_structure: []
+  non_claims:
+    - does not certify runtime repair
+    - does not imply authorization
+    - does not resolve all dependency anomalies
+    - does not define atomicity without declared type/domain semantics
+
+declarations_required:
+  - heading
+  - domains
+  - candidate_keys
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - every attribute value belongs to declared domain
+  - no list/json/csv attribute value represents multiple facts without child relvar
+  - tuple identity derives from declared key, not physical row position
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectNestedCarrier
+  - RejectUntypedRepeatedGroup
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: invoice line items stored as a delimited string in one attribute value
+    diagnosis: non-atomic carrier
+    terminal: RejectNestedCarrier
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

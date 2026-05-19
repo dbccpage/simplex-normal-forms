@@ -1,0 +1,71 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.bcnf
+  name: Boyce-Codd Normal Form
+  short_name: BCNF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: non-superkey determinant
+  preserves_invariant: every nontrivial functional dependency has a superkey determinant
+  protected_skeleton: [candidate_keys, functional_dependencies, superkeys]
+  erased_structure: []
+  non_claims:
+    - may require decompositions that do not preserve every dependency in one relvar
+    - does not certify runtime repair
+    - does not imply authorization
+    - unrelated to quarantined BellCNF observer contracts
+
+declarations_required:
+  - heading
+  - candidate_keys
+  - superkeys
+  - functional_dependencies
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - for every nontrivial functional dependency X -> Y, X is a superkey
+  - dependencies with non-superkey determinants terminalize as decomposition obligations
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectNonSuperkeyDeterminant
+  - RequireDecomposition
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: instructor determines room while instructor is not a key of the relvar
+    diagnosis: non-superkey determinant
+    terminal: RejectNonSuperkeyDeterminant
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

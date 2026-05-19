@@ -1,0 +1,110 @@
+schema_version: smplx.contract_schema.v1
+
+required_fields:
+  - id
+  - title
+  - version
+  - status
+  - category
+  - normalized_object
+  - anomaly_excluded
+  - required_declarations
+  - required_evidence
+  - obstruction_substrate
+  - validation_rules
+  - terminal_routes
+  - certificate_requirements
+  - authorization_boundary
+  - proof_obligations
+  - non_claims
+  - examples
+
+field_types:
+  id: string
+  title: string
+  version: string
+  status:
+    enum:
+      - draft
+      - active
+      - deprecated
+      - quarantined
+      - experimental_conjecture
+  category:
+    enum:
+      - shape_normal_form
+      - change_normal_form
+      - evidence_form
+      - certificate_ledger_form
+      - authority_contract
+      - observer_epistemic_form
+      - experimental_regime
+      - domain_extension
+      - comedy_folklore
+      - normal_form
+      - certified_form
+      - observer_contract
+      - ledger_form
+      - experimental_extension
+      - domain_specific_application
+  normalized_object: string
+  anomaly_excluded: string_or_list
+  required_declarations: list
+  required_evidence: list
+  obstruction_substrate: object
+  validation_rules: list
+  terminal_routes: list
+  certificate_requirements: object
+  authorization_boundary: object
+  proof_obligations: list
+  non_claims: list
+  examples: list
+
+optional_fields:
+  - subcategory
+  - short_name
+  - proof_status
+  - local_terminal_routes
+  - terminal_route_map
+  - examples_inline
+
+proof_status_labels:
+  - Definitional
+  - Operational semantics
+  - Conditional theorem
+  - Proof obligation
+  - Mechanization target
+  - Experimental conjecture
+  - Domain extension
+  - Comedy diagnostic
+
+protected_nf_term:
+  rule: NF is a protected term.
+  hard_checklist:
+    - representation_normalized
+    - anomaly_excluded
+    - finite_packet
+    - verifier_or_check
+    - terminal_routes
+    - implementation_failure_prevented
+
+canonical_terminals:
+  - Preserve
+  - Repair
+  - Invalidate
+  - Recompute
+  - Serialize
+  - Lift
+  - Escalate
+  - Unsupported
+  - ClosureFailure
+  - BudgetUnknown
+  - ConservativeInvalidate
+  - Quarantine
+  - Decompose
+  - Refuse
+  - Reject
+  - Abstain
+
+experimental_terminal_routes:
+  rule: local terminal routes are allowed only when mapped to canonical terminal routes before verifier output

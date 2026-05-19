@@ -1,0 +1,40 @@
+schema_version: smplx.obstruction_substrate_schema.v1
+
+canonical_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: repairs_witnesses_patches
+  C1: defects_mismatches_representation_defects
+  C2: closure_failures_higher_consistency_failures
+  d0: repair_to_defect_map
+  d1: defect_to_closure_map
+  Q1: "C^1 / im(d0)"
+  omega: defect
+  obstruction_class: "[omega]"
+  Phi: quotient_residual_magnitude
+  Gamma: closure_defect_magnitude
+  Xi: evidence_sufficiency
+  mu: optional_policy_gauge_selector
+  tau: terminalizer
+  Lambda: lift_refusal_discipline
+
+classification:
+  exact:
+    condition: "[omega] = 0"
+    terminals: [Preserve, Repair]
+  residual_closed:
+    condition: "[omega] != 0 and d1(omega) = 0"
+    terminals: [Lift, Escalate, Recompute]
+  open:
+    condition: "d1(omega) != 0"
+    terminals: [ClosureFailure, Refuse]
+  unknown:
+    condition: "Xi = 0"
+    terminals: [BudgetUnknown, ConservativeInvalidate, Invalidate, Unsupported]
+
+non_claims:
+  - does_not_replace_codd_or_relational_theory
+  - does_not_claim_all_data_problems_are_normal_forms
+  - does_not_claim_certification_equals_authorization
+  - does_not_claim_metadata_creates_authority
+  - does_not_require_category_theory_for_implementation
+  - does_not_prove_experimental_regimes

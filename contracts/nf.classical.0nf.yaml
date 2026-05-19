@@ -1,0 +1,70 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.0nf
+  name: Raw Carrier Form
+  short_name: 0NF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: none
+  preserves_invariant: carrier is parseable as a finite data body before relational discipline is asserted
+  protected_skeleton: [finite_carrier, parseable_values]
+  erased_structure: []
+  non_claims:
+    - does not assert relation semantics
+    - does not assert tuple identity
+    - does not assert declared domains or keys
+    - does not certify runtime repair
+    - does not imply authorization
+
+declarations_required:
+  - finite_carrier_encoding
+  - parse_rule
+
+evidence_required: []
+
+validation_criteria:
+  - carrier can be parsed into finite values under the declared parse rule
+  - unparseable carrier cannot be promoted to relational analysis
+  - relational claims require explicit heading domains keys and predicate
+
+proof_obligations: []
+
+terminal_routes:
+  - AcceptRawCarrier
+  - RejectUnparseableCarrier
+  - RequireRelationalDeclaration
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: byte stream is treated as a relation before parse rule and heading are declared
+    diagnosis: raw carrier promoted to relational claim
+    terminal: RequireRelationalDeclaration
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md

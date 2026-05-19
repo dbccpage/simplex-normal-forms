@@ -1,0 +1,72 @@
+id: nf.transport.gtmur
+title: GTMUR Representation Transport Contract
+version: v1
+status: draft
+category: authority_contract
+normalized_object: representation_transport
+anomaly_excluded: gauge drift
+required_declarations:
+  - source_representation
+  - target_representation
+  - transport_F
+  - finite_core_action_bar_F
+  - descent_compatibility_witness_chi_F
+  - loss_ledger_policy
+required_evidence:
+  - transport_certificate
+  - chi_F_witness
+  - Loss_F_when_distinctions_are_erased
+  - target_verifier_record
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_transport_witnesses
+  C1: representation_defects
+  C2: noncommuting_transport_closure_failures
+  d0: witness_to_transport_defect
+  d1: transport_defect_to_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - "chi_F: D_target F => bar F D_source must be declared"
+  - updates_commute_with_representation_change_up_to_declared_loss
+  - lossy_transport_requires_Loss_F
+  - target_verifier_must_not_be_bypassed
+terminal_routes:
+  - Preserve
+  - Lift
+  - Escalate
+  - Unsupported
+  - ClosureFailure
+  - BudgetUnknown
+  - Quarantine
+  - Refuse
+  - Reject
+local_terminal_routes:
+  - AuthorityLaundering
+  - LossLedgerMissing
+  - TransportViolation
+terminal_route_map:
+  AuthorityLaundering: Reject
+  LossLedgerMissing: Refuse
+  TransportViolation: Reject
+certificate_requirements:
+  required: true
+  shape: transport_certificate
+  fields:
+    - source_representation
+    - target_representation
+    - F
+    - bar_F
+    - chi_F
+    - Loss_F
+    - terminal_route
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "A certificate table without a verifier is just another table."
+proof_obligations:
+  - status: Conditional theorem
+    item: transport preserves update authority up to declared loss under chi_F
+non_claims:
+  - does not authorize a target representation without active verifier acceptance
+  - does not hide erased distinctions
+examples:
+  - examples/02_certificate_table_without_verifier.md

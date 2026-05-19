@@ -1,0 +1,56 @@
+id: nf.epistemic.enf
+title: Epistemic Claim Form
+short_name: ENF
+version: v1
+status: draft
+category: observer_epistemic_form
+normalized_object: observer_relative_claim_packet
+anomaly_excluded: omniscience fiction
+required_declarations:
+  - what_is_known
+  - by_whom
+  - as_of_when
+  - under_which_authority
+  - with_what_uncertainty
+  - terminal_route_if_challenged
+required_evidence:
+  - subordinate_normal_form_packets_or_refs
+  - observer_packet
+  - freshness_packet_when_temporal_claim
+  - authority_packet_when_actionable_claim
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: admissible_claim_witnesses_or_subordinate_packets
+  C1: omitted_context_or_omniscience_defects
+  C2: cross_observer_authority_closure_failures
+  d0: claim_witness_to_context_defect
+  d1: context_defect_to_authority_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - no_required_claim_dimension_omitted
+  - certified_claim_form_composes_subordinate_contracts
+  - local_validity_does_not_imply_global_authority
+  - certified_does_not_imply_authorized
+terminal_routes:
+  - Preserve
+  - Invalidate
+  - Recompute
+  - Lift
+  - Escalate
+  - Refuse
+certificate_requirements:
+  required: true
+  shape: epistemic_claim_packet
+  verifier_required: true
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Proof obligation
+    item: define executable composition checks for subordinate observer and authority packets
+non_claims:
+  - master packet not same kind of object as 1NF or BQNF
+  - does not make metadata authority-bearing
+  - does not authorize claims without active authority verifier
+examples:
+  - examples/03_observer_relative_freshness.md

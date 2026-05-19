@@ -1,0 +1,72 @@
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+
+identity:
+  id: nf.classical.dknf
+  name: Domain-Key Normal Form
+  short_name: DKNF
+  version: v0
+  status: active
+  family: shape
+
+classification:
+  hierarchy_level: normal_form
+  subject_kind: [relvar]
+  data_posture: at_rest
+  mathematical_posture: operational
+
+purpose:
+  excludes_anomaly: constraint not implied by domain constraints and key constraints
+  preserves_invariant: all relvar constraints are consequences of declared domains and keys
+  protected_skeleton: [domains, candidate_keys, constraints]
+  erased_structure: []
+  non_claims:
+    - often idealized and rarely fully achieved in production schemas
+    - does not certify runtime repair
+    - does not imply authorization
+    - does not make application policy constraints disappear
+
+declarations_required:
+  - heading
+  - domains
+  - candidate_keys
+  - constraints
+  - relation_predicate
+
+evidence_required: []
+
+validation_criteria:
+  - every declared constraint is derivable from domain constraints and key constraints
+  - constraints requiring additional predicates terminalize as refactoring obligations
+  - production exceptions are not treated as DKNF compliance
+
+proof_obligations: []
+
+terminal_routes:
+  - Accept
+  - RejectNonDomainKeyConstraint
+  - RequireConstraintRefactoring
+
+certification:
+  certificate_required: false
+  certificate_kind: null
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: false
+
+authorization:
+  authorized_by: null
+  certified_implies_authorized: false
+
+failure_modes:
+  - symptom: discount rule depends on customer status and date range beyond domain and key constraints
+    diagnosis: non-domain-key constraint
+    terminal: RejectNonDomainKeyConstraint
+
+examples:
+  - ref: ../1_normal_forms.md
+    section: "2.1 Classical Relational Normal Forms"
+
+references:
+  - ../1_normal_forms.md
+  - ../0_relvar_relation_table_and_boundary_relvar.md
