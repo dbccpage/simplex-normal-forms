@@ -2,6 +2,8 @@
 
 Typed contract objects for SMPLX-009. **Contracts are boring and checkable**; papers carry narrative.
 
+> The first demos are JSON-first. SQL adapters come later. The theory is about finite packets, evidence, obstruction, and terminalization; a database engine is only one carrier.
+
 ## Canonical pipeline
 
 Every certified adjudication follows this order (metaphors are not step zero):
