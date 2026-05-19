@@ -1,0 +1,72 @@
+id: contract.time.clock_sync
+title: Clock Synchronization Authority Contract
+short_name: CSAC
+version: v1
+status: quarantined
+category: domain_extension
+normalized_object: timestamp_authority_claim
+anomaly_excluded: assuming global time is exact
+required_declarations:
+  - clock_id
+  - clock_type
+  - sync_source
+  - drift_bound
+  - offset_bound
+  - monotonicity_rule
+  - reset_policy
+  - total_order_authority_rule
+required_evidence:
+  - clock_sync_trace
+  - drift_measurement_or_bound
+  - offset_interval
+  - reset_log
+  - consensus_certificate_if_total_order_claimed
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: clock_corrections_offset_adjustments_or_consensus_witnesses
+  C1: drift_offset_reset_or_interval_overlap_defects
+  C2: nonmonotone_time_or_inconsistent_ordering_closure_failures
+  d0: repair_to_time_defect
+  d1: time_defect_to_ordering_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - timestamp_claims_include_uncertainty_interval
+  - clock_resets_are_terminalized
+  - total_ordering_requires_disjoint_certified_intervals_or_consensus
+  - overlapping_time_intervals_terminalize_as_interval_only_or_unknown
+terminal_routes:
+  - Preserve
+  - Serialize
+  - Lift
+  - Escalate
+  - Refuse
+  - Reject
+local_terminal_routes:
+  - TimeCertified
+  - TimeIntervalOnly
+  - DriftExceeded
+  - ClockReset
+  - OrderingUnknown
+  - ConsensusRequired
+terminal_route_map:
+  TimeCertified: Preserve
+  TimeIntervalOnly: Lift
+  DriftExceeded: Reject
+  ClockReset: Reject
+  OrderingUnknown: Refuse
+  ConsensusRequired: Lift
+certificate_requirements:
+  required: true
+  shape: clock_sync_certificate
+  verifier_required: true
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Mechanization target
+    item: define executable clock-bound ordering verifier
+non_claims:
+  - does not convert bounded clock intervals into absolute simultaneity
+  - does not authorize total ordering without clock-bound proof or consensus certificate
+examples:
+  - examples/03_observer_relative_freshness.md

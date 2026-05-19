@@ -1,0 +1,70 @@
+id: contract.motion.locality_bound
+title: Locality-Bound Propagation Contract
+short_name: LBPC
+version: v1
+status: quarantined
+category: domain_extension
+normalized_object: finite_locality_propagation_claim
+anomaly_excluded: instantaneous global influence claim across a local finite graph
+required_declarations:
+  - finite_locality_graph
+  - graph_metric
+  - local_interaction_or_dependency_radius
+  - velocity_bound
+  - decay_bound_or_epsilon
+  - event_support
+  - observation_window
+  - residual_ledger_policy
+required_evidence:
+  - topology_snapshot
+  - dependency_or_coupling_bound
+  - event_support_witness
+  - observation_time_window
+  - residual_bound_computation
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: local_delays_repair_paths_or_basis_updates
+  C1: out_of_cone_influence_or_unbounded_commutator_defects
+  C2: locality_cycle_or_noncomposable_bound_closure_failures
+  d0: local_repair_to_propagation_defect
+  d1: propagation_defect_to_locality_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - claimed_affected_support_lies_inside_declared_locality_cone_or_emits_residual
+  - outside_cone_effects_carry_decay_or_error_budget
+  - missing_topology_or_coupling_evidence_terminalizes
+  - locality_cone_composition_checked_for_multi_hop_transports
+terminal_routes:
+  - Preserve
+  - Lift
+  - Escalate
+  - BudgetUnknown
+  - Refuse
+local_terminal_routes:
+  - WithinLocalityCone
+  - ExponentiallySuppressed
+  - OutsideConeResidual
+  - LocalityBoundExceeded
+  - RefuseInstantInfluence
+terminal_route_map:
+  WithinLocalityCone: Preserve
+  ExponentiallySuppressed: Preserve
+  OutsideConeResidual: Lift
+  LocalityBoundExceeded: Escalate
+  RefuseInstantInfluence: Refuse
+certificate_requirements:
+  required: true
+  shape: locality_bound_certificate
+  verifier_required: true
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Domain extension
+    item: Lieb-Robinson-inspired only; prove finite propagation bound for any concrete carrier before use
+non_claims:
+  - does not prove a Lieb-Robinson theorem
+  - does not imply zero influence outside the cone
+  - does not authorize physical interpretation beyond declared finite carrier
+examples:
+  - docs/red_team.md

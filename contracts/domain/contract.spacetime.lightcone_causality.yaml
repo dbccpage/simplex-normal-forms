@@ -1,0 +1,69 @@
+id: contract.spacetime.lightcone_causality
+title: Light-Cone Causality Contract
+short_name: LCCC
+version: v1
+status: quarantined
+category: domain_extension
+normalized_object: finite_causal_ordering_claim
+anomaly_excluded: non-admissible causal ordering
+required_declarations:
+  - event_location
+  - event_time
+  - reference_frame_or_clock_basis
+  - propagation_medium
+  - max_signal_speed
+  - path_model
+  - latency_bound
+  - consensus_witness_if_total_order_is_claimed
+required_evidence:
+  - timestamp_packets
+  - location_or_region_witnesses
+  - network_path_or_physical_path_bound
+  - consensus_certificate_if_ordering_spacelike_events
+obstruction_substrate:
+  complex: "C^0 -> C^1 -> C^2"
+  C0: clock_frame_path_or_consensus_repairs
+  C1: non_admissible_order_or_latency_defects
+  C2: causal_cycle_or_unrealizable_propagation_triangle
+  d0: repair_to_causal_defect
+  d1: causal_defect_to_closure_failure
+  Q1: "C^1 / im(d0)"
+validation_rules:
+  - claimed_cause_lies_inside_declared_past_light_cone_or_network_cone
+  - spacelike_events_require_consensus_for_total_order
+  - stale_but_possible_and_causally_impossible_claims_use_distinct_terminals
+terminal_routes:
+  - Preserve
+  - Serialize
+  - Lift
+  - Escalate
+  - Refuse
+  - Reject
+local_terminal_routes:
+  - CausallyAdmissible
+  - SpacelikeConcurrent
+  - ConsensusRequired
+  - CausalViolation
+  - OrderingUnknown
+terminal_route_map:
+  CausallyAdmissible: Preserve
+  SpacelikeConcurrent: Serialize
+  ConsensusRequired: Lift
+  CausalViolation: Reject
+  OrderingUnknown: Refuse
+certificate_requirements:
+  required: true
+  shape: lightcone_causality_certificate
+  verifier_required: true
+authorization_boundary:
+  certified_implies_authorized: false
+  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
+proof_obligations:
+  - status: Domain extension
+    item: accepted causal edges satisfy declared finite propagation constraints
+non_claims:
+  - does not provide consensus by itself
+  - does not make concurrent events totally ordered
+  - does not prove physical simultaneity beyond declared finite timing model
+examples:
+  - docs/red_team.md
