@@ -1,0 +1,12 @@
+[book]
+authors = ["Jeremy H. Carroll"]
+language = "en"
+multilingual = false
+src = "book"
+title = "Simplex Normal Forms Book"
+
+[output.html]
+git-repository-url = "https://github.com/dbccpage/simplex-normal-forms"
+
+# Enable this section if using the mdbook-pdf tool
+# [output.pdf]
