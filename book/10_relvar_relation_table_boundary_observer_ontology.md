@@ -860,9 +860,9 @@ This follows the boundary-certified database idea: a database should not guess w
 **Evolution in one line:** Codd disciplined **valid states**; boundary relvars discipline **valid transitions and certified repairs**.
 
 \[
-\underbrace{Rel(H)}_{\text{states at rest}}
+\underbrace{Rel(H)}*{\text{states at rest}}
 \quad\leadsto\quad
-\underbrace{(C^0 \xrightarrow{d_0} C^1,\ Q^1,\ \mathsf{Term})}_{\text{transitions in motion}}
+\underbrace{(C^0 \xrightarrow{d_0} C^1,\ Q^1,\ \mathsf{Term})}*{\text{transitions in motion}}
 \]
 
 Full operational treatment: `1a_bqnf_incremental_repair.md`.

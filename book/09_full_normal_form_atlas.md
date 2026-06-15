@@ -77,12 +77,12 @@ The audit and governance substrate verifying the four data states:
 
 To prevent taxonomy bloat, database structures and contracts are organized into distinct categories rather than treating every invariant as a new normal form:
 
-*   **Normal Forms:** Decidable representation shapes excluding a declared anomaly (e.g., 1NF/3NF for shape, BQNF for change, GNF for gauge).
-*   **Certified Forms:** Normal forms combined with a certificate, an obstruction class, and a terminal route (certified $\not\Rightarrow$ authorized).
-*   **Authority Contracts:** Verifier and policy specifications that evaluate credentials, lineage, and permission (e.g., GTMUR transport contract, GTLA verifier).
-*   **Observer Contracts:** Visibility and coordinate envelopes (e.g., comparison envelopes $\Omega_{\mathfrak O}$).
-*   **Ledger Forms:** Structured accounts of lost representation, precision, or attributes (e.g., loss ledger).
-*   **Domain Extensions:** Extensible modules quarantined from the core database papers (e.g., relativistic coordinate frames, noisy channel boundaries, horizon boundaries, locality cones).
+- **Normal Forms:** Decidable representation shapes excluding a declared anomaly (e.g., 1NF/3NF for shape, BQNF for change, GNF for gauge).
+- **Certified Forms:** Normal forms combined with a certificate, an obstruction class, and a terminal route (certified $\not\Rightarrow$ authorized).
+- **Authority Contracts:** Verifier and policy specifications that evaluate credentials, lineage, and permission (e.g., GTMUR transport contract, GTLA verifier).
+- **Observer Contracts:** Visibility and coordinate envelopes (e.g., comparison envelopes $\Omega_{\mathfrak O}$).
+- **Ledger Forms:** Structured accounts of lost representation, precision, or attributes (e.g., loss ledger).
+- **Domain Extensions:** Extensible modules quarantined from the core database papers (e.g., relativistic coordinate frames, noisy channel boundaries, horizon boundaries, locality cones).
 
 The concrete atlas begins below; distributed claim forms are collected in §7.
 
@@ -142,9 +142,9 @@ SPJA form forces aggregate evidence to be explicit, making incremental repair so
 ### 2.3 Safe Relational Calculus Forms
 
 Relational calculus shapes support safety under the declared assumptions by enforcing that logical formulas range exclusively over finite, replayable database carriers:
-*   **Safe Tuple Relational Calculus (STRC):** Form: $\{t \mid \varphi(t)\}$, where $\varphi$ is range-restricted. Unsafe formulas are not authority-bearing because they may range over infinite or undeclared domains.
-*   **Domain Relational Calculus (DRC):** Form: $\{(x_1,\dots,x_n) \mid \varphi(x_1,\dots,x_n)\}$, isolating domain variables for precise attribute masking and loss ledger accounting.
-*   **Prenex / Guarded Normal Form:** Form: $Q_1x_1\cdots Q_nx_n.\; G(x_1,\dots,x_n)\wedge\psi$, where the guard $G$ is a finite relation preventing the smuggling of continuum assumptions.
+- **Safe Tuple Relational Calculus (STRC):** Form: $\{t \mid \varphi(t)\}$, where $\varphi$ is range-restricted. Unsafe formulas are not authority-bearing because they may range over infinite or undeclared domains.
+- **Domain Relational Calculus (DRC):** Form: $\{(x_1,\dots,x_n) \mid \varphi(x_1,\dots,x_n)\}$, isolating domain variables for precise attribute masking and loss ledger accounting.
+- **Prenex / Guarded Normal Form:** Form: $Q_1x_1\cdots Q_nx_n.\; G(x_1,\dots,x_n)\wedge\psi$, where the guard $G$ is a finite relation preventing the smuggling of continuum assumptions.
 
 ### 2.4 Datalog / Fixpoint Normal Form
 
@@ -224,9 +224,9 @@ Boundary-Quotient Normal Form is the unified certified normal form for runtime d
 
 Fix a **layer** (one materialized view, cache entry, or observer). Declare:
 
-*   **0-cells** $C^0$: admissible repair potentials (e.g., group-key deltas, predicate entry/exit adjustments, sufficient-statistic updates).
-*   **1-cells** $C^1$: **defects** $\omega$ — finite packets describing how a write event disagrees with the current certified state relative to $\partial Q$.
-*   **Boundary operator** $d_0: C^0 \to C^1$: maps a repair potential $\alpha$ to its induced defect $d_0\alpha$.
+- **0-cells** $C^0$: admissible repair potentials (e.g., group-key deltas, predicate entry/exit adjustments, sufficient-statistic updates).
+- **1-cells** $C^1$: **defects** $\omega$ — finite packets describing how a write event disagrees with the current certified state relative to $\partial Q$.
+- **Boundary operator** $d_0: C^0 \to C^1$: maps a repair potential $\alpha$ to its induced defect $d_0\alpha$.
 
 Two defects are **equivalent for repair** when they differ by an admissible repair:
 
@@ -246,22 +246,22 @@ Operationally: $[\omega]=0$ means “incremental repair preserves declared query
 
 > **Theorem-shaped (Boundary exactness criterion).**  
 > *Let $Q$ be a view with declared boundary $\partial Q$ and admissible repair potentials $C^0$. If a write event $e$ induces $\omega(e)\in C^1$ and there exists computable evidence yielding a witness $\alpha$ such that $\omega(e)=d_0\alpha$, then incremental repair along $\alpha$ preserves the semantics of $Q$ on the declared SPJA fragment (SUM/COUNT/AVG lanes under sufficient statistics; MIN/MAX only with declared auxiliary state or conservative invalidation).*  
->  
+> 
 > *Proof obligation:* fix explicit $C^0,C^1,d_0$ for the workload fragment and show $\alpha$ updates sufficient statistics iff the view homomorphism commutes with the CDC-evidence monoid. Deferred to Paper A; SmplCache instantiates the SUM/COUNT/AVG case.
 
 An update event $\omega$ in $C^1$ satisfies BQNF under five strict subclauses:
 
-1.  **Boundary Declared:** The query/view shape must declare its boundary fingerprint:
+1. **Boundary Declared:** The query/view shape must declare its boundary fingerprint:
     \[
     \partial Q = (\text{relations},\text{attributes},\text{predicates},\text{groups},\text{aggregates},\text{policies}).
     \]
-2.  **Delta Computable:** The write event must admit a computable delta program:
+2. **Delta Computable:** The write event must admit a computable delta program:
     \[
     \Delta Q(e) = Q(S+\Delta_e) - Q(S).
     \]
-3.  **Quotient Class Computable:** The event defect $\omega(e)$ must map to a computable class $[\omega(e)]$ in the quotient obstruction space $Q^1 = C^1 / \operatorname{im}(d_0)$.
-4.  **Repair Image Declared:** A sound repair is possible if and only if $[\omega(e)] = 0$ (implying the change is an exact boundary $\omega = d_0\alpha$, resulting in a repair action $\alpha$).
-5.  **Terminal Route Declared:** If $[\omega(e)] \neq 0$, the system must execute a declared terminal route:
+3. **Quotient Class Computable:** The event defect $\omega(e)$ must map to a computable class $[\omega(e)]$ in the quotient obstruction space $Q^1 = C^1 / \operatorname{im}(d_0)$.
+4. **Repair Image Declared:** A sound repair is possible if and only if $[\omega(e)] = 0$ (implying the change is an exact boundary $\omega = d_0\alpha$, resulting in a repair action $\alpha$).
+5. **Terminal Route Declared:** If $[\omega(e)] \neq 0$, the system must execute a declared terminal route:
 
 | BQNF Classification | Condition | Terminal Route |
 |---|---|---|
@@ -335,12 +335,12 @@ Governs representation changes ($F: A \to A_{\mathrm{nf}}$). Authority transport
 }
 \]
 
-#### GTMUR Failure Terminals:
-*   `TransportViolation`: No $\chi_F$ exists for the normalizing map.
-*   `SilentMutation`: A protected structural skeleton was altered without a ledger.
-*   `LossLedgerMissing`: Lossy normalization was executed without an accounting ledger.
-*   `TargetTerminalBypass`: The normalized object bypassed its target verifier.
-*   `AuthorityLaundering`: A representationally normal form is mistaken for an authorized form.
+#### GTMUR Failure Terminals
+- `TransportViolation`: No $\chi_F$ exists for the normalizing map.
+- `SilentMutation`: A protected structural skeleton was altered without a ledger.
+- `LossLedgerMissing`: Lossy normalization was executed without an accounting ledger.
+- `TargetTerminalBypass`: The normalized object bypassed its target verifier.
+- `AuthorityLaundering`: A representationally normal form is mistaken for an authorized form.
 
 ### 5.2 Comparison envelope ($\Omega_{\mathfrak O}$)
 
@@ -350,20 +350,20 @@ Enables different candidate normal forms or plan decompositions to be combined o
 N_1(A) \xleftarrow{p_1} C(A) \xrightarrow{p_2} N_2(A)
 \]
 
-*   **Pullback Policy-Data Envelope:** Pulls back data representations with policy domains.
-*   **Pushout Migration Envelope:** Merges schemas under declared identifications.
-*   **Weak Terminal Comparison Envelope:** Evaluates candidate repairs against a single terminal criterion.
-*   **Failure terminals:** `NoComparisonEnvelope`, `NonComposableCertificate`, and `CompletionWithoutDescent`.
+- **Pullback Policy-Data Envelope:** Pulls back data representations with policy domains.
+- **Pushout Migration Envelope:** Merges schemas under declared identifications.
+- **Weak Terminal Comparison Envelope:** Evaluates candidate repairs against a single terminal criterion.
+- **Failure terminals:** `NoComparisonEnvelope`, `NonComposableCertificate`, and `CompletionWithoutDescent`.
 
 ### 5.3 Finite-shadow authority criterion (GTTC)
 
 Governs continuous or evolving systems by asserting that a continuous object is authority-bearing if and only if there exists a cofinal, coherent tower of authorized finite shadows:
 
 \[
-\exists \Lambda_0 \subseteq \Lambda \text{ cofinal}: \forall \lambda \in \Lambda_0, \mathsf{Auth}_{\Omega_{\mathfrak O}}(A_\lambda) \downarrow \text{ and } \chi_{\lambda\mu} \downarrow.
+\exists \Lambda_0 \subseteq \Lambda \text{ cofinal}: \forall \lambda \in \Lambda_0, \mathsf{Auth}*{\Omega*{\mathfrak O}}(A_\lambda) \downarrow \text{ and } \chi_{\lambda\mu} \downarrow.
 \]
 
-*   **GTTC Failure Terminals:** `NoFiniteShadow`, `NoCofinalAuthorizedShadow`, `ShadowIncoherence`, `ApproximationLedgerMissing`, and `LimitMembershipNotAuthority`.
+- **GTTC Failure Terminals:** `NoFiniteShadow`, `NoCofinalAuthorizedShadow`, `ShadowIncoherence`, `ApproximationLedgerMissing`, and `LimitMembershipNotAuthority`.
 
 ### 5.4 Terminal authority verifier (GTLA)
 
@@ -614,7 +614,7 @@ ENF is the **composition target** of LNF–SnNF: subordinate normal forms supply
 
 > **Thesis (epistemic replacement for Codd default).**  
 > Modern systems should be judged not only on whether dependencies are decomposed, but on whether they can truthfully answer: *where is it, what version is it, who may rely on it, what uncertainty remains, and what happens if challenged?*  
->  
+> 
 > **Paper program (future):** operational checklists and certificates per epistemic NF, analogous to Paper A (BQNF) and Paper B (GTMUR).
 
 ### 7.11 Mapping epistemic NFs to the existing stack
@@ -631,8 +631,8 @@ ENF is the **composition target** of LNF–SnNF: subordinate normal forms supply
 
 ## 8. Synthesis
 
-*   **Shape Normal Forms** exclude static dependency and range anomalies in data at rest.
-*   **Boundary-Quotient Normal Form (BQNF)** certifies whether runtime data in motion represents a sound repair or an obstruction.
-*   **Evidence and Certificate Forms** standardize audit trails, provenance, and the structural skeletons preserved during transitions.
-*   **Authority Contracts** govern the active transport, comparison, and finite shadowing of representation states, ensuring authority descent remains bounded and checked.
-*   **Epistemic Normal Forms** (§7) specify what a distributed system must declare so it does not pretend to omniscient global state — composing locality, version, freshness, provenance, and authority into bounded claims.
+- **Shape Normal Forms** exclude static dependency and range anomalies in data at rest.
+- **Boundary-Quotient Normal Form (BQNF)** certifies whether runtime data in motion represents a sound repair or an obstruction.
+- **Evidence and Certificate Forms** standardize audit trails, provenance, and the structural skeletons preserved during transitions.
+- **Authority Contracts** govern the active transport, comparison, and finite shadowing of representation states, ensuring authority descent remains bounded and checked.
+- **Epistemic Normal Forms** (§7) specify what a distributed system must declare so it does not pretend to omniscient global state — composing locality, version, freshness, provenance, and authority into bounded claims.

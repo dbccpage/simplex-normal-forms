@@ -88,4 +88,3 @@ not of schema alone. SUM, COUNT, and AVG repairs are complete for supported line
 
 **Theorem (Boundary Repair Soundness).**  
 Given a declared schema, workload, layer map, and CDC event evidence, a local repair is sound only if the induced write defect lies in the declared repair image. If the defect class is nonzero, any silent local patch is unsound; the system must invalidate, serialize, lift, escalate, or refuse.
-
