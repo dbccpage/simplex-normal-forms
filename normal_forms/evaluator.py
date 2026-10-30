@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, List, Optional, Tuple
 
 from normal_forms.bqnf_repair import (
     process_bqnf_incremental_repair as repair_bqnf,
@@ -27,6 +27,12 @@ from normal_forms.sales_cochain import (
 )
 from normal_forms.sales_cochain import (
     estimate_quantile as quantile_of,
+)
+from normal_forms.sales_cochain import (
+    rebalance_quantile_cochain as rebalance_quantiles,
+)
+from normal_forms.sales_cochain import (
+    verify_quantile_cochain_invariants as verify_quantile_invariants,
 )
 from normal_forms.schema_sql import install_schema
 from normal_forms.sn_dispatch import (
@@ -104,7 +110,12 @@ class NormalFormsEvaluator:
         old_amount: Optional[float] = None,
         new_amount: Optional[float] = None,
         maintain_cochain: bool = True,
-    ):
+        dynamic_buckets: bool = False,
+        bucket_width: float = 10.0,
+        split_threshold: int = 8,
+        merge_threshold: int = 3,
+        min_bucket_width: float = 0.625,
+    ) -> dict[str, int]:
         return record_sales_cdc(
             self.conn,
             op_type,
@@ -114,7 +125,35 @@ class NormalFormsEvaluator:
             old_amount,
             new_amount,
             maintain_cochain,
+            dynamic_buckets=dynamic_buckets,
+            bucket_width=bucket_width,
+            split_threshold=split_threshold,
+            merge_threshold=merge_threshold,
+            min_bucket_width=min_bucket_width,
         )
+
+    def rebalance_quantile_cochain(
+        self,
+        region: str,
+        bucket_width: float = 10.0,
+        split_threshold: int = 8,
+        merge_threshold: int = 3,
+        min_bucket_width: float = 0.625,
+    ) -> dict[str, Any]:
+        return rebalance_quantiles(
+            self.conn,
+            region,
+            bucket_width=bucket_width,
+            split_threshold=split_threshold,
+            merge_threshold=merge_threshold,
+            min_bucket_width=min_bucket_width,
+        )
+
+    def verify_quantile_cochain_invariants(
+        self,
+        region: Optional[str] = None,
+    ) -> Tuple[bool, List[str]]:
+        return verify_quantile_invariants(self.conn, region=region)
 
     def estimate_quantile(self, region: str, q: float = 0.5) -> Optional[float]:
         return quantile_of(self.conn, region, q)
