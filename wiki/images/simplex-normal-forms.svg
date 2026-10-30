@@ -1,0 +1,733 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1280" width="100%" height="100%">
+  <defs>
+    <style>
+      .main-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 38px; font-weight: 900; fill: #0f172a; text-anchor: middle; letter-spacing: 0.05em; }
+      .sub-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 19px; font-weight: 500; font-style: italic; fill: #475569; text-anchor: middle; }
+      .section-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 17px; font-weight: 800; text-anchor: middle; letter-spacing: 0.04em; }
+      .card-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #0f172a; }
+      .card-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13.5px; font-weight: 400; fill: #334155; line-height: 1.4; }
+      .quote-header { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 800; fill: #0f172a; }
+      .quote-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 400; fill: #334155; line-height: 1.45; }
+      .spine-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 14px; font-weight: 800; fill: #0f172a; text-anchor: middle; }
+      .spine-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 11px; font-weight: 500; fill: #334155; text-anchor: middle; line-height: 1.25; }
+      .legend-label { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; fill: #1e293b; }
+      .arrow { stroke: #0f172a; stroke-width: 2; fill: none; }
+      .box-border { rx: 8; ry: 8; fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; }
+    </style>
+
+    <marker id="arr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0f172a"/>
+    </marker>
+    <marker id="arr-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1280" fill="#f8fafc" />
+
+  <!-- ============================================================ -->
+  <!-- HEADER                                                       -->
+  <!-- ============================================================ -->
+  <text class="main-title" x="960" y="48">NORMAL FORM (NF) FRAMEWORK</text>
+  <text class="sub-title" x="960" y="78">From Codd's Data at Rest to Data in Motion, Representation Change, and Authority Pressure</text>
+
+  <!-- ============================================================ -->
+  <!-- TOP ROW                                                      -->
+  <!-- ============================================================ -->
+
+  <!-- Top Left: Codd Quote -->
+  <g transform="translate(24, 98)">
+    <rect class="box-border" width="380" height="152" stroke="#94a3b8" />
+    <text class="quote-header" x="20" y="32">Codd is not wrong; he is stationary.</text>
+    <text class="quote-body" x="20" y="62">Classical normal forms make dependency</text>
+    <text class="quote-body" x="20" y="82">anomalies hard to hide in stored relations.</text>
+    <text class="quote-body" x="20" y="112">We extend normalization to what moves,</text>
+    <text class="quote-body" x="20" y="132">changes form, and claims authority.</text>
+  </g>
+
+  <!-- Top Center: The NF Questions -->
+  <g transform="translate(424, 98)">
+    <rect class="box-border" width="1120" height="152" stroke="#cbd5e1" />
+    <text class="section-title" x="560" y="30" fill="#1e3a8a">THE NF QUESTIONS (Observer-Relative)</text>
+
+    <!-- 7 Question items horizontally -->
+    <!-- Q1: Distinguishable (Eye) -->
+    <g transform="translate(80, 82)">
+      <circle cx="0" cy="0" r="22" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+      <path d="M -12 0 C -6 -8 6 -8 12 0 C 6 8 -6 8 -12 0 Z" fill="none" stroke="#2563eb" stroke-width="2"/>
+      <circle cx="0" cy="0" r="4" fill="#2563eb"/>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What is</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">distinguishable?</text>
+    </g>
+    <path class="arrow" d="M 125 82 L 155 82" marker-end="url(#arr)"/>
+
+    <!-- Q2: Same (Equals) -->
+    <g transform="translate(200, 82)">
+      <circle cx="0" cy="0" r="22" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+      <path d="M -8 -4 L 8 -4 M -8 4 L 8 4" stroke="#16a34a" stroke-width="3" stroke-linecap="round"/>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What counts</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">as same?</text>
+    </g>
+    <path class="arrow" d="M 245 82 L 275 82" marker-end="url(#arr)"/>
+
+    <!-- Q3: Survives comparison (Shield) -->
+    <g transform="translate(320, 82)">
+      <circle cx="0" cy="0" r="22" fill="#faf5ff" stroke="#a855f7" stroke-width="2"/>
+      <path d="M -8 -10 L 8 -10 L 8 2 C 8 8 0 12 0 12 C 0 12 -8 8 -8 2 Z" fill="none" stroke="#7e22ce" stroke-width="2"/>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What survives</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">comparison?</text>
+    </g>
+    <path class="arrow" d="M 365 82 L 395 82" marker-end="url(#arr)"/>
+
+    <!-- Q4: Fails to glue (Puzzle) -->
+    <g transform="translate(440, 82)">
+      <circle cx="0" cy="0" r="22" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+      <path d="M -8 -8 L -2 -8 C -2 -5 2 -5 2 -8 L 8 -8 L 8 -2 C 5 -2 5 2 8 2 L 8 8 L -8 8 Z" fill="none" stroke="#c2410c" stroke-width="2"/>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What fails</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">to glue?</text>
+    </g>
+    <path class="arrow" d="M 485 82 L 515 82" marker-end="url(#arr)"/>
+
+    <!-- Q5: Can be repaired (Wrench) -->
+    <g transform="translate(560, 82)">
+      <circle cx="0" cy="0" r="22" fill="#f0fdfa" stroke="#14b8a6" stroke-width="2"/>
+      <path d="M -6 6 L 6 -6 M -8 -4 L -4 -8 L 0 -4 L -4 0 Z" fill="none" stroke="#0f766e" stroke-width="2" stroke-linecap="round"/>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What can be</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">repaired?</text>
+    </g>
+    <path class="arrow" d="M 605 82 L 635 82" marker-end="url(#arr)"/>
+
+    <!-- Q6: Residual remains (Sigma) -->
+    <g transform="translate(680, 82)">
+      <circle cx="0" cy="0" r="22" fill="#fff1f2" stroke="#f43f5e" stroke-width="2"/>
+      <text x="0" y="2" font-size="20" font-weight="bold" fill="#be123c" text-anchor="middle" dominant-baseline="central">Σ</text>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What residual</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">remains?</text>
+    </g>
+    <path class="arrow" d="M 725 82 L 755 82" marker-end="url(#arr)"/>
+
+    <!-- Q7: Authority is earned (Star) -->
+    <g transform="translate(800, 82)">
+      <circle cx="0" cy="0" r="22" fill="#fffbeb" stroke="#f59e0b" stroke-width="2"/>
+      <polygon points="0,-9 2.5,-3 8.5,-2 4,2 5.5,8 0,5 -5.5,8 -4,2 -8.5,-2 -2.5,-3" fill="none" stroke="#b45309" stroke-width="1.8"/>
+      <text class="card-text" x="0" y="38" text-anchor="middle" font-weight="600">What authority</text>
+      <text class="card-text" x="0" y="54" text-anchor="middle" font-weight="600">is earned?</text>
+    </g>
+  </g>
+
+  <!-- Top Right: Certificate Quote -->
+  <g transform="translate(1564, 98)">
+    <rect class="box-border" width="332" height="152" stroke="#94a3b8" />
+    <text class="quote-header" x="166" y="36" text-anchor="middle">A certificate table</text>
+    <text class="quote-header" x="166" y="60" text-anchor="middle">without a verifier</text>
+    <text class="quote-header" x="166" y="84" text-anchor="middle">is just another table.</text>
+    <g transform="translate(166, 120)">
+      <rect x="-14" y="-14" width="28" height="28" rx="4" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
+      <line x1="-8" y1="-6" x2="8" y2="-6" stroke="#1d4ed8" stroke-width="2"/>
+      <line x1="-8" y1="0" x2="8" y2="0" stroke="#1d4ed8" stroke-width="2"/>
+      <line x1="-8" y1="6" x2="4" y2="6" stroke="#1d4ed8" stroke-width="2"/>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- LEFT COLUMN: FROM CODD TO BQNF                               -->
+  <!-- ============================================================ -->
+  <g transform="translate(24, 268)">
+    <rect class="box-border" width="320" height="570" stroke="#93c5fd" />
+    <text class="section-title" x="160" y="30" fill="#1e40af">FROM CODD TO BQNF</text>
+
+    <!-- Box 1: Classical Normal Forms -->
+    <g transform="translate(18, 55)">
+      <rect width="284" height="135" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+      <text class="card-title" x="142" y="24" text-anchor="middle" fill="#1e3a8a">Classical Normal Forms</text>
+      <text class="card-title" x="142" y="42" text-anchor="middle" fill="#1e3a8a" font-size="14px">(Data at Rest)</text>
+
+      <g transform="translate(25, 45)">
+        <ellipse cx="12" cy="18" rx="10" ry="4" fill="#3b82f6"/>
+        <path d="M 2 18 L 2 30 C 2 33 22 33 22 30 L 22 18" fill="#3b82f6"/>
+        <ellipse cx="12" cy="30" rx="10" ry="4" fill="#2563eb"/>
+      </g>
+      <text class="card-text" x="70" y="70">• relation shape</text>
+      <text class="card-text" x="70" y="90">• dependency anomalies</text>
+      <text class="card-text" x="70" y="110">• data at rest</text>
+    </g>
+
+    <!-- Arrow down -->
+    <path class="arrow" d="M 160 200 L 160 220" marker-end="url(#arr)"/>
+
+    <!-- Box 2: BQNF (Data in Motion) -->
+    <g transform="translate(18, 225)">
+      <rect width="284" height="150" rx="8" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+      <text class="card-title" x="142" y="24" text-anchor="middle" fill="#1e3a8a">BQNF</text>
+      <text class="card-title" x="142" y="42" text-anchor="middle" fill="#1e3a8a" font-size="14px">(Data in Motion)</text>
+
+      <path d="M 32 60 L 22 75 L 30 75 L 24 95 L 40 78 L 32 78 Z" fill="#2563eb"/>
+      <text class="card-text" x="60" y="68">• boundary shape</text>
+      <text class="card-text" x="60" y="88">• write-event obstruction</text>
+      <text class="card-text" x="60" y="108">• repair / invalidate /</text>
+      <text class="card-text" x="70" y="124">recompute / lift</text>
+      <text class="card-text" x="60" y="142">• data in motion</text>
+    </g>
+
+    <!-- Arrow down -->
+    <path class="arrow" d="M 160 385 L 160 405" marker-end="url(#arr)"/>
+
+    <!-- Box 3: CODA_MUR -->
+    <g transform="translate(18, 410)">
+      <rect width="284" height="142" rx="8" fill="#f5f3ff" stroke="#ddd6fe" stroke-width="1.5"/>
+      <text class="card-title" x="142" y="24" text-anchor="middle" fill="#5b21b6">CODA_MUR</text>
+      <text class="card-title" x="142" y="42" text-anchor="middle" fill="#5b21b6" font-size="14px">(Representation Change)</text>
+
+      <g transform="translate(25, 60)">
+        <circle cx="8" cy="8" r="4" fill="#7c3aed"/>
+        <circle cx="20" cy="24" r="4" fill="#7c3aed"/>
+        <line x1="8" y1="8" x2="20" y2="24" stroke="#7c3aed" stroke-width="2"/>
+      </g>
+      <text class="card-text" x="60" y="68">• representation transport</text>
+      <text class="card-text" x="60" y="88">• loss ledger</text>
+      <text class="card-text" x="60" y="108">• descent witness</text>
+      <text class="card-text" x="60" y="128">• no silent authority degradation</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- CENTER PANEL 1: BQNF                                         -->
+  <!-- ============================================================ -->
+  <g transform="translate(362, 268)">
+    <rect class="box-border" width="1200" height="275" stroke="#86efac" />
+    <text class="section-title" x="600" y="28" fill="#15803d">BQNF – BOUNDARY-QUALIFIED NORMAL FORM (For Writes and Views)</text>
+
+    <!-- 5 Steps in BQNF -->
+    <!-- Step 1: Boundary Declaration -->
+    <g transform="translate(15, 48)">
+      <rect width="215" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text class="card-title" x="107" y="24" text-anchor="middle" font-size="13px" fill="#166534">1. BOUNDARY DECLARATION</text>
+      <!-- Dashed box icon -->
+      <g transform="translate(107, 72)">
+        <path d="M -22 -14 L -22 -22 L -14 -22 M 14 -22 L 22 -22 L 22 -14 M 22 14 L 22 22 L 14 22 M -14 22 L -22 22 L -22 14" stroke="#16a34a" stroke-width="3" fill="none"/>
+      </g>
+      <text class="card-text" x="18" y="125">Declare the boundary</text>
+      <text class="card-text" x="18" y="145">of the view/cache,</text>
+      <text class="card-text" x="18" y="165">dependencies, and</text>
+      <text class="card-text" x="18" y="185">assumptions.</text>
+    </g>
+    <path class="arrow" d="M 235 153 L 255 153" marker-end="url(#arr)"/>
+
+    <!-- Step 2: Delta / Event Packet -->
+    <g transform="translate(260, 48)">
+      <rect width="215" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text class="card-title" x="107" y="24" text-anchor="middle" font-size="13px" fill="#166534">2. DELTA / EVENT PACKET</text>
+      <!-- Dotted cluster icon -->
+      <g transform="translate(107, 72)">
+        <circle cx="0" cy="-12" r="3.5" fill="#16a34a"/>
+        <circle cx="-14" cy="4" r="3.5" fill="#16a34a"/>
+        <circle cx="14" cy="4" r="3.5" fill="#16a34a"/>
+        <circle cx="-8" cy="16" r="3.5" fill="#16a34a"/>
+        <circle cx="8" cy="16" r="3.5" fill="#16a34a"/>
+      </g>
+      <text class="card-text" x="18" y="125">Write event is captured</text>
+      <text class="card-text" x="18" y="145">with before/after image</text>
+      <text class="card-text" x="18" y="165">and declared fidelity.</text>
+    </g>
+    <path class="arrow" d="M 480 153 L 500 153" marker-end="url(#arr)"/>
+
+    <!-- Step 3: Obstruction Computation -->
+    <g transform="translate(505, 48)">
+      <rect width="215" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text class="card-title" x="107" y="24" text-anchor="middle" font-size="13px" fill="#166534">3. OBSTRUCTION COMPUTATION</text>
+      <!-- Simplicial triangle icon -->
+      <g transform="translate(107, 72)">
+        <polygon points="0,-18 18,14 -18,14" fill="none" stroke="#7c3aed" stroke-width="2.5"/>
+        <circle cx="0" cy="-18" r="4.5" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5"/>
+        <circle cx="18" cy="14" r="4.5" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5"/>
+        <circle cx="-18" cy="14" r="4.5" fill="#ffffff" stroke="#7c3aed" stroke-width="2.5"/>
+      </g>
+      <text class="card-text" x="18" y="125">Compute what the event</text>
+      <text class="card-text" x="18" y="145">breaks relative to the</text>
+      <text class="card-text" x="18" y="165">boundary (the obstruction).</text>
+    </g>
+    <path class="arrow" d="M 725 153 L 745 153" marker-end="url(#arr)"/>
+
+    <!-- Step 4: Admissible Repair Image -->
+    <g transform="translate(750, 48)">
+      <rect width="215" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text class="card-title" x="107" y="24" text-anchor="middle" font-size="13px" fill="#166534">4. ADMISSIBLE REPAIR IMAGE</text>
+      <!-- Wrench icon -->
+      <g transform="translate(107, 72)">
+        <path d="M -12 12 L 8 -8 M -15 -3 L -3 -15 L 3 -9 L -9 3 Z" fill="none" stroke="#0d9488" stroke-width="3" stroke-linecap="round"/>
+      </g>
+      <text class="card-text" x="18" y="125">Determine if a local repair</text>
+      <text class="card-text" x="18" y="145">exists within declared</text>
+      <text class="card-text" x="18" y="165">repair language.</text>
+    </g>
+    <path class="arrow" d="M 970 153 L 990 153" marker-end="url(#arr)"/>
+
+    <!-- Step 5: Terminal Route -->
+    <g transform="translate(995, 48)">
+      <rect width="190" height="210" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text class="card-title" x="95" y="24" text-anchor="middle" font-size="13px" fill="#166534">5. TERMINAL ROUTE</text>
+      <!-- Bullseye target icon -->
+      <g transform="translate(95, 68)">
+        <circle cx="0" cy="0" r="16" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+        <circle cx="0" cy="0" r="9" fill="none" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="0" cy="0" r="3.5" fill="#dc2626"/>
+      </g>
+      <text class="card-text" x="14" y="112" font-size="12.5px" font-weight="600">Emit terminal result:</text>
+      <text class="card-text" x="14" y="128" font-size="12px">Preserve / Repair /</text>
+      <text class="card-text" x="14" y="144" font-size="12px">Invalidate / Recompute /</text>
+      <text class="card-text" x="14" y="160" font-size="12px">Serialize / Lift /</text>
+      <text class="card-text" x="14" y="176" font-size="12px">Unsupported /</text>
+      <text class="card-text" x="14" y="192" font-size="12px">ClosureFailure</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- CENTER PANEL 2: CODA_MUR                                        -->
+  <!-- ============================================================ -->
+  <g transform="translate(362, 555)">
+    <rect class="box-border" width="1200" height="180" stroke="#c084fc" />
+    <text class="section-title" x="600" y="26" fill="#6b21a8">CODA_MUR – REPRESENTATION TRANSPORT WITH LEDGER</text>
+
+    <!-- Pipeline boxes -->
+    <!-- Source Rep A -->
+    <g transform="translate(20, 44)">
+      <rect width="150" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="22" text-anchor="middle" font-size="13px">Source</text>
+      <text class="card-title" x="75" y="38" text-anchor="middle" font-size="13px">Representation</text>
+      <text class="card-title" x="75" y="54" text-anchor="middle" font-size="13px">A</text>
+      <polygon points="75,66 84,80 66,80" fill="none" stroke="#334155" stroke-width="2"/>
+    </g>
+    <!-- Arrow F -->
+    <path class="arrow" d="M 175 90 L 220 90" marker-end="url(#arr)"/>
+    <text class="card-title" x="197" y="80" text-anchor="middle">F</text>
+
+    <!-- Target Rep A_NF -->
+    <g transform="translate(225, 44)">
+      <rect width="150" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="22" text-anchor="middle" font-size="13px">Target</text>
+      <text class="card-title" x="75" y="38" text-anchor="middle" font-size="13px">Representation</text>
+      <text class="card-title" x="75" y="54" text-anchor="middle" font-size="13px">A<tspan baseline-shift="sub" font-size="10">NF</tspan></text>
+      <polygon points="75,66 85,73 81,83 69,83 65,73" fill="none" stroke="#7c3aed" stroke-width="2"/>
+    </g>
+    <path class="arrow" d="M 380 90 L 415 90" marker-end="url(#arr)"/>
+
+    <!-- Transport Certificate X_F -->
+    <g transform="translate(420, 44)">
+      <rect width="150" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="22" text-anchor="middle" font-size="13px">Transport</text>
+      <text class="card-title" x="75" y="38" text-anchor="middle" font-size="13px">Certificate</text>
+      <text class="card-title" x="75" y="54" text-anchor="middle" font-size="13px">X<tspan baseline-shift="sub" font-size="10">F</tspan></text>
+      <!-- Certificate Icon -->
+      <g transform="translate(75, 74)">
+        <rect x="-8" y="-8" width="16" height="16" rx="2" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+        <line x1="-5" y1="-3" x2="5" y2="-3" stroke="#2563eb" stroke-width="1.5"/>
+        <line x1="-5" y1="1" x2="5" y2="1" stroke="#2563eb" stroke-width="1.5"/>
+      </g>
+    </g>
+    <path class="arrow" d="M 575 90 L 610 90" marker-end="url(#arr)"/>
+
+    <!-- Loss Ledger L_F -->
+    <g transform="translate(615, 44)">
+      <rect width="150" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="22" text-anchor="middle" font-size="13px">Loss Ledger</text>
+      <text class="card-title" x="75" y="44" text-anchor="middle" font-size="13px">L<tspan baseline-shift="sub" font-size="10">F</tspan></text>
+      <!-- Ledger Icon -->
+      <g transform="translate(75, 72)">
+        <rect x="-8" y="-9" width="16" height="18" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+        <line x1="-4" y1="-4" x2="4" y2="-4" stroke="#7c3aed" stroke-width="1.2"/>
+        <line x1="-4" y1="0" x2="4" y2="0" stroke="#7c3aed" stroke-width="1.2"/>
+        <line x1="-4" y1="4" x2="1" y2="4" stroke="#7c3aed" stroke-width="1.2"/>
+      </g>
+    </g>
+    <path class="arrow" d="M 770 90 L 805 90" marker-end="url(#arr)"/>
+
+    <!-- Descent Witness (W_F, Pi_F) -->
+    <g transform="translate(810, 44)">
+      <rect width="150" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="22" text-anchor="middle" font-size="13px">Descent Witness</text>
+      <text class="card-title" x="75" y="44" text-anchor="middle" font-size="13px">(W<tspan baseline-shift="sub" font-size="10">F</tspan>, Π<tspan baseline-shift="sub" font-size="10">F</tspan>)</text>
+      <!-- Shield icon -->
+      <path d="M 70 63 L 80 63 L 80 73 C 80 78 75 81 75 81 C 75 81 70 78 70 73 Z" fill="none" stroke="#16a34a" stroke-width="2"/>
+    </g>
+    <path class="arrow" d="M 965 90 L 1000 90" marker-end="url(#arr)"/>
+
+    <!-- Authority Preserved? -->
+    <g transform="translate(1005, 44)">
+      <rect width="150" height="92" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="24" text-anchor="middle" font-size="13px">Authority</text>
+      <text class="card-title" x="75" y="42" text-anchor="middle" font-size="13px">Preserved?</text>
+      <!-- Scales icon -->
+      <g transform="translate(75, 72)">
+        <line x1="0" y1="-10" x2="0" y2="10" stroke="#475569" stroke-width="2"/>
+        <line x1="-12" y1="-6" x2="12" y2="-6" stroke="#475569" stroke-width="2"/>
+        <path d="M -12 -6 L -16 2 L -8 2 Z M 12 -6 L 8 2 L 16 2 Z" fill="none" stroke="#475569" stroke-width="1.5"/>
+      </g>
+    </g>
+
+    <!-- YES / NO diverging arrows -->
+    <path class="arrow" d="M 1160 76 L 1188 76" marker-end="url(#arr)"/>
+    <text class="card-title" x="1174" y="66" font-size="12px" fill="#15803d">YES</text>
+
+    <path class="arrow" d="M 1160 106 L 1188 106" marker-end="url(#arr)"/>
+    <text class="card-title" x="1174" y="122" font-size="12px" fill="#b91c1c">NO</text>
+
+    <!-- Caption -->
+    <text class="card-text" x="600" y="162" text-anchor="middle" font-style="italic">
+      After map (F : A → A<tspan baseline-shift="sub" font-size="11">NF</tspan>), declared updates on the target correspond to admissible updates on the source, modulo ledgered loss.
+    </text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT COLUMN: TERMINAL ROUTES (AUTHORITY)                    -->
+  <!-- ============================================================ -->
+  <g transform="translate(1575, 268)">
+    <rect class="box-border" width="320" height="465" stroke="#94a3b8" />
+    <text class="section-title" x="160" y="26" fill="#0f172a">TERMINAL ROUTES (Authority)</text>
+
+    <!-- 8 Terminal Routes -->
+    <!-- 1: Preserve -->
+    <g transform="translate(20, 48)">
+      <circle cx="16" cy="16" r="14" fill="#f0fdf4" stroke="#22c55e" stroke-width="2"/>
+      <path d="M 11 16 L 15 20 L 22 11" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#166534">Preserve</text>
+      <text class="card-text" x="42" y="30">No change needed</text>
+    </g>
+
+    <!-- 2: Repair -->
+    <g transform="translate(20, 100)">
+      <circle cx="16" cy="16" r="14" fill="#eff6ff" stroke="#3b82f6" stroke-width="2"/>
+      <path d="M 10 22 L 20 12 M 8 14 L 14 8" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#1e40af">Repair</text>
+      <text class="card-text" x="42" y="30">Local repair safe</text>
+    </g>
+
+    <!-- 3: Invalidate -->
+    <g transform="translate(20, 152)">
+      <circle cx="16" cy="16" r="14" fill="#fff7ed" stroke="#f97316" stroke-width="2"/>
+      <polygon points="16,8 24,23 8,23" fill="none" stroke="#ea580c" stroke-width="2"/>
+      <line x1="16" y1="13" x2="16" y2="17" stroke="#ea580c" stroke-width="2"/>
+      <circle cx="16" cy="20" r="1" fill="#ea580c"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#c2410c">Invalidate</text>
+      <text class="card-text" x="42" y="30">Discard derived state</text>
+    </g>
+
+    <!-- 4: Recompute -->
+    <g transform="translate(20, 204)">
+      <circle cx="16" cy="16" r="14" fill="#faf5ff" stroke="#a855f7" stroke-width="2"/>
+      <path d="M 10 16 A 6 6 0 1 1 20 20" fill="none" stroke="#7e22ce" stroke-width="2" marker-end="url(#arr)"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#6b21a8">Recompute</text>
+      <text class="card-text" x="42" y="30">Full recompute required</text>
+    </g>
+
+    <!-- 5: Serialize -->
+    <g transform="translate(20, 256)">
+      <circle cx="16" cy="16" r="14" fill="#f0fdfa" stroke="#14b8a6" stroke-width="2"/>
+      <rect x="11" y="14" width="10" height="8" rx="2" fill="#0d9488"/>
+      <path d="M 13 14 L 13 11 C 13 9 19 9 19 11 L 19 14" fill="none" stroke="#0d9488" stroke-width="1.8"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#0f766e">Serialize</text>
+      <text class="card-text" x="42" y="30">Order-sensitive handling</text>
+    </g>
+
+    <!-- 6: Lift -->
+    <g transform="translate(20, 308)">
+      <circle cx="16" cy="16" r="14" fill="#fefce8" stroke="#ca8a04" stroke-width="2"/>
+      <path d="M 16 23 L 16 10 M 11 15 L 16 10 L 21 15" fill="none" stroke="#a16207" stroke-width="2" stroke-linecap="round"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#854d0e">Lift</text>
+      <text class="card-text" x="42" y="30">Escalate boundary/level</text>
+    </g>
+
+    <!-- 7: Unsupported -->
+    <g transform="translate(20, 360)">
+      <circle cx="16" cy="16" r="14" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/>
+      <path d="M 11 11 L 21 21 M 21 11 L 11 21" stroke="#475569" stroke-width="2.5" stroke-linecap="round"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#334155">Unsupported</text>
+      <text class="card-text" x="42" y="30">Outside repair language</text>
+    </g>
+
+    <!-- 8: ClosureFailure -->
+    <g transform="translate(20, 412)">
+      <circle cx="16" cy="16" r="14" fill="#fff1f2" stroke="#f43f5e" stroke-width="2"/>
+      <circle cx="16" cy="16" r="7" fill="none" stroke="#e11d48" stroke-width="2"/>
+      <text class="card-title" x="42" y="14" font-size="14px" fill="#be123c">ClosureFailure</text>
+      <text class="card-text" x="42" y="30">Obstruction cannot close</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- CENTER PANEL 3: EPISTEMIC NORMAL FORMS                       -->
+  <!-- ============================================================ -->
+  <g transform="translate(362, 746)">
+    <rect class="box-border" width="1295" height="130" stroke="#cbd5e1" />
+    <text class="section-title" x="647" y="24" fill="#0f172a">EPISTEMIC NORMAL FORMS (Bounded, Authorized Claims About Facts)</text>
+
+    <!-- 7 Epistemic NF Cards -->
+    <!-- 1: Freshness NF -->
+    <g transform="translate(18, 38)">
+      <rect width="170" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <circle cx="22" cy="22" r="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+      <polyline points="22,17 22,22 26,22" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+      <text class="card-title" x="40" y="25" font-size="12px" fill="#1e40af">Freshness NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Age, horizon, expiry,</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">staleness budgets</text>
+    </g>
+
+    <!-- 2: Location NF -->
+    <g transform="translate(198, 38)">
+      <rect width="170" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <circle cx="22" cy="22" r="10" fill="#fff1f2" stroke="#ef4444" stroke-width="1.5"/>
+      <path d="M 22 16 C 19 16 17 18 17 21 C 17 25 22 28 22 28 C 22 28 27 25 27 21 C 27 18 25 16 22 16 Z" fill="#ef4444"/>
+      <text class="card-title" x="40" y="25" font-size="12px" fill="#b91c1c">Location NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Where the claim resides;</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">jurisdiction &amp; reachability</text>
+    </g>
+
+    <!-- 3: Replica State NF -->
+    <g transform="translate(378, 38)">
+      <rect width="170" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <ellipse cx="22" cy="18" rx="8" ry="3" fill="#3b82f6"/>
+      <path d="M 14 18 L 14 26 C 14 28 30 28 30 26 L 30 18" fill="#2563eb"/>
+      <text class="card-title" x="40" y="25" font-size="12px" fill="#1e3a8a">Replica State NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Replica identity,</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">state vector, lag bounds</text>
+    </g>
+
+    <!-- 4: Observer/Authority NF -->
+    <g transform="translate(558, 38)">
+      <rect width="175" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <path d="M 17 17 L 27 17 L 27 25 C 27 28 22 30 22 30 C 22 30 17 28 17 25 Z" fill="#1e3a8a"/>
+      <text class="card-title" x="38" y="25" font-size="11.5px" fill="#0f172a">Observer/Authority NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Who can assert, verify,</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">override, or refuse</text>
+    </g>
+
+    <!-- 5: Provenance NF -->
+    <g transform="translate(743, 38)">
+      <rect width="170" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <g transform="translate(22, 22)">
+        <path d="M -5 -2 L -2 -5 C 0 -7 4 -7 6 -5 L 6 -5 C 8 -3 8 1 6 3 L 3 6" fill="none" stroke="#2563eb" stroke-width="1.8"/>
+        <path d="M -3 -6 L -6 -3 C -8 -1 -8 3 -6 5 L -6 5 C -4 7 0 7 2 5 L 5 2" fill="none" stroke="#2563eb" stroke-width="1.8"/>
+      </g>
+      <text class="card-title" x="40" y="25" font-size="12px" fill="#1e40af">Provenance NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Lineage of creation,</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">edits, transforms</text>
+    </g>
+
+    <!-- 6: Context NF -->
+    <g transform="translate(923, 38)">
+      <rect width="170" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <rect x="14" y="14" width="14" height="18" rx="2" fill="none" stroke="#475569" stroke-width="1.5"/>
+      <line x1="17" y1="18" x2="25" y2="18" stroke="#475569" stroke-width="1.2"/>
+      <line x1="17" y1="22" x2="25" y2="22" stroke="#475569" stroke-width="1.2"/>
+      <text class="card-title" x="40" y="25" font-size="12px" fill="#334155">Context NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Context window,</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">validity domain</text>
+    </g>
+
+    <!-- 7: Epistemic NF -->
+    <g transform="translate(1103, 38)">
+      <rect width="175" height="78" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.2"/>
+      <!-- Brain icon -->
+      <g transform="translate(22, 22)">
+        <path d="M -6 -4 C -8 -4 -8 0 -6 2 C -8 4 -6 7 -4 7 C -2 7 -2 5 -2 5 C -2 5 -2 7 0 7 C 2 7 2 5 2 5 C 2 5 2 7 4 7 C 6 7 8 4 6 2 C 8 0 8 -4 6 -4 Z" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+      </g>
+      <text class="card-title" x="40" y="25" font-size="12px" fill="#6b21a8">Epistemic NF</text>
+      <text class="card-text" x="12" y="48" font-size="10.5px">Claim type, modality,</text>
+      <text class="card-text" x="12" y="62" font-size="10.5px">uncertainty form</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM ROW: THE UNIFYING SPINE (GT STACK)                    -->
+  <!-- ============================================================ -->
+  <g transform="translate(24, 890)">
+    <rect class="box-border" width="1010" height="190" stroke="#cbd5e1" />
+    <text class="section-title" x="505" y="28" fill="#1e293b">THE UNIFYING SPINE (GT Stack)</text>
+
+    <!-- 7 GT Stack boxes -->
+    <!-- GTFOC -->
+    <g transform="translate(18, 48)">
+      <rect width="118" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="59" y="26">GTFOC</text>
+      <text class="spine-desc" x="59" y="52" font-weight="700">Obstruction</text>
+      <text class="spine-desc" x="59" y="78">(What defect</text>
+      <text class="spine-desc" x="59" y="94">remains?)</text>
+    </g>
+    <path class="arrow" d="M 141 108 L 152 108" marker-end="url(#arr)"/>
+
+    <!-- GTFDA -->
+    <g transform="translate(158, 48)">
+      <rect width="118" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="59" y="26">GTFDA</text>
+      <text class="spine-desc" x="59" y="52" font-weight="700">Authority</text>
+      <text class="spine-desc" x="59" y="66" font-weight="700">Descent</text>
+      <text class="spine-desc" x="59" y="86">(Finite,</text>
+      <text class="spine-desc" x="59" y="100">replayable,</text>
+      <text class="spine-desc" x="59" y="114">terminal?)</text>
+    </g>
+    <path class="arrow" d="M 281 108 L 292 108" marker-end="url(#arr)"/>
+
+    <!-- CODA_MUR -->
+    <g transform="translate(298, 48)">
+      <rect width="128" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="64" y="26">CODA_MUR</text>
+      <text class="spine-desc" x="64" y="52" font-weight="700">Representation</text>
+      <text class="spine-desc" x="64" y="66" font-weight="700">Transport</text>
+      <text class="spine-desc" x="64" y="90">(Preserves</text>
+      <text class="spine-desc" x="64" y="106">authority?)</text>
+    </g>
+    <path class="arrow" d="M 431 108 L 442 108" marker-end="url(#arr)"/>
+
+    <!-- GTOR -->
+    <g transform="translate(448, 48)">
+      <rect width="128" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="64" y="26">GTOR</text>
+      <text class="spine-desc" x="64" y="52" font-weight="700">Comparison &amp;</text>
+      <text class="spine-desc" x="64" y="66" font-weight="700">Completion</text>
+      <text class="spine-desc" x="64" y="90">(Can it glue?)</text>
+    </g>
+    <path class="arrow" d="M 581 108 L 592 108" marker-end="url(#arr)"/>
+
+    <!-- GTTC -->
+    <g transform="translate(598, 48)">
+      <rect width="118" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="59" y="26">GTTC</text>
+      <text class="spine-desc" x="59" y="52" font-weight="700">Continuum</text>
+      <text class="spine-desc" x="59" y="78">(Finite shadows</text>
+      <text class="spine-desc" x="59" y="94">suffice?)</text>
+    </g>
+    <path class="arrow" d="M 721 108 L 732 108" marker-end="url(#arr)"/>
+
+    <!-- GTTA -->
+    <g transform="translate(738, 48)">
+      <rect width="118" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="59" y="26">GTTA</text>
+      <text class="spine-desc" x="59" y="52" font-weight="700">Anomalon</text>
+      <text class="spine-desc" x="59" y="78">(What residual</text>
+      <text class="spine-desc" x="59" y="94">remains?)</text>
+    </g>
+    <path class="arrow" d="M 861 108 L 872 108" marker-end="url(#arr)"/>
+
+    <!-- GTLA -->
+    <g transform="translate(878, 48)">
+      <rect width="118" height="120" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.2"/>
+      <text class="spine-title" x="59" y="26">GTLA</text>
+      <text class="spine-desc" x="59" y="52" font-weight="700">Layered Authority</text>
+      <text class="spine-desc" x="59" y="78">(All obligations</text>
+      <text class="spine-desc" x="59" y="94">conserved?)</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- PRODUCT WEDGE                                                -->
+  <!-- ============================================================ -->
+  <g transform="translate(1048, 890)">
+    <rect class="box-border" width="608" height="190" stroke="#cbd5e1" />
+    <text class="section-title" x="304" y="28" fill="#1e3a8a">PRODUCT WEDGE: Boundary-Certified CDC and Cache Repair</text>
+
+    <!-- Funnel icon + description -->
+    <g transform="translate(24, 52)">
+      <polygon points="0,0 24,0 16,16 16,28 8,24 8,16" fill="#3b82f6"/>
+      <text class="card-text" x="34" y="10" font-weight="500">Given a CDC event and a materialized</text>
+      <text class="card-text" x="34" y="26" font-weight="500">view/cache shape, compute the</text>
+      <text class="card-text" x="34" y="42" font-weight="500">terminal route with a certificate.</text>
+    </g>
+
+    <!-- Flow: CDC Event -> NF Engine (BQNF) -> Terminal Result + Certificate -->
+    <g transform="translate(24, 115)">
+      <!-- CDC Event (Packet) -->
+      <rect x="0" y="0" width="150" height="52" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <text class="card-title" x="75" y="20" text-anchor="middle" font-size="12px">CDC Event</text>
+      <text class="card-text" x="75" y="38" text-anchor="middle" font-size="11px">(Packet)</text>
+
+      <path class="arrow" d="M 158 26 L 195 26" marker-end="url(#arr)"/>
+
+      <!-- NF Engine (BQNF) -->
+      <g transform="translate(202, 0)">
+        <rect x="0" y="0" width="150" height="52" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text class="card-title" x="75" y="20" text-anchor="middle" font-size="12px">NF Engine</text>
+        <text class="card-text" x="75" y="38" text-anchor="middle" font-size="11px">(BQNF)</text>
+      </g>
+
+      <path class="arrow" d="M 360 26 L 397 26" marker-end="url(#arr)"/>
+
+      <!-- Terminal Result + Certificate -->
+      <g transform="translate(404, 0)">
+        <rect x="0" y="0" width="165" height="52" rx="6" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text class="card-title" x="82" y="20" text-anchor="middle" font-size="11.5px">Terminal Result</text>
+        <text class="card-text" x="82" y="38" text-anchor="middle" font-size="11px">+ Certificate</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM RIGHT: LEGEND                                         -->
+  <!-- ============================================================ -->
+  <g transform="translate(1670, 746)">
+    <rect class="box-border" width="226" height="334" stroke="#cbd5e1" />
+    <text class="section-title" x="113" y="26" fill="#0f172a">LEGEND</text>
+
+    <!-- Legend items -->
+    <g transform="translate(18, 45)">
+      <!-- Boundary -->
+      <g transform="translate(0, 0)">
+        <rect x="0" y="0" width="20" height="16" rx="2" fill="none" stroke="#1e293b" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <text class="legend-label" x="32" y="13">Boundary</text>
+      </g>
+      <!-- Delta/Event -->
+      <g transform="translate(0, 28)">
+        <circle cx="5" cy="5" r="2" fill="#16a34a"/>
+        <circle cx="15" cy="5" r="2" fill="#16a34a"/>
+        <circle cx="10" cy="12" r="2" fill="#16a34a"/>
+        <text class="legend-label" x="32" y="13">Delta/Event</text>
+      </g>
+      <!-- Obstruction -->
+      <g transform="translate(0, 56)">
+        <polygon points="10,0 20,16 0,16" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+        <text class="legend-label" x="32" y="13">Obstruction</text>
+      </g>
+      <!-- Repair -->
+      <g transform="translate(0, 84)">
+        <path d="M 4 14 L 14 4 M 2 6 L 6 2" stroke="#0d9488" stroke-width="2" stroke-linecap="round"/>
+        <text class="legend-label" x="32" y="13">Repair</text>
+      </g>
+      <!-- Terminal -->
+      <g transform="translate(0, 112)">
+        <circle cx="10" cy="8" r="8" fill="none" stroke="#dc2626" stroke-width="1.5"/>
+        <circle cx="10" cy="8" r="4" fill="#dc2626"/>
+        <text class="legend-label" x="32" y="13">Terminal</text>
+      </g>
+      <!-- Certificate -->
+      <g transform="translate(0, 140)">
+        <rect x="2" y="0" width="16" height="18" rx="2" fill="none" stroke="#2563eb" stroke-width="1.5"/>
+        <line x1="5" y1="5" x2="15" y2="5" stroke="#2563eb" stroke-width="1.2"/>
+        <text class="legend-label" x="32" y="13">Certificate</text>
+      </g>
+      <!-- Authority -->
+      <g transform="translate(0, 168)">
+        <path d="M 5 2 L 15 2 L 15 10 C 15 14 10 16 10 16 C 10 16 5 14 5 10 Z" fill="none" stroke="#1e3a8a" stroke-width="1.5"/>
+        <text class="legend-label" x="32" y="13">Authority</text>
+      </g>
+      <!-- Descent/Verify -->
+      <g transform="translate(0, 196)">
+        <line x1="2" y1="4" x2="18" y2="4" stroke="#475569" stroke-width="1.5"/>
+        <line x1="10" y1="0" x2="10" y2="16" stroke="#475569" stroke-width="1.5"/>
+        <text class="legend-label" x="32" y="13">Descent/Verify</text>
+      </g>
+      <!-- Transport -->
+      <g transform="translate(0, 224)">
+        <line x1="2" y1="8" x2="16" y2="8" stroke="#0f172a" stroke-width="2"/>
+        <polyline points="12,4 16,8 12,12" fill="none" stroke="#0f172a" stroke-width="2"/>
+        <text class="legend-label" x="32" y="13">Transport</text>
+      </g>
+      <!-- Ledger -->
+      <g transform="translate(0, 252)">
+        <rect x="2" y="0" width="16" height="18" rx="2" fill="none" stroke="#7c3aed" stroke-width="1.5"/>
+        <line x1="6" y1="5" x2="14" y2="5" stroke="#7c3aed" stroke-width="1"/>
+        <line x1="6" y1="9" x2="14" y2="9" stroke="#7c3aed" stroke-width="1"/>
+        <line x1="6" y1="13" x2="10" y2="13" stroke="#7c3aed" stroke-width="1"/>
+        <text class="legend-label" x="32" y="13">Ledger</text>
+      </g>
+    </g>
+  </g>
+</svg>

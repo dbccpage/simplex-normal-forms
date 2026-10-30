@@ -1,0 +1,461 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1280" width="100%" height="100%">
+  <defs>
+    <style>
+      .title-badge { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 26px; font-weight: 700; fill: #ffffff; text-anchor: middle; dominant-baseline: central; }
+      .node-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .sub-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 500; text-anchor: middle; dominant-baseline: central; fill: #334155; }
+      .legend-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 500; fill: #1e293b; dominant-baseline: central; }
+      .arrow { stroke: #1e293b; stroke-width: 2.5; fill: none; }
+      .arrow-green { stroke: #16a34a; stroke-width: 2.5; fill: none; }
+      .arrow-blue { stroke: #2563eb; stroke-width: 2.5; stroke-dasharray: 6 5; fill: none; }
+      .arrow-dashed-orange { stroke: #ea580c; stroke-width: 2.5; stroke-dasharray: 6 5; fill: none; }
+      .arrow-dashed-pink { stroke: #db2777; stroke-width: 2.5; stroke-dasharray: 6 5; fill: none; }
+      .arrow-dotted-purple { stroke: #9333ea; stroke-width: 2.5; stroke-dasharray: 3 4; fill: none; }
+      .arrow-dotted-amber { stroke: #d97706; stroke-width: 2.5; stroke-dasharray: 3 4; fill: none; }
+      .arrow-dotted-black { stroke: #1e293b; stroke-width: 2.5; stroke-dasharray: 3 4; fill: none; }
+      .card-bg { rx: 12; ry: 12; fill: #ffffff; stroke-width: 1.5; }
+    </style>
+
+    <!-- Marker Definitions -->
+    <marker id="arrow-black" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#1e293b"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ea580c"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#9333ea"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+
+    <!-- Symbols -->
+    <g id="check-icon">
+      <path d="M4 14 L10 20 L24 4" fill="none" stroke="#16a34a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="cross-icon">
+      <path d="M5 5 L21 21 M21 5 L5 21" fill="none" stroke="#dc2626" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="key-icon">
+      <!-- Old-style skeleton key in blue -->
+      <circle cx="9" cy="9" r="6" fill="#0284c7" stroke="#0369a1" stroke-width="1.5"/>
+      <circle cx="9" cy="9" r="2.5" fill="#ffffff"/>
+      <path d="M9 15 L9 29 M9 22 L14 22 M9 26 L13 26" stroke="#0284c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1920" height="1280" fill="#f8fafc" />
+
+  <!-- ========================================== -->
+  <!-- ROW 1                                      -->
+  <!-- ========================================== -->
+
+  <!-- Panel 1: 0NF -->
+  <g id="panel-0nf" transform="translate(24, 20)">
+    <rect class="card-bg" width="608" height="364" stroke="#fca5a5" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#ef4444" />
+    <text class="title-badge" x="304" y="39">0NF</text>
+
+    <!-- Node R -->
+    <circle cx="304" cy="115" r="32" fill="#fee2e2" stroke="#ef4444" stroke-width="2.5"/>
+    <text class="node-text" x="304" y="115" fill="#991b1b">R</text>
+
+    <!-- Arrow down -->
+    <path class="arrow" d="M 304 147 L 304 220" marker-end="url(#arrow-black)"/>
+
+    <!-- Unnormalized Container -->
+    <rect x="32" y="160" width="544" height="185" rx="14" ry="14" fill="#fff1f2" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 6"/>
+
+    <!-- Nested Attribute Boxes -->
+    <g transform="translate(60, 230)">
+      <rect x="0" y="0" width="80" height="75" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="40" y="38" fill="#1e293b">A<tspan baseline-shift="sub" font-size="16">1</tspan></text>
+    </g>
+    <g transform="translate(175, 230)">
+      <rect x="0" y="0" width="105" height="75" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="52" y="38" font-size="28" fill="#1e293b">• • •</text>
+    </g>
+    <g transform="translate(325, 205)">
+      <rect x="0" y="0" width="80" height="120" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <!-- Matrix brackets and elements -->
+      <path d="M 20 18 L 14 18 L 14 102 L 20 102 M 60 18 L 66 18 L 66 102 L 60 102" fill="none" stroke="#475569" stroke-width="2"/>
+      <text class="sub-text" x="40" y="32">b<tspan baseline-shift="sub" font-size="12">1</tspan></text>
+      <text class="sub-text" x="40" y="55">b<tspan baseline-shift="sub" font-size="12">2</tspan></text>
+      <text class="sub-text" x="40" y="75">• • •</text>
+      <text class="sub-text" x="40" y="96">b<tspan baseline-shift="sub" font-size="12">n</tspan></text>
+    </g>
+    <g transform="translate(450, 230)">
+      <rect x="0" y="0" width="80" height="75" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="40" y="38" fill="#1e293b">A<tspan baseline-shift="sub" font-size="16">n</tspan></text>
+    </g>
+  </g>
+
+  <!-- Panel 2: 1NF -->
+  <g id="panel-1nf" transform="translate(656, 20)">
+    <rect class="card-bg" width="608" height="364" stroke="#86efac" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#22c55e" />
+    <text class="title-badge" x="304" y="39">1NF</text>
+
+    <!-- Node R -->
+    <circle cx="304" cy="120" r="34" fill="#dcfce7" stroke="#22c55e" stroke-width="2.5"/>
+    <text class="node-text" x="304" y="120" fill="#166534">R</text>
+
+    <!-- Branching arrows -->
+    <path class="arrow-green" d="M 282 146 L 100 248" marker-end="url(#arrow-green)"/>
+    <path class="arrow-green" d="M 298 154 L 230 248" marker-end="url(#arrow-green)"/>
+    <path class="arrow-green" d="M 326 146 L 508 248" marker-end="url(#arrow-green)"/>
+
+    <!-- Atomic Boxes -->
+    <g transform="translate(60, 255)">
+      <rect x="0" y="0" width="80" height="70" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="40" y="35" fill="#1e293b">A<tspan baseline-shift="sub" font-size="16">1</tspan></text>
+    </g>
+    <g transform="translate(190, 255)">
+      <rect x="0" y="0" width="80" height="70" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="40" y="35" fill="#1e293b">A<tspan baseline-shift="sub" font-size="16">2</tspan></text>
+    </g>
+    <text class="node-text" x="340" y="290" font-size="32" fill="#334155">• • •</text>
+    <g transform="translate(470, 255)">
+      <rect x="0" y="0" width="80" height="70" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="40" y="35" fill="#1e293b">A<tspan baseline-shift="sub" font-size="16">n</tspan></text>
+    </g>
+  </g>
+
+  <!-- Panel 3: 2NF -->
+  <g id="panel-2nf" transform="translate(1288, 20)">
+    <rect class="card-bg" width="608" height="364" stroke="#93c5fd" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#3b82f6" />
+    <text class="title-badge" x="304" y="39">2NF</text>
+
+    <!-- Key K -->
+    <circle cx="85" cy="120" r="30" fill="#eff6ff" stroke="#3b82f6" stroke-width="2.5"/>
+    <text class="node-text" x="85" y="120" fill="#1e40af">K</text>
+
+    <!-- Subset X -->
+    <circle cx="85" cy="270" r="30" fill="#eff6ff" stroke="#3b82f6" stroke-width="2.5"/>
+    <text class="node-text" x="85" y="270" fill="#1e40af">X</text>
+
+    <!-- Dashed connection K to X -->
+    <path class="arrow-blue" d="M 85 152 L 85 238"/>
+
+    <!-- Arrow K to R -->
+    <path class="arrow" d="M 118 120 L 255 120" marker-end="url(#arrow-black)"/>
+    <text class="sub-text" x="180" y="142" font-size="16" fill="#1d4ed8">(key)</text>
+
+    <!-- Dashed arrow X to R (partial dependency) -->
+    <path class="arrow-blue" d="M 112 258 L 260 148" marker-end="url(#arrow-blue)"/>
+
+    <!-- Node R -->
+    <circle cx="290" cy="120" r="32" fill="#dbeafe" stroke="#2563eb" stroke-width="2.5"/>
+    <text class="node-text" x="290" y="120" fill="#1e3a8a">R</text>
+
+    <!-- Arrows from R to A1, A2, An -->
+    <path class="arrow" d="M 322 110 L 418 85" marker-end="url(#arrow-black)"/>
+    <path class="arrow" d="M 322 125 L 418 150" marker-end="url(#arrow-black)"/>
+    <path class="arrow" d="M 315 145 L 418 260" marker-end="url(#arrow-black)"/>
+
+    <!-- Attributes on right -->
+    <g transform="translate(425, 55)">
+      <rect x="0" y="0" width="75" height="58" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="37" y="29" fill="#1e293b">A<tspan baseline-shift="sub" font-size="14">1</tspan></text>
+      <use href="#check-icon" x="90" y="14"/>
+    </g>
+    <g transform="translate(425, 125)">
+      <rect x="0" y="0" width="75" height="58" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="37" y="29" fill="#1e293b">A<tspan baseline-shift="sub" font-size="14">2</tspan></text>
+      <use href="#cross-icon" x="90" y="14"/>
+    </g>
+    <text class="node-text" x="462" y="215" font-size="24" fill="#64748b">⋮</text>
+    <g transform="translate(425, 235)">
+      <rect x="0" y="0" width="75" height="58" rx="4" fill="#ffffff" stroke="#334155" stroke-width="2"/>
+      <text class="node-text" x="37" y="29" fill="#1e293b">A<tspan baseline-shift="sub" font-size="14">n</tspan></text>
+      <use href="#check-icon" x="90" y="14"/>
+    </g>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- ROW 2                                      -->
+  <!-- ========================================== -->
+
+  <!-- Panel 4: 3NF -->
+  <g id="panel-3nf" transform="translate(24, 404)">
+    <rect class="card-bg" width="608" height="364" stroke="#d8b4fe" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#a855f7" />
+    <text class="title-badge" x="304" y="39">3NF</text>
+
+    <!-- Node X -->
+    <circle cx="105" cy="180" r="32" fill="#faf5ff" stroke="#9333ea" stroke-width="2.5"/>
+    <text class="node-text" x="105" y="180" fill="#6b21a8">X</text>
+
+    <!-- Arrow X to R -->
+    <path class="arrow" d="M 140 180 L 260 180" marker-end="url(#arrow-black)"/>
+
+    <!-- Node R -->
+    <circle cx="295" cy="180" r="32" fill="#f3e8ff" stroke="#9333ea" stroke-width="2.5"/>
+    <text class="node-text" x="295" y="180" fill="#581c87">R</text>
+
+    <!-- Arrow R to A -->
+    <path class="arrow" d="M 330 180 L 440 180" marker-end="url(#arrow-black)"/>
+
+    <!-- Attribute A -->
+    <g transform="translate(445, 148)">
+      <rect x="0" y="0" width="75" height="64" rx="4" fill="#f5f3ff" stroke="#9333ea" stroke-width="2"/>
+      <text class="node-text" x="37" y="32" fill="#581c87">A</text>
+    </g>
+
+    <!-- Intermediate B (dashed) -->
+    <g transform="translate(258, 268)">
+      <rect x="0" y="0" width="75" height="64" rx="8" fill="#faf5ff" stroke="#9333ea" stroke-width="2" stroke-dasharray="6 4"/>
+      <text class="node-text" x="37" y="32" fill="#6b21a8">B</text>
+    </g>
+
+    <!-- Transitive arrows (forbidden) -->
+    <path class="arrow-dotted-purple" d="M 295 215 L 295 264"/>
+    <path class="arrow-dotted-purple" d="M 336 300 L 482 300 L 482 220" marker-end="url(#arrow-purple)"/>
+    <use href="#cross-icon" x="390" y="240"/>
+  </g>
+
+  <!-- Panel 5: EKNF -->
+  <g id="panel-eknf" transform="translate(656, 404)">
+    <rect class="card-bg" width="608" height="364" stroke="#fcd34d" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#f59e0b" />
+    <text class="title-badge" x="304" y="39">EKNF</text>
+
+    <!-- Node X -->
+    <circle cx="105" cy="180" r="32" fill="#fffbeb" stroke="#d97706" stroke-width="2.5"/>
+    <text class="node-text" x="105" y="180" fill="#92400e">X</text>
+
+    <!-- Arrow X to R -->
+    <path class="arrow" d="M 140 180 L 260 180" marker-end="url(#arrow-black)"/>
+
+    <!-- Node R -->
+    <circle cx="295" cy="180" r="32" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+    <text class="node-text" x="295" y="180" fill="#78350f">R</text>
+
+    <!-- Arrow R to A -->
+    <path class="arrow" d="M 330 180 L 440 180" marker-end="url(#arrow-black)"/>
+
+    <!-- Attribute A -->
+    <g transform="translate(445, 148)">
+      <rect x="0" y="0" width="75" height="64" rx="4" fill="#fffbeb" stroke="#d97706" stroke-width="2"/>
+      <text class="node-text" x="37" y="32" fill="#78350f">A</text>
+    </g>
+
+    <!-- Intermediate K_attr (dashed amber) -->
+    <g transform="translate(250, 268)">
+      <rect x="0" y="0" width="90" height="64" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="2" stroke-dasharray="6 4"/>
+      <text class="node-text" x="45" y="32" fill="#92400e">K<tspan baseline-shift="sub" font-size="14">attr</tspan></text>
+    </g>
+
+    <!-- Dotted arrows -->
+    <path class="arrow-dotted-amber" d="M 295 215 L 295 264"/>
+    <path class="arrow-dotted-amber" d="M 344 300 L 482 300 L 482 220" marker-end="url(#arrow-amber)"/>
+    <use href="#check-icon" x="395" y="240"/>
+  </g>
+
+  <!-- Panel 6: BCNF -->
+  <g id="panel-bcnf" transform="translate(1288, 404)">
+    <rect class="card-bg" width="608" height="364" stroke="#5eead4" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#14b8a6" />
+    <text class="title-badge" x="304" y="39">BCNF</text>
+
+    <!-- Node X -->
+    <circle cx="115" cy="180" r="32" fill="#f0fdfa" stroke="#0d9488" stroke-width="2.5"/>
+    <text class="node-text" x="115" y="180" fill="#115e59">X</text>
+
+    <!-- Arrow X to R with Key -->
+    <path class="arrow" d="M 150 180 L 280 180" marker-end="url(#arrow-black)"/>
+    <use href="#key-icon" x="195" y="195" transform="scale(1.2)"/>
+
+    <!-- Node R -->
+    <circle cx="315" cy="180" r="32" fill="#ccfbf1" stroke="#0d9488" stroke-width="2.5"/>
+    <text class="node-text" x="315" y="180" fill="#042f2e">R</text>
+
+    <!-- Arrow R to Y -->
+    <path class="arrow" d="M 350 180 L 475 180" marker-end="url(#arrow-black)"/>
+
+    <!-- Attribute Y -->
+    <g transform="translate(480, 148)">
+      <rect x="0" y="0" width="75" height="64" rx="4" fill="#f0fdfa" stroke="#0d9488" stroke-width="2"/>
+      <text class="node-text" x="37" y="32" fill="#115e59">Y</text>
+    </g>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- ROW 3                                      -->
+  <!-- ========================================== -->
+
+  <!-- Panel 7: 4NF -->
+  <g id="panel-4nf" transform="translate(24, 788)">
+    <rect class="card-bg" width="608" height="364" stroke="#fdba74" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#f97316" />
+    <text class="title-badge" x="304" y="39">4NF</text>
+
+    <!-- Diamond R[X] -->
+    <g transform="translate(304, 120)">
+      <polygon points="0,-42 55,0 0,42 -55,0" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#9a3412">R[X]</text>
+    </g>
+
+    <!-- Diamond R[Y] -->
+    <g transform="translate(130, 245)">
+      <polygon points="0,-42 55,0 0,42 -55,0" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#9a3412">R[Y]</text>
+    </g>
+
+    <!-- Diamond R[Z] -->
+    <g transform="translate(478, 245)">
+      <polygon points="0,-42 55,0 0,42 -55,0" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#9a3412">R[Z]</text>
+    </g>
+
+    <!-- Projection arrows -->
+    <path class="arrow" d="M 265 145 L 170 215" marker-end="url(#arrow-black)"/>
+    <path class="arrow" d="M 343 145 L 438 215" marker-end="url(#arrow-black)"/>
+
+    <!-- Join pullback node -->
+    <path class="arrow" d="M 188 245 L 295 245"/>
+    <path class="arrow" d="M 312 245 L 420 245"/>
+    <circle cx="304" cy="245" r="6" fill="#1e293b"/>
+
+    <!-- Forbidden dashed arrow down from R[X] to join -->
+    <path class="arrow-dashed-orange" d="M 304 165 L 304 235" marker-end="url(#arrow-orange)"/>
+    <use href="#cross-icon" x="290" y="268"/>
+  </g>
+
+  <!-- Panel 8: 5NF (PJNF) -->
+  <g id="panel-5nf" transform="translate(656, 788)">
+    <rect class="card-bg" width="608" height="364" stroke="#7dd3fc" />
+    <rect x="204" y="16" width="200" height="46" rx="8" ry="8" fill="#0284c7" />
+    <text class="title-badge" x="304" y="39">5NF (PJNF)</text>
+
+    <!-- Diamonds R1, R2, R3, Rn -->
+    <!-- R1 (top) -->
+    <g transform="translate(304, 115)">
+      <polygon points="0,-36 48,0 0,36 -48,0" fill="#f0f9ff" stroke="#0284c7" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#0369a1">R<tspan baseline-shift="sub" font-size="16">1</tspan></text>
+    </g>
+    <!-- R2 (left) -->
+    <g transform="translate(130, 205)">
+      <polygon points="0,-36 48,0 0,36 -48,0" fill="#f0f9ff" stroke="#0284c7" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#0369a1">R<tspan baseline-shift="sub" font-size="16">2</tspan></text>
+    </g>
+    <!-- R3 (right) -->
+    <g transform="translate(478, 205)">
+      <polygon points="0,-36 48,0 0,36 -48,0" fill="#f0f9ff" stroke="#0284c7" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#0369a1">R<tspan baseline-shift="sub" font-size="16">3</tspan></text>
+    </g>
+    <!-- Rn (bottom) -->
+    <g transform="translate(304, 298)">
+      <polygon points="0,-36 48,0 0,36 -48,0" fill="#f0f9ff" stroke="#0284c7" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#0369a1">R<tspan baseline-shift="sub" font-size="16">n</tspan></text>
+    </g>
+
+    <!-- Projections R1 -> R2, R1 -> R3 -->
+    <path class="arrow" d="M 270 135 L 175 185" marker-end="url(#arrow-black)"/>
+    <path class="arrow" d="M 338 135 L 433 185" marker-end="url(#arrow-black)"/>
+
+    <!-- Central Pullback Node -->
+    <circle cx="304" cy="205" r="6" fill="#1e293b"/>
+
+    <!-- Dotted horizontal lines with arrows from R2 and R3 to center -->
+    <path class="arrow-dotted-black" d="M 180 205 L 295 205" marker-start="url(#arrow-black)"/>
+    <path class="arrow-dotted-black" d="M 312 205 L 428 205" marker-end="url(#arrow-black)"/>
+
+    <!-- Connection from Rn to center dot with key -->
+    <path class="arrow-dotted-black" d="M 304 260 L 304 215"/>
+    <use href="#key-icon" x="325" y="228" transform="scale(1.1)"/>
+  </g>
+
+  <!-- Panel 9: 6NF -->
+  <g id="panel-6nf" transform="translate(1288, 788)">
+    <rect class="card-bg" width="608" height="364" stroke="#f472b6" />
+    <rect x="234" y="16" width="140" height="46" rx="8" ry="8" fill="#ec4899" />
+    <text class="title-badge" x="304" y="39">6NF</text>
+
+    <!-- Node R -->
+    <circle cx="304" cy="115" r="34" fill="#fdf2f8" stroke="#db2777" stroke-width="2.5"/>
+    <text class="node-text" x="304" y="115" fill="#9d174d">R</text>
+
+    <!-- Dashed branching arrows to irreducible components -->
+    <path class="arrow-dashed-pink" d="M 275 135 L 105 240"/>
+    <path class="arrow-dashed-pink" d="M 292 148 L 220 240"/>
+    <path class="arrow-dashed-pink" d="M 333 135 L 505 240"/>
+
+    <!-- Component boxes F1, F2, ..., Fn -->
+    <g transform="translate(65, 245)">
+      <rect x="0" y="0" width="75" height="70" rx="4" fill="#fdf2f8" stroke="#db2777" stroke-width="2"/>
+      <text class="node-text" x="37" y="35" fill="#9d174d">F<tspan baseline-shift="sub" font-size="16">1</tspan></text>
+    </g>
+    <g transform="translate(185, 245)">
+      <rect x="0" y="0" width="75" height="70" rx="4" fill="#fdf2f8" stroke="#db2777" stroke-width="2"/>
+      <text class="node-text" x="37" y="35" fill="#9d174d">F<tspan baseline-shift="sub" font-size="16">2</tspan></text>
+    </g>
+    <text class="node-text" x="340" y="280" font-size="32" fill="#9d174d">• • •</text>
+    <g transform="translate(470, 245)">
+      <rect x="0" y="0" width="75" height="70" rx="4" fill="#fdf2f8" stroke="#db2777" stroke-width="2"/>
+      <text class="node-text" x="37" y="35" fill="#9d174d">F<tspan baseline-shift="sub" font-size="16">n</tspan></text>
+    </g>
+  </g>
+
+  <!-- ========================================== -->
+  <!-- BOTTOM LEGEND BAR                          -->
+  <!-- ========================================== -->
+  <g id="legend-bar" transform="translate(24, 1172)">
+    <rect class="card-bg" width="1872" height="88" stroke="#cbd5e1" rx="8" ry="8"/>
+
+    <!-- Item 1: projection -->
+    <g transform="translate(50, 44)">
+      <path class="arrow" d="M 0 0 L 65 0" marker-end="url(#arrow-black)"/>
+      <text class="legend-text" x="80" y="0">projection</text>
+    </g>
+
+    <!-- Item 2: not allowed -->
+    <g transform="translate(260, 44)">
+      <path class="arrow" d="M 0 0 L 65 0" stroke-dasharray="6 5" marker-end="url(#arrow-black)"/>
+      <text class="legend-text" x="80" y="0">not allowed</text>
+    </g>
+
+    <!-- Item 3: transitive (forbidden) -->
+    <g transform="translate(480, 36)">
+      <path class="arrow-dotted-black" d="M 0 8 L 65 8" marker-end="url(#arrow-black)"/>
+      <text class="legend-text" x="80" y="0">transitive</text>
+      <text class="legend-text" x="80" y="18">(forbidden)</text>
+    </g>
+
+    <!-- Item 4: key (superkey) -->
+    <g transform="translate(730, 26)">
+      <use href="#key-icon" x="0" y="0" transform="scale(1.2)"/>
+      <text class="legend-text" x="40" y="18">key (superkey)</text>
+    </g>
+
+    <!-- Item 5: projection / component -->
+    <g transform="translate(970, 44)">
+      <polygon points="18,-16 36,0 18,16 0,0" fill="#ffffff" stroke="#1e293b" stroke-width="2"/>
+      <text class="legend-text" x="50" y="-8">projection /</text>
+      <text class="legend-text" x="50" y="10">component</text>
+    </g>
+
+    <!-- Item 6: join / limit (pullback) -->
+    <g transform="translate(1210, 44)">
+      <line x1="0" y1="0" x2="60" y2="0" stroke="#1e293b" stroke-width="2"/>
+      <circle cx="30" cy="0" r="5" fill="#1e293b"/>
+      <text class="legend-text" x="75" y="-8">join / limit</text>
+      <text class="legend-text" x="75" y="10">(pullback)</text>
+    </g>
+
+    <!-- Item 7: decomposition -->
+    <g transform="translate(1480, 44)">
+      <rect x="0" y="-18" width="45" height="36" rx="6" ry="6" fill="#ffffff" stroke="#1e293b" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <text class="legend-text" x="60" y="0">decomposition</text>
+    </g>
+  </g>
+</svg>

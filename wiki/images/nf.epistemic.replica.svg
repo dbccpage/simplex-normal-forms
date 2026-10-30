@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 860" width="100%" height="100%">
+  <defs>
+    <linearGradient id="hdrGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#064e3b"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#16a34a"/>
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#dc2626"/>
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#059669"/>
+    </marker>
+  </defs>
+  <style>
+    .bg { fill: #f8fafc; stroke: #cbd5e1; stroke-width: 2; }
+    .hdr-title { font: 700 22px 'Segoe UI', Arial, sans-serif; fill: #ffffff; }
+    .hdr-sub { font: 500 13px 'Consolas', 'Courier New', monospace; fill: #cbd5e1; }
+    .badge-txt { font: 700 12px 'Segoe UI', Arial, sans-serif; fill: #064e3b; }
+    .sec-hdr { font: 700 14px 'Segoe UI', Arial, sans-serif; fill: #0f172a; letter-spacing: 0.4px; }
+    .box-title { font: 700 13px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+    .body { font: 400 12.5px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+    .mono { font: 500 12px 'Consolas', 'Courier New', monospace; fill: #1e293b; }
+    .pill { font: 600 11.5px 'Consolas', 'Courier New', monospace; }
+    .footer { font: 500 11px 'Consolas', 'Courier New', monospace; fill: #64748b; }
+  </style>
+
+  <!-- Outer Frame -->
+  <rect x="8" y="8" width="1084" height="844" rx="14" class="bg"/>
+
+  <!-- 1. Header Banner -->
+  <rect x="22" y="20" width="1056" height="86" rx="10" fill="url(#hdrGrad)"/>
+  <text x="42" y="52" class="hdr-title">Replica Normal Form</text>
+  <text x="42" y="76" class="hdr-sub">ID: nf.epistemic.replica  |  Family: epistemic  |  Posture: in_motion  |  Version: v0</text>
+  <text x="42" y="95" class="hdr-sub">Status: draft (proposed)  |  Verification: absent  |  AuthorityEffect: None</text>
+
+  <!-- Short Name & Category Badges -->
+  <rect x="880" y="32" width="180" height="30" rx="6" fill="#d1fae5" stroke="#059669" stroke-width="1.5"/>
+  <text x="970" y="52" text-anchor="middle" class="badge-txt">RNF</text>
+  <rect x="880" y="68" width="180" height="24" rx="5" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="970" y="84" text-anchor="middle" style="font: 600 11px 'Segoe UI', sans-serif; fill: #e2e8f0;">Extended Form Contract</text>
+
+  <!-- 2. Visual Concrete Example & Mechanism Section -->
+  <rect x="22" y="118" width="1056" height="242" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="40" y="142" class="sec-hdr">VISUAL WORKED EXAMPLE &amp; NORMALIZATION MECHANISM</text>
+  <line x1="40" y1="150" x2="1060" y2="150" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Left Box: Before / Unnormalized / Event -->
+  <rect x="40" y="164" width="330" height="140" rx="8" fill="#fff1f2" stroke="#fda4af" stroke-width="1.5"/>
+  <text x="56" y="186" class="box-title" fill="#9f1239">1. Input / Anomaly-Prone State</text>
+  <text x="56" y="205" style="font: 600 12px 'Segoe UI', sans-serif; fill: #881337;">Input Carrier (RNF Candidate)</text>
+  <text x="56" y="228" class="mono">Anomaly risk: false sameness</text>
+
+  <!-- Arrow 1 -->
+  <line x1="370" y1="234" x2="432" y2="234" stroke="#059669" stroke-width="2.5" marker-end="url(#arrowBlue)"/>
+
+  <!-- Center Box: Normal Form Gate / Operator -->
+  <rect x="440" y="164" width="220" height="140" rx="8" fill="#d1fae5" stroke="#059669" stroke-width="2"/>
+  <text x="550" y="188" text-anchor="middle" class="box-title" fill="#064e3b">2. RNF Verification Gate</text>
+  <rect x="454" y="200" width="192" height="36" rx="5" fill="#ffffff" stroke="#059669" stroke-width="1"/>
+  <text x="550" y="222" text-anchor="middle" class="mono" fill="#064e3b">every copy declares origi...</text>
+  <text x="550" y="256" text-anchor="middle" class="body">Checks schema &amp; boundary</text>
+  <text x="550" y="274" text-anchor="middle" class="body">invariants without authority</text>
+  <text x="550" y="292" text-anchor="middle" class="mono" style="font-size:11px; fill:#475569;">certified != authorized</text>
+
+  <!-- Arrow 2 (Admitted) -->
+  <line x1="660" y1="234" x2="722" y2="234" stroke="#16a34a" stroke-width="2.5" marker-end="url(#arrowGreen)"/>
+
+  <!-- Right Box: After / Normalized / Repaired -->
+  <rect x="730" y="164" width="330" height="140" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+  <text x="746" y="186" class="box-title" fill="#166534">3. Normalized / Certified Outcome</text>
+  <text x="746" y="205" style="font: 600 12px 'Segoe UI', sans-serif; fill: #14532d;">Certified RNF Output</text>
+  <text x="746" y="228" class="mono">Invariant: [&#x27;origin&#x27;, &#x27;epoch&#x27;,</text>
+<text x="746" y="246" class="mono">&#x27;causal_frontier&#x27;,</text>
+<text x="746" y="264" class="mono">&#x27;divergence_budget&#x27;]</text>
+
+  <!-- Bottom Bar in Visual Section: Refusal / Obstruction Trapdoor -->
+  <line x1="550" y1="304" x2="550" y2="332" stroke="#dc2626" stroke-width="2" marker-end="url(#arrowRed)"/>
+  <rect x="180" y="322" width="740" height="28" rx="6" fill="#fef2f2" stroke="#fecaca" stroke-width="1.2"/>
+  <text x="550" y="340" text-anchor="middle" class="mono" fill="#991b1b">Defect / Missing Witness Trapdoor -> Routes deterministically to Refuse / Invalidate / Recompute</text>
+
+  <!-- 3. Four-Pillar Quadrilateral Section -->
+  <text x="30" y="384" class="sec-hdr">THE FOUR-PILLAR QUADRILATERAL &amp; EPISTEMIC HYGIENE</text>
+
+  <!-- Pillar I -->
+  <rect x="22" y="394" width="520" height="96" rx="8" fill="#ffffff" stroke="#fda4af" stroke-width="1.5"/>
+  <rect x="22" y="394" width="8" height="96" rx="4" fill="#e11d48"/>
+  <text x="42" y="416" class="box-title" fill="#9f1239">Pillar I — Excludes Anomaly</text>
+  <text x="42" y="436" class="body">false sameness</text>
+
+  <!-- Pillar II -->
+  <rect x="558" y="394" width="520" height="96" rx="8" fill="#ffffff" stroke="#93c5fd" stroke-width="1.5"/>
+  <rect x="558" y="394" width="8" height="96" rx="4" fill="#2563eb"/>
+  <text x="578" y="416" class="box-title" fill="#1e40af">Pillar II — Preserves Invariant &amp; Skeleton</text>
+  <text x="578" y="436" class="body">every copy declares origin epoch causal frontier divergence budget</text>
+<text x="578" y="452" class="body">reconciliation</text>
+
+  <!-- Pillar III -->
+  <rect x="22" y="500" width="520" height="96" rx="8" fill="#ffffff" stroke="#86efac" stroke-width="1.5"/>
+  <rect x="22" y="500" width="8" height="96" rx="4" fill="#16a34a"/>
+  <text x="42" y="522" class="box-title" fill="#166534">Pillar III — Lossless Reconstruction</text>
+  <text x="42" y="542" class="body">[&#x27;origin&#x27;, &#x27;epoch&#x27;, &#x27;causal_frontier&#x27;, &#x27;divergence_budget&#x27;]</text>
+
+  <!-- Pillar IV & Non-Claims -->
+  <rect x="558" y="500" width="520" height="96" rx="8" fill="#ffffff" stroke="#fcd34d" stroke-width="1.5"/>
+  <rect x="558" y="500" width="8" height="96" rx="4" fill="#d97706"/>
+  <text x="578" y="522" class="box-title" fill="#92400e">Pillar IV — Syntactic Decidability &amp; Non-Claims</text>
+  <text x="578" y="542" class="body">Decidable from declared schema constraints and witness boundaries. |</text>
+<text x="578" y="558" class="body">Non-claim: eventual consistency is not equivalence without declared</text>
+<text x="578" y="574" class="body">budget</text>
+
+  <!-- 4. Operational Pipeline: Declarations, Criteria, Terminal Routing -->
+  <rect x="22" y="610" width="1056" height="218" rx="10" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5"/>
+  <text x="40" y="634" class="sec-hdr">OPERATIONAL VERIFICATION PIPELINE &amp; TERMINAL ROUTING</text>
+  <line x1="40" y1="642" x2="1060" y2="642" stroke="#e2e8f0" stroke-width="1.5"/>
+
+  <!-- Left: Required Declarations -->
+  <rect x="40" y="654" width="300" height="160" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="54" y="676" class="box-title">Required Declarations</text>
+  <text x="54" y="698" class="mono">• origin</text>
+<text x="54" y="718" class="mono">• epoch</text>
+<text x="54" y="738" class="mono">• causal_frontier</text>
+<text x="54" y="758" class="mono">• divergence_budget</text>
+<text x="54" y="778" class="mono">• reconciliation_rule</text>
+
+  <line x1="340" y1="734" x2="372" y2="734" stroke="#64748b" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Center: Validation Criteria -->
+  <rect x="380" y="654" width="318" height="160" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="394" y="676" class="box-title">Validation Criteria</text>
+  <text x="394" y="698" class="body">replicas are not compared without</text>
+<text x="394" y="718" class="body">declared frontier | merge requires</text>
+<text x="394" y="738" class="body">reconciliation_rule terminal when budget</text>
+<text x="394" y="758" class="body">exceeded | aligns with BQNF Serialize</text>
+<text x="394" y="778" class="body">terminal when concurrent defects do n...</text>
+
+  <line x1="698" y1="734" x2="730" y2="734" stroke="#64748b" stroke-width="2" marker-end="url(#arrowBlue)"/>
+
+  <!-- Right: Terminal Route Pills -->
+  <rect x="734" y="654" width="334" height="160" rx="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.2"/>
+  <rect x="742" y="668" width="318" height="24" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.2"/><text x="754" y="684" class="pill" fill="#166534">Reconciled -&gt; Preserve</text><rect x="742" y="700" width="318" height="24" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.2"/><text x="754" y="716" class="pill" fill="#166534">Converging -&gt; Repair</text><rect x="742" y="732" width="318" height="24" rx="6" fill="#ffe4e6" stroke="#fda4af" stroke-width="1.2"/><text x="754" y="748" class="pill" fill="#991b1b">DivergenceExceeded -&gt; Escalate</text><rect x="742" y="764" width="318" height="24" rx="6" fill="#fef3c7" stroke="#fde68a" stroke-width="1.2"/><text x="754" y="780" class="pill" fill="#92400e">Serialize</text><rect x="742" y="796" width="318" height="24" rx="6" fill="#ffe4e6" stroke="#fda4af" stroke-width="1.2"/><text x="754" y="812" class="pill" fill="#991b1b">Refuse</text>
+
+  <!-- Footer -->
+  <text x="550" y="844" text-anchor="middle" class="footer">Simplex Normal Forms Catalog  •  Contract: nf.epistemic.replica  •  certified_implies_authorized: false  •  AuthorityEffect: None</text>
+</svg>

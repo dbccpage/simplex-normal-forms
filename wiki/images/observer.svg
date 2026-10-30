@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%">
+  <defs>
+    <style>
+      .main-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 50px; font-weight: 700; fill: #0f172a; text-anchor: middle; }
+      .formula-title { font-family: "Times New Roman", Times, serif; font-size: 34px; font-style: italic; fill: #0f172a; text-anchor: middle; }
+      .circle-header { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 40px; font-weight: 800; fill: #0f172a; text-anchor: middle; }
+      .circle-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 30px; font-weight: 700; fill: #0f172a; text-anchor: middle; }
+      .desc-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 32px; font-weight: 600; fill: #0f172a; }
+      .math-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 30px; font-weight: 600; fill: #0f172a; text-anchor: middle; }
+      .pipe-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 600; fill: #0f172a; text-anchor: middle; dominant-baseline: central; }
+      .pipe-sub { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 18px; font-weight: 600; fill: #0f172a; text-anchor: middle; }
+      .quotient-text { font-family: "Times New Roman", Times, serif; font-size: 32px; font-weight: 600; fill: #0f172a; }
+      .quote-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 34px; font-weight: 500; fill: #0f172a; text-anchor: middle; line-height: 1.4; }
+      .sub-quote { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 22px; font-weight: 600; fill: #1e293b; text-anchor: middle; }
+      .arrow { stroke: #0f172a; stroke-width: 3.5; fill: none; }
+      .pipe-arrow { stroke: #0f172a; stroke-width: 2; fill: none; }
+    </style>
+
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0f172a"/>
+    </marker>
+    <marker id="pipe-arrowhead" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0f172a"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1080" fill="#ffffff" />
+
+  <!-- Title & Formula -->
+  <text class="main-title" x="960" y="68">“Observer as Finite Authority Boundary”</text>
+  <text class="formula-title" x="960" y="128"><tspan font-style="normal">O = (View, Boundary, </tspan>D, V, τ, Λ, <tspan font-style="normal">Policy)</tspan></text>
+
+  <!-- Quotient Annotations -->
+  <text class="quotient-text" x="1245" y="225">Q<tspan baseline-shift="super" font-size="22">1</tspan> = C<tspan baseline-shift="super" font-size="22">1</tspan>/im(d<tspan baseline-shift="sub" font-size="22">0</tspan>)</text>
+  <text class="quotient-text" x="380" y="870">Q<tspan baseline-shift="super" font-size="22">1</tspan> = C<tspan baseline-shift="super" font-size="22">1</tspan>/im(d<tspan baseline-shift="sub" font-size="22">0</tspan>)</text>
+
+  <!-- ============================================================ -->
+  <!-- CENTRAL OBSERVER CIRCLE                                      -->
+  <!-- ============================================================ -->
+  <circle cx="960" cy="515" r="390" fill="#ffffff" stroke="#000000" stroke-width="4.5" />
+
+  <!-- Inside Circle Top -->
+  <text class="circle-header" x="960" y="245">Observer <tspan font-style="italic" font-family="Times New Roman">O</tspan></text>
+  <text class="circle-sub" x="960" y="305">View: <tspan font-weight="500">what O can see</tspan></text>
+  <text class="circle-sub" x="960" y="355">Boundary: <tspan font-weight="500">what O may claim</tspan></text>
+
+  <!-- Inside Circle Bottom -->
+  <g transform="translate(960, 615)">
+    <text class="math-desc" x="0" y="0"><tspan font-style="italic" font-family="Times New Roman">D</tspan>: finite descent</text>
+    <text class="math-desc" x="0" y="44"><tspan font-style="italic" font-family="Times New Roman">V</tspan>: verifier</text>
+    <text class="math-desc" x="0" y="88">τ: terminalizer</text>
+    <text class="math-desc" x="0" y="132">Λ: lift / refusal discipline</text>
+    <text class="math-desc" x="0" y="188" font-size="36" letter-spacing="0.1em">Φ, Γ, Ξ</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- PIPELINE INSIDE CIRCLE                                       -->
+  <!-- ============================================================ -->
+  <!-- Entrance Funnel -->
+  <g transform="translate(562, 490)">
+    <path d="M 0 0 L 25 15 L 25 35 L 0 50 Z" fill="#cbd5e1" stroke="#0f172a" stroke-width="2"/>
+    <ellipse cx="0" cy="25" rx="4" ry="25" fill="#94a3b8" stroke="#0f172a" stroke-width="1.5"/>
+    <text class="pipe-sub" x="25" y="76">representation</text>
+    <text class="pipe-sub" x="25" y="98">input</text>
+  </g>
+
+  <!-- Pipeline blocks -->
+  <!-- Block 1: representation -->
+  <g transform="translate(615, 497)">
+    <path class="pipe-arrow" d="M -28 18 L -3 18" marker-end="url(#pipe-arrowhead)"/>
+    <rect x="0" y="0" width="138" height="36" rx="6" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
+    <ellipse cx="0" cy="18" rx="4" ry="18" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="138" cy="18" rx="4" ry="18" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/>
+    <text class="pipe-text" x="69" y="18">representation</text>
+  </g>
+
+  <!-- Block 2: finite packet -->
+  <g transform="translate(780, 490)">
+    <path class="pipe-arrow" d="M -27 25 L -3 25" marker-end="url(#pipe-arrowhead)"/>
+    <rect x="0" y="0" width="105" height="50" rx="8" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
+    <ellipse cx="0" cy="25" rx="5" ry="25" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="105" cy="25" rx="5" ry="25" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/>
+    <text class="pipe-text" x="52" y="16">finite</text>
+    <text class="pipe-text" x="52" y="34">packet</text>
+  </g>
+
+  <!-- Block 3: obstruction check -->
+  <g transform="translate(915, 490)">
+    <path class="pipe-arrow" d="M -30 25 L -3 25" marker-end="url(#pipe-arrowhead)"/>
+    <rect x="0" y="0" width="128" height="50" rx="8" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
+    <ellipse cx="0" cy="25" rx="5" ry="25" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="128" cy="25" rx="5" ry="25" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/>
+    <text class="pipe-text" x="64" y="16">obstruction</text>
+    <text class="pipe-text" x="64" y="34">check</text>
+  </g>
+
+  <!-- Block 4: verifier -->
+  <g transform="translate(1072, 497)">
+    <path class="pipe-arrow" d="M -29 18 L -3 18" marker-end="url(#pipe-arrowhead)"/>
+    <rect x="0" y="0" width="86" height="36" rx="6" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
+    <ellipse cx="0" cy="18" rx="4" ry="18" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="86" cy="18" rx="4" ry="18" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/>
+    <text class="pipe-text" x="43" y="18">verifier</text>
+  </g>
+
+  <!-- Block 5: terminal -->
+  <g transform="translate(1185, 497)">
+    <path class="pipe-arrow" d="M -27 18 L -3 18" marker-end="url(#pipe-arrowhead)"/>
+    <rect x="0" y="0" width="100" height="36" rx="6" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.8"/>
+    <ellipse cx="0" cy="18" rx="4" ry="18" fill="#cbd5e1" stroke="#0f172a" stroke-width="1.2"/>
+    <ellipse cx="100" cy="18" rx="4" ry="18" fill="#e2e8f0" stroke="#0f172a" stroke-width="1.2"/>
+    <text class="pipe-text" x="50" y="18">terminal</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- LEFT INPUTS (CONVERGING ARROWS)                             -->
+  <!-- ============================================================ -->
+  <!-- raw data -->
+  <text class="desc-text" x="350" y="300" text-anchor="end">raw data</text>
+  <path class="arrow" d="M 370 295 L 545 480" marker-end="url(#arrowhead)"/>
+
+  <!-- measurement -->
+  <text class="desc-text" x="350" y="405" text-anchor="end">measurement</text>
+  <path class="arrow" d="M 370 400 L 545 495" marker-end="url(#arrowhead)"/>
+
+  <!-- model output -->
+  <text class="desc-text" x="350" y="525" text-anchor="end">model output</text>
+  <path class="arrow" d="M 370 515 L 540 515" marker-end="url(#arrowhead)"/>
+
+  <!-- database event -->
+  <text class="desc-text" x="350" y="635" text-anchor="end">database event</text>
+  <path class="arrow" d="M 370 630 L 545 535" marker-end="url(#arrowhead)"/>
+
+  <!-- external claim -->
+  <text class="desc-text" x="350" y="745" text-anchor="end">external claim</text>
+  <path class="arrow" d="M 370 740 L 545 550" marker-end="url(#arrowhead)"/>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT OUTPUTS (DIVERGING ARROWS)                            -->
+  <!-- ============================================================ -->
+  <!-- Exit point at circle edge: (1350, 515) -->
+  <!-- Authorized -->
+  <path class="arrow" d="M 1350 495 L 1525 315" marker-end="url(#arrowhead)"/>
+  <text class="desc-text" x="1550" y="315">Authorized</text>
+
+  <!-- Refused -->
+  <path class="arrow" d="M 1350 505 L 1525 425" marker-end="url(#arrowhead)"/>
+  <text class="desc-text" x="1550" y="425">Refused</text>
+
+  <!-- Lift Required -->
+  <path class="arrow" d="M 1350 515 L 1525 515" marker-end="url(#arrowhead)"/>
+  <text class="desc-text" x="1550" y="525">Lift Required</text>
+
+  <!-- Budget Unknown -->
+  <path class="arrow" d="M 1350 525 L 1525 615" marker-end="url(#arrowhead)"/>
+  <text class="desc-text" x="1550" y="625">Budget Unknown</text>
+
+  <!-- Residual -->
+  <path class="arrow" d="M 1350 535 L 1525 725" marker-end="url(#arrowhead)"/>
+  <text class="desc-text" x="1550" y="735">Residual</text>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM ANNOTATIONS                                          -->
+  <!-- ============================================================ -->
+  <text class="sub-quote" x="1410" y="830">Same data + different observer</text>
+  <text class="sub-quote" x="1410" y="858">= different authority</text>
+
+  <text class="quote-text" x="960" y="975">An observer is not a camera.</text>
+  <text class="quote-text" x="960" y="1015">It is a bounded claim-making regime.</text>
+</svg>

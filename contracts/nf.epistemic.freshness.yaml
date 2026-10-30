@@ -1,52 +1,89 @@
-id: nf.epistemic.freshness
-title: Freshness Normal Form
-version: v1
-status: draft
-category: observer_epistemic_form
-normalized_object: distributed_read_claim
-anomaly_excluded: stale authority
-required_declarations:
+schema_version: smplx.nf.contract.v0
+contract_kind: normal_form_contract
+identity:
+  id: nf.epistemic.freshness
+  name: Freshness Normal Form
+  short_name: FNF
+  version: v0
+  status: draft
+  family: epistemic
+  theory_status: proposed
+  contract_status: draft
+  verification_status: absent
+classification:
+  hierarchy_level: normal_form
+  subject_kind:
+  - distributed_claim
+  - query_shape
+  data_posture: in_motion
+  mathematical_posture: operational
+purpose:
+  excludes_anomaly: timeless truth
+  preserves_invariant: every read declares temporal boundary and invalidation status
+  protected_skeleton:
   - read_timestamp
-  - source_epoch
   - replica_lag
   - cache_age
   - invalidation_status
   - freshness_sla
-required_evidence:
-  - freshness_packet
-  - replica_or_cache_epoch
-  - invalidation_log_ref
-obstruction_substrate:
-  complex: "C^0 -> C^1 -> C^2"
-  C0: admissible_refresh_or_invalidation_witnesses
-  C1: stale_read_defects
-  C2: inconsistent_freshness_closure_failures
-  d0: refresh_witness_to_staleness_defect
-  d1: staleness_defect_to_closure_failure
-  Q1: "C^1 / im(d0)"
-validation_rules:
-  - reads_must_carry_temporal_boundary
-  - stale_or_unknown_status_cannot_be_presented_as_fresh
-  - freshness_sla_miss_terminalizes
+  erased_structure: []
+  non_claims:
+  - does not replace BQNF repair decision
+declarations_required:
+- read_timestamp
+- replica_lag
+- cache_age
+- invalidation_status
+- freshness_sla
+evidence_required:
+- clock_source
+- lag_metrics from replica or cache layer
+validation_criteria:
+- query result never served without read_timestamp
+- SLA breach terminalizes or escalates
+- pairs with BQNF Invalidate when cache stale
+proof_obligations: []
 terminal_routes:
-  - Preserve
-  - Invalidate
-  - Recompute
-  - Escalate
-  - BudgetUnknown
-  - ConservativeInvalidate
-  - Refuse
-certificate_requirements:
-  required: true
-  shape: freshness_packet
-authorization_boundary:
+- Fresh
+- Stale
+- LagExceeded
+- Invalidate
+- Refuse
+certification:
+  certificate_required: true
+  certificate_kind: freshness_packet
+  obstruction_class_required: false
+  loss_ledger_required: false
+  verifier_required: true
+authorization:
+  authorized_by: null
   certified_implies_authorized: false
-  warning: "CertifiedNF(x) does not imply AuthorizedNF(x)."
-proof_obligations:
-  - status: Operational semantics
-    item: define freshness verifier for cache and replica reads
-non_claims:
-  - does not prove value correctness
-  - does not repair cache state without BQNF
-examples:
-  - examples/03_observer_relative_freshness.md
+references:
+- ../1_normal_forms.md
+- ../1a_bqnf_incremental_repair.md
+terminal_route_map:
+  Fresh: Preserve
+  Stale: Escalate
+  LagExceeded: Invalidate
+  Invalidate: Invalidate
+  Refuse: Refuse
+definition:
+  source: coda_all_universe/mssn_sn_tower/definitions.md
+  formal_statement: timeless truth. every read declares temporal boundary and invalidation
+    status
+  quadrilateral:
+    qualifies_as_true_normal_form: false
+    qualification_gap: reconstruction_is_not_a_relational_project_join
+    anomaly_exclusion: timeless truth
+    lossless_join:
+      status: declared_reconstruction
+      statement: every read declares temporal boundary and invalidation status
+    dependency_preservation:
+      status: declared_with_the_invariant
+      statement: The preserved invariant stays on the declared schema. This form does
+        not state a functional-dependency projection of a flat relvar decomposition.
+    syntactic_decision:
+      status: declaration_decidable
+      statement: The check reads the declared constraints and validation criteria.
+        One unrecorded runtime image is not the decider.
+schema_ref: ./normal_form_contract_schema.yaml

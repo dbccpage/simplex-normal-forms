@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <style>
+      .font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+      .card { fill: #ffffff; stroke: #cbd5e1; stroke-width: 1.5; rx: 10; ry: 10; }
+      .title { font-size: 24px; font-weight: 800; fill: #0f172a; }
+      .sub { font-size: 13px; font-weight: 500; fill: #475569; }
+      .tier-hdr { font-size: 14px; font-weight: 800; letter-spacing: 0.05em; }
+      .pill { rx: 4; ry: 4; }
+      .pill-text { font-size: 10px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+    </style>
+  </defs>
+  <rect width="1200" height="800" fill="#f8fafc" />
+  <g transform="translate(24, 20)">
+    <rect class="card" width="1152" height="90" stroke="#94a3b8" />
+    <text class="font-sans title" x="24" y="42">NORMAL FORM CONTRACT ATLAS INDEX</text>
+    <text class="font-sans sub" x="24" y="66">Complete Canonical Normal Form Contract Registry across Active, Draft, and Experimental Tiers</text>
+  </g>
+  <g transform="translate(24, 126)">
+    <rect class="card" width="368" height="645" stroke="#93c5fd" />
+    <rect x="0" y="0" width="6" height="645" rx="3" ry="3" fill="#2563eb" />
+    <text class="font-sans tier-hdr" x="20" y="32" fill="#1e40af">ACTIVE CONTRACTS (12)</text>
+    <rect x="20" y="55" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="67" fill="#1e3a8a">nf.classical.1nf</text>
+    <rect x="20" y="85" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="97" fill="#1e3a8a">nf.classical.2nf</text>
+    <rect x="20" y="115" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="127" fill="#1e3a8a">nf.classical.3nf</text>
+    <rect x="20" y="145" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="157" fill="#1e3a8a">nf.classical.4nf</text>
+    <rect x="20" y="175" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="187" fill="#1e3a8a">nf.classical.5nf</text>
+    <rect x="20" y="205" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="217" fill="#1e3a8a">nf.classical.6nf</text>
+    <rect x="20" y="235" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="247" fill="#1e3a8a">nf.classical.bcnf</text>
+    <rect x="20" y="265" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="277" fill="#1e3a8a">nf.classical.dknf</text>
+    <rect x="20" y="295" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="307" fill="#1e3a8a">nf.classical.eknf</text>
+    <rect x="20" y="325" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="337" fill="#1e3a8a">nf.classical.etnf</text>
+    <rect x="20" y="355" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="367" fill="#1e3a8a">nf.classical.rfnf</text>
+    <rect x="20" y="385" width="328" height="24" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1"/>
+    <text class="mono pill-text" x="184" y="397" fill="#1e3a8a">nf.classical.sknf</text>
+  </g>
+  <g transform="translate(416, 126)">
+    <rect class="card" width="450" height="645" stroke="#cbd5e1" />
+    <rect x="0" y="0" width="6" height="645" rx="3" ry="3" fill="#64748b" />
+    <text class="font-sans tier-hdr" x="20" y="32" fill="#334155">DRAFT CONTRACTS (67)</text>
+    <rect x="20" y="55" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="67" fill="#334155">nf.change.bqnf</text>
+    <rect x="235" y="55" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="67" fill="#334155">nf.classical.0nf</text>
+    <rect x="20" y="85" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="97" fill="#334155">nf.classical.nf2</text>
+    <rect x="235" y="85" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="97" fill="#334155">nf.cochain.dhnf</text>
+    <rect x="20" y="115" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="127" fill="#334155">nf.coda.eqnf</text>
+    <rect x="235" y="115" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="127" fill="#334155">nf.coda.gbqnf</text>
+    <rect x="20" y="145" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="157" fill="#334155">nf.coda.tsnf</text>
+    <rect x="235" y="145" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="157" fill="#334155">nf.cohomology.acnf</text>
+    <rect x="20" y="175" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="187" fill="#334155">nf.compilation.cpnf</text>
+    <rect x="235" y="175" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="187" fill="#334155">nf.derivation.aonf</text>
+    <rect x="20" y="205" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="217" fill="#334155">nf.derivation.obnf</text>
+    <rect x="235" y="205" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="217" fill="#334155">nf.derivation.pdnf</text>
+    <rect x="20" y="235" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="247" fill="#334155">nf.derivation.rpnf</text>
+    <rect x="235" y="235" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="247" fill="#334155">nf.derivation.scnf</text>
+    <rect x="20" y="265" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="277" fill="#334155">nf.epistemic.authority</text>
+    <rect x="235" y="265" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="277" fill="#334155">nf.epistemic.cnf</text>
+    <rect x="20" y="295" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="307" fill="#334155">nf.epistemic.enf</text>
+    <rect x="235" y="295" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="307" fill="#334155">nf.epistemic.freshness</text>
+    <rect x="20" y="325" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="337" fill="#334155">nf.epistemic.location</text>
+    <rect x="235" y="325" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="337" fill="#334155">nf.epistemic.observer</text>
+    <rect x="20" y="355" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="367" fill="#334155">nf.epistemic.odnf</text>
+    <rect x="235" y="355" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="367" fill="#334155">nf.epistemic.onf</text>
+    <rect x="20" y="385" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="397" fill="#334155">nf.epistemic.pvnf</text>
+    <rect x="235" y="385" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="397" fill="#334155">nf.epistemic.replica</text>
+    <rect x="20" y="415" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="427" fill="#334155">nf.epistemic.snnf</text>
+    <rect x="235" y="415" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="427" fill="#334155">nf.epistemic.state</text>
+    <rect x="20" y="445" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="457" fill="#334155">nf.evidence.cdc</text>
+    <rect x="235" y="445" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="457" fill="#334155">nf.evidence.certificate</text>
+    <rect x="20" y="475" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="487" fill="#334155">nf.evidence.ddanf</text>
+    <rect x="235" y="475" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="487" fill="#334155">nf.evidence.loss_ledger</text>
+    <rect x="20" y="505" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="517" fill="#334155">nf.evidence.provenance</text>
+    <rect x="235" y="505" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="517" fill="#334155">nf.experimental.7nf</text>
+    <rect x="20" y="535" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="547" fill="#334155">nf.experimental.bell_contextuality</text>
+    <rect x="235" y="535" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="547" fill="#334155">nf.experimental.gauge</text>
+    <rect x="20" y="565" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="577" fill="#334155">nf.experimental.quantum_observer_ontology</text>
+    <rect x="235" y="565" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="577" fill="#334155">nf.fsp.bssnf</text>
+    <rect x="20" y="595" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="120" y="607" fill="#334155">nf.fsp.micnf</text>
+    <rect x="235" y="595" width="200" height="24" rx="4" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+    <text class="mono pill-text" x="335" y="607" fill="#334155">nf.logic.qanf</text>
+  </g>
+  <g transform="translate(890, 126)">
+    <rect class="card" width="286" height="645" stroke="#fed7aa" />
+    <rect x="0" y="0" width="6" height="645" rx="3" ry="3" fill="#ea580c" />
+    <text class="font-sans tier-hdr" x="20" y="32" fill="#9a3412">EXPERIMENTAL (0)</text>
+  </g>
+</svg>
