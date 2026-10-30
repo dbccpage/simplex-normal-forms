@@ -34,11 +34,13 @@ from normal_forms.multi_hop_composition import (
     CODA_MUR_TRIGGER_ID,
     CodaMurHopSpec,
     SalesCochainCdcSpec,
+    WatermarkSpec,
     build_sealed_loss_ledger,
     decode_composite_group_key,
     encode_composite_group_key,
     evaluate_stage1_relational_synthesis,
     evaluate_stage2b_cochain_extrema_quantiles,
+    evaluate_watermarked_cdc_stream_with_observer_poset,
     project_and_rejoin,
     run_extended_multi_hop_pipeline,
     run_multi_hop_pipeline,
@@ -1809,6 +1811,678 @@ class TestMultiHopCompositionProperties(unittest.TestCase):
         self.assertEqual(r3e.overall_terminal, "Reject")
         assert r3e.stage3_coda_mur is not None
         self.assertEqual(r3e.stage3_coda_mur.local_route, "TransportViolation")
+
+    def test_watermarked_out_of_order_late_cdc_quantile_mutations_and_poset_shifts_80_trials(self) -> None:
+        """Verifies out-of-order late-arriving watermarked CDC streams across 80 randomized trials
+        where delayed events simultaneously mutate historical quantile buckets (dyadic splits and
+        merges) and shift observer-relative freshness lag across poset SLA thresholds.
+        """
+        rng = random.Random(20261030)
+        heading, schema = _build_composite_group_sales_schema()
+
+        cust_zip = {1: "10001", 2: "20002", 3: "30003", 4: "40004"}
+        zip_reg = {"10001": "US-EAST", "20002": "US-EAST", "30003": "US-WEST", "40004": "US-WEST"}
+        merch_info = {
+            101: ("B2B", "GOLD"),
+            102: ("B2B", "SILVER"),
+            103: ("RETAIL", "GOLD"),
+            104: ("RETAIL", "SILVER"),
+        }
+
+        observer_poset = [
+            ObserverSpec("O1_rt_2s", max_lag_seconds=2, authorized_scopes=("composite_sales",)),
+            ObserverSpec("O2_ops_10s", max_lag_seconds=10, authorized_scopes=("composite_sales", "ops")),
+            ObserverSpec(
+                "O3_exec_30s", max_lag_seconds=30, authorized_scopes=("composite_sales", "ops", "exec")
+            ),
+            ObserverSpec(
+                "O4_batch_90s",
+                max_lag_seconds=90,
+                authorized_scopes=("composite_sales", "ops", "exec", "archive"),
+            ),
+        ]
+        wm_spec = WatermarkSpec(
+            allowed_lateness_seconds=50.0,
+            initial_watermark_seconds=0.0,
+            base_replica_lag_seconds=1.0,
+            packet_scope="composite_sales",
+            reject_beyond_watermark=True,
+        )
+
+        for trial in range(80):
+            group_attrs: Tuple[str, ...] = (
+                ("region",) if (trial % 2 == 0) else ("region", "channel")
+            )
+
+            # Seed 4 initial rows in (US-EAST, B2B) concentrated in [10.0, 14.0)
+            initial_rows: List[Dict[str, Any]] = []
+            for sid in range(1, 5):
+                amt = _sample_power_law_amount(rng, x_min=10.0, scale=0.8, alpha=2.6, x_max=22.0)
+                initial_rows.append(
+                    {
+                        "sale_id": sid,
+                        "customer_id": 1,
+                        "customer_zip": "10001",
+                        "merchant_id": 101,
+                        "region": "US-EAST",
+                        "channel": "B2B",
+                        "tier": "GOLD",
+                        "amount": amt,
+                        "audit_nonce": f"init_{sid}",
+                    }
+                )
+
+            def _make_row(sid_val: int, cid_val: int, mid_val: int, amt_val: float, tag: str) -> Dict[str, Any]:
+                cz_val = cust_zip[cid_val]
+                reg_val = zip_reg[cz_val]
+                chan_val, tier_val = merch_info[mid_val]
+                return {
+                    "sale_id": sid_val,
+                    "customer_id": cid_val,
+                    "customer_zip": cz_val,
+                    "merchant_id": mid_val,
+                    "region": reg_val,
+                    "channel": chan_val,
+                    "tier": tier_val,
+                    "amount": amt_val,
+                    "audit_nonce": tag,
+                }
+
+            # Construct a 10-step watermarked CDC arrival sequence with out-of-order delayed events
+            # that both mutate historical quantile buckets (splits & merges) and shift lag across O1..O4:
+            # Step 1 (on-time, t_event=10, t_ingest=11, lag=1s <= 2s -> all 4 observers AuthorizedFresh):
+            r10 = _make_row(
+                10, 1, 101, _sample_power_law_amount(rng, 10.0, 0.8, 2.6, 15.0), "s10"
+            )
+            # Step 2 (on-time, t_event=25, t_ingest=26, lag=1s <= 2s -> advances high-water mark to 25):
+            r11 = _make_row(
+                11, 1, 101, _sample_power_law_amount(rng, 10.0, 0.8, 2.6, 15.0), "s11"
+            )
+            # Step 3 (OUT-OF-ORDER late INSERT, t_event=19, t_ingest=27 -> lateness=6s, lag=8s in (2s, 10s],
+            #         rejects O1_rt_2s, admits O2..O4, and splits dense [0, 16) bucket!):
+            r12 = _make_row(
+                12, 1, 101, _sample_power_law_amount(rng, 10.0, 0.6, 2.8, 13.5), "s12_late"
+            )
+            # Step 4 (on-time, t_event=45, t_ingest=46 -> lag=1s <= 2s, recovers O1..O4 to AuthorizedFresh,
+            #         advances high-water mark to 45, watermark W=0):
+            r13 = _make_row(
+                13, 1, 101, _sample_power_law_amount(rng, 10.0, 0.6, 2.8, 13.5), "s13"
+            )
+            # Step 5 (OUT-OF-ORDER late INSERT, t_event=27, t_ingest=48 -> lateness=18s, lag=21s in (10s, 30s],
+            #         rejects O1, O2; admits O3, O4; further refines historical dyadic bucket!):
+            r14 = _make_row(
+                14, 1, 101, _sample_power_law_amount(rng, 10.0, 0.5, 2.9, 12.5), "s14_late"
+            )
+            # Step 6 (OUT-OF-ORDER late UPDATE on sale_id=10, t_event=30, t_ingest=72 -> lateness=15s,
+            #         ingestion lag=42s in (30s, 90s], rejects O1, O2, O3; admits only O4_batch_90s!):
+            r10_upd = _make_row(
+                10, 1, 101, _sample_power_law_amount(rng, 18.0, 1.2, 2.4, 28.0), "s10_upd_late"
+            )
+            # Step 7..9 (OUT-OF-ORDER & on-time DELETEs draining the split [0, 16) sub-buckets so they merge):
+            # Step 7 (late DELETE on sale_id=1, t_event=35, t_ingest=75 -> lag=40s):
+            # Step 8 (late DELETE on sale_id=2, t_event=38, t_ingest=76 -> lag=38s):
+            # Step 9 (late DELETE on sale_id=3, t_event=40, t_ingest=77 -> lag=37s):
+            # Step 10 (on-time DELETE on sale_id=4, t_event=80, t_ingest=81 -> lag=1s <= 2s, full poset recovery!):
+            cochain_events = [
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=10,
+                    new_amount=float(r10["amount"]),
+                    new_row=r10,
+                    event_timestamp=10.0,
+                    ingestion_timestamp=11.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=11,
+                    new_amount=float(r11["amount"]),
+                    new_row=r11,
+                    event_timestamp=25.0,
+                    ingestion_timestamp=26.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=12,
+                    new_amount=float(r12["amount"]),
+                    new_row=r12,
+                    event_timestamp=19.0,
+                    ingestion_timestamp=27.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=13,
+                    new_amount=float(r13["amount"]),
+                    new_row=r13,
+                    event_timestamp=45.0,
+                    ingestion_timestamp=46.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=14,
+                    new_amount=float(r14["amount"]),
+                    new_row=r14,
+                    event_timestamp=27.0,
+                    ingestion_timestamp=48.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="UPDATE",
+                    sale_id=10,
+                    old_amount=float(r10["amount"]),
+                    new_amount=float(r10_upd["amount"]),
+                    old_row=r10,
+                    new_row=r10_upd,
+                    event_timestamp=30.0,
+                    ingestion_timestamp=72.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=1,
+                    old_amount=float(initial_rows[0]["amount"]),
+                    old_row=dict(initial_rows[0]),
+                    event_timestamp=35.0,
+                    ingestion_timestamp=75.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=2,
+                    old_amount=float(initial_rows[1]["amount"]),
+                    old_row=dict(initial_rows[1]),
+                    event_timestamp=38.0,
+                    ingestion_timestamp=76.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=3,
+                    old_amount=float(initial_rows[2]["amount"]),
+                    old_row=dict(initial_rows[2]),
+                    event_timestamp=40.0,
+                    ingestion_timestamp=77.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=11,
+                    old_amount=float(r11["amount"]),
+                    old_row=r11,
+                    event_timestamp=41.0,
+                    ingestion_timestamp=78.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=12,
+                    old_amount=float(r12["amount"]),
+                    old_row=r12,
+                    event_timestamp=42.0,
+                    ingestion_timestamp=79.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=4,
+                    old_amount=float(initial_rows[3]["amount"]),
+                    old_row=dict(initial_rows[3]),
+                    event_timestamp=80.0,
+                    ingestion_timestamp=81.0,
+                ),
+            ]
+
+            h1_target = (
+                "sale_id",
+                "customer_id",
+                "customer_zip",
+                "merchant_id",
+                "region",
+                "channel",
+                "tier",
+                "amount",
+            )
+            h2_target = ("sale_id", "region", "channel", "tier", "amount")
+            hops = [
+                CodaMurHopSpec(
+                    hop_id="hop1_drop_nonce",
+                    source_heading=heading,
+                    target_heading=h1_target,
+                    group_attribute=group_attrs[0],
+                    group_attributes=group_attrs,
+                    value_attribute="amount",
+                    loss_ledger=build_sealed_loss_ledger(["audit_nonce"], initial_rows, "sale_id"),
+                    target_verifier={"verifier_id": "v_wm_1", "executed": True, "outcome": "verified"},
+                ),
+                CodaMurHopSpec(
+                    hop_id="hop2_drop_entities",
+                    source_heading=h1_target,
+                    target_heading=h2_target,
+                    group_attribute=group_attrs[0],
+                    group_attributes=group_attrs,
+                    value_attribute="amount",
+                    loss_ledger=build_sealed_loss_ledger(
+                        ["customer_id", "customer_zip", "merchant_id"], initial_rows, "sale_id"
+                    ),
+                    target_verifier={"verifier_id": "v_wm_2", "executed": True, "outcome": "verified"},
+                ),
+            ]
+
+            wm_receipt = evaluate_watermarked_cdc_stream_with_observer_poset(
+                schema=schema,
+                initial_rows=initial_rows,
+                cochain_cdc_events=cochain_events,
+                watermark_spec=wm_spec,
+                observer_poset=observer_poset,
+                transport_hops=hops,
+                use_cochain=True,
+                track_quantiles=True,
+                quantile_tolerance=25.0,
+                pk_attribute="sale_id",
+                group_attributes=group_attrs,
+                dynamic_buckets=True,
+                bucket_width=16.0,
+                split_threshold=4,
+                merge_threshold=2,
+                min_bucket_width=0.5,
+            )
+
+            self.assertTrue(wm_receipt.certified, f"Trial {trial} failed: {wm_receipt.reason}")
+            self.assertFalse(wm_receipt.authorized)
+            self.assertFalse(wm_receipt.certified_implies_authorized)
+            self.assertEqual(wm_receipt.authority_effect, "None")
+            self.assertEqual(wm_receipt.events_submitted, 12)
+            self.assertEqual(wm_receipt.events_applied, 12)
+            self.assertEqual(wm_receipt.out_of_order_events_applied, 8)
+            self.assertEqual(wm_receipt.late_events_rejected_or_quarantined, 0)
+            self.assertGreaterEqual(wm_receipt.historical_bucket_mutations_on_late_events, 3)
+            self.assertGreaterEqual(wm_receipt.total_bucket_splits, 2)
+            self.assertGreaterEqual(wm_receipt.total_bucket_merges, 1)
+            self.assertGreaterEqual(wm_receipt.poset_threshold_shifts, 4)
+            self.assertTrue(wm_receipt.lag_anti_monotonicity_verified)
+            self.assertTrue(wm_receipt.all_step_posets_monotonic)
+            self.assertTrue(wm_receipt.converges_to_event_time_order)
+            self.assertAlmostEqual(wm_receipt.final_watermark_timestamp, 30.0, places=6)
+            self.assertAlmostEqual(wm_receipt.max_event_timestamp, 80.0, places=6)
+
+            # Verify exact observer poset transitions at the delayed steps:
+            # Step 1 (lag=1s): all 4 observers admitted
+            self.assertEqual(
+                wm_receipt.step_receipts[0].admitted_observers,
+                ("O1_rt_2s", "O2_ops_10s", "O3_exec_30s", "O4_batch_90s"),
+            )
+            # Step 3 (late arrival, lag=8s): O1 rejected, O2..O4 admitted
+            self.assertTrue(wm_receipt.step_receipts[2].is_out_of_order)
+            self.assertEqual(
+                wm_receipt.step_receipts[2].admitted_observers,
+                ("O2_ops_10s", "O3_exec_30s", "O4_batch_90s"),
+            )
+            self.assertEqual(wm_receipt.step_receipts[2].rejected_observers, ("O1_rt_2s",))
+            # Step 4 (on-time catchup, lag=1s): all 4 observers admitted again
+            self.assertEqual(
+                wm_receipt.step_receipts[3].admitted_observers,
+                ("O1_rt_2s", "O2_ops_10s", "O3_exec_30s", "O4_batch_90s"),
+            )
+            # Step 5 (late arrival, lag=21s): O1, O2 rejected; O3, O4 admitted
+            self.assertTrue(wm_receipt.step_receipts[4].is_out_of_order)
+            self.assertEqual(
+                wm_receipt.step_receipts[4].admitted_observers,
+                ("O3_exec_30s", "O4_batch_90s"),
+            )
+            # Step 6 (late arrival, lag=42s): O1, O2, O3 rejected; only O4 admitted
+            self.assertTrue(wm_receipt.step_receipts[5].is_out_of_order)
+            self.assertEqual(
+                wm_receipt.step_receipts[5].admitted_observers,
+                ("O4_batch_90s",),
+            )
+            # Step 12 (on-time catchup, lag=1s): all 4 observers admitted again
+            self.assertEqual(
+                wm_receipt.step_receipts[11].admitted_observers,
+                ("O1_rt_2s", "O2_ops_10s", "O3_exec_30s", "O4_batch_90s"),
+            )
+            assert wm_receipt.coda_mur_receipt is not None
+            self.assertTrue(wm_receipt.coda_mur_receipt.commutation_verified)
+
+    def test_out_of_order_insert_permutation_dyadic_bucket_path_invariance_60_trials(self) -> None:
+        """Verifies across 60 randomized trials that any watermarked out-of-order arrival
+        permutation of skewed power-law INSERT events produces the exact same dyadic bucket
+        intervals, counts, medians, extrema, and group totals as canonical event-time order.
+        """
+        rng = random.Random(31415926)
+        _, schema = _build_sales_cochain_schema()
+
+        observer_poset = [
+            ObserverSpec("O1_3s", max_lag_seconds=3, authorized_scopes=("regional_sales",)),
+            ObserverSpec("O2_15s", max_lag_seconds=15, authorized_scopes=("regional_sales", "ops")),
+            ObserverSpec(
+                "O3_60s", max_lag_seconds=60, authorized_scopes=("regional_sales", "ops", "archive")
+            ),
+        ]
+        wm_spec = WatermarkSpec(
+            allowed_lateness_seconds=60.0,
+            initial_watermark_seconds=0.0,
+            base_replica_lag_seconds=1.0,
+            packet_scope="regional_sales",
+            reject_beyond_watermark=True,
+        )
+
+        for trial in range(60):
+            initial_rows = [
+                {
+                    "sale_id": 1,
+                    "customer_id": 1,
+                    "customer_zip": "10001",
+                    "region": "US-EAST",
+                    "amount": 10.5,
+                    "audit_nonce": "n_1",
+                }
+            ]
+
+            # Generate 14 skewed power-law INSERT events at event times t = 10, 12, ..., 36
+            canonical_events: List[SalesCochainCdcSpec] = []
+            for idx in range(14):
+                sid = 10 + idx
+                t_ev = 10.0 + 2.0 * idx
+                amt = _sample_power_law_amount(rng, x_min=10.0, scale=1.0, alpha=2.7, x_max=80.0)
+                row = {
+                    "sale_id": sid,
+                    "customer_id": 1,
+                    "customer_zip": "10001",
+                    "region": "US-EAST",
+                    "amount": amt,
+                    "audit_nonce": f"n_{sid}",
+                }
+                canonical_events.append(
+                    SalesCochainCdcSpec(
+                        op_type="INSERT",
+                        sale_id=sid,
+                        new_region="US-EAST",
+                        new_amount=amt,
+                        new_row=row,
+                        event_timestamp=t_ev,
+                        ingestion_timestamp=t_ev + 1.0,
+                    )
+                )
+
+            # Permute arrival order and assign monotonically increasing ingestion timestamps >= event_timestamp
+            perm_indices = list(range(14))
+            while True:
+                rng.shuffle(perm_indices)
+                if perm_indices != list(range(14)):
+                    break
+
+            permuted_events: List[SalesCochainCdcSpec] = []
+            curr_ingest = 12.0
+            for p_i in perm_indices:
+                base_ev = canonical_events[p_i]
+                assert base_ev.event_timestamp is not None
+                curr_ingest = max(curr_ingest + rng.choice([1.0, 2.5, 4.0]), float(base_ev.event_timestamp) + 1.0)
+                permuted_events.append(
+                    SalesCochainCdcSpec(
+                        op_type=base_ev.op_type,
+                        sale_id=base_ev.sale_id,
+                        new_region=base_ev.new_region,
+                        new_amount=base_ev.new_amount,
+                        new_row=base_ev.new_row,
+                        event_timestamp=base_ev.event_timestamp,
+                        ingestion_timestamp=curr_ingest,
+                    )
+                )
+
+            res_canon = evaluate_watermarked_cdc_stream_with_observer_poset(
+                schema=schema,
+                initial_rows=initial_rows,
+                cochain_cdc_events=canonical_events,
+                watermark_spec=wm_spec,
+                observer_poset=observer_poset,
+                dynamic_buckets=True,
+                bucket_width=16.0,
+                split_threshold=4,
+                merge_threshold=2,
+                min_bucket_width=0.5,
+            )
+            res_perm = evaluate_watermarked_cdc_stream_with_observer_poset(
+                schema=schema,
+                initial_rows=initial_rows,
+                cochain_cdc_events=permuted_events,
+                watermark_spec=wm_spec,
+                observer_poset=observer_poset,
+                dynamic_buckets=True,
+                bucket_width=16.0,
+                split_threshold=4,
+                merge_threshold=2,
+                min_bucket_width=0.5,
+            )
+
+            self.assertTrue(res_canon.certified)
+            self.assertTrue(res_perm.certified, f"Trial {trial}: permuted stream failed: {res_perm.reason}")
+            self.assertGreaterEqual(res_perm.out_of_order_events_applied, 1)
+            self.assertGreaterEqual(res_perm.historical_bucket_mutations_on_late_events, 1)
+            self.assertTrue(res_perm.converges_to_event_time_order)
+            self.assertTrue(res_perm.lag_anti_monotonicity_verified)
+
+            assert res_canon.final_cochain_receipt is not None
+            assert res_perm.final_cochain_receipt is not None
+            self.assertEqual(
+                res_canon.final_cochain_receipt.active_bucket_counts,
+                res_perm.final_cochain_receipt.active_bucket_counts,
+            )
+            self.assertAlmostEqual(
+                float(res_canon.final_cochain_receipt.cached_medians["US-EAST"]),
+                float(res_perm.final_cochain_receipt.cached_medians["US-EAST"]),
+                places=9,
+            )
+            self.assertAlmostEqual(
+                float(res_canon.final_cochain_receipt.true_medians["US-EAST"]),
+                float(res_perm.final_cochain_receipt.true_medians["US-EAST"]),
+                places=9,
+            )
+
+    def test_watermarked_late_event_and_causal_anomaly_refusal_matrix(self) -> None:
+        """Verifies fail-closed terminal routing across watermark and causal anomalies:
+        1. Late event falling below advancing watermark with reject_beyond_watermark=True -> LateEventExceedsWatermark (Invalidate).
+        2. Late event falling below advancing watermark with reject_beyond_watermark=False -> QuarantinedLateEvent (Quarantine).
+        3. Negative event-to-ingestion lag (t_ingest < t_event) -> NegativeEventLagViolation (ConservativeInvalidate).
+        4. Non-monotonic physical ingestion clock (t_ingest(k) < t_ingest(k-1)) -> OutOfOrderIngestionClock (Invalidate).
+        5. Out-of-order causal key violation (DELETE before INSERT, or duplicate INSERT) -> CausalKeyViolation (Invalidate).
+        6. Missing event_timestamp or ingestion_timestamp -> ConservativeInvalidate.
+        7. Invalid WatermarkSpec parameters -> Refuse.
+        """
+        _, schema = _build_sales_cochain_schema()
+        initial_rows = [
+            {
+                "sale_id": 1,
+                "customer_id": 1,
+                "customer_zip": "10001",
+                "region": "US-EAST",
+                "amount": 25.0,
+                "audit_nonce": "n_1",
+            }
+        ]
+        observer_poset = [
+            ObserverSpec("O1_2s", max_lag_seconds=2, authorized_scopes=("regional_sales",)),
+            ObserverSpec("O2_20s", max_lag_seconds=20, authorized_scopes=("regional_sales", "ops")),
+        ]
+        wm_strict = WatermarkSpec(
+            allowed_lateness_seconds=10.0,
+            initial_watermark_seconds=0.0,
+            base_replica_lag_seconds=1.0,
+            packet_scope="regional_sales",
+            reject_beyond_watermark=True,
+        )
+
+        r2 = {
+            "sale_id": 2,
+            "customer_id": 1,
+            "customer_zip": "10001",
+            "region": "US-EAST",
+            "amount": 35.0,
+            "audit_nonce": "n_2",
+        }
+        r3 = {
+            "sale_id": 3,
+            "customer_id": 1,
+            "customer_zip": "10001",
+            "region": "US-EAST",
+            "amount": 45.0,
+            "audit_nonce": "n_3",
+        }
+
+        # Case 1: Event at t_event=30 advances watermark to W = 30 - 10 = 20;
+        #         subsequent late event at t_event=15 < 20 -> LateEventExceedsWatermark (Invalidate)
+        events_beyond_wm = [
+            SalesCochainCdcSpec(
+                op_type="INSERT",
+                sale_id=2,
+                new_region="US-EAST",
+                new_amount=35.0,
+                new_row=r2,
+                event_timestamp=30.0,
+                ingestion_timestamp=31.0,
+            ),
+            SalesCochainCdcSpec(
+                op_type="INSERT",
+                sale_id=3,
+                new_region="US-EAST",
+                new_amount=45.0,
+                new_row=r3,
+                event_timestamp=15.0,
+                ingestion_timestamp=32.0,
+            ),
+        ]
+        res_beyond_strict = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=events_beyond_wm,
+            watermark_spec=wm_strict,
+            observer_poset=observer_poset,
+        )
+        self.assertFalse(res_beyond_strict.certified)
+        self.assertEqual(res_beyond_strict.terminal_route, "LateEventExceedsWatermark")
+        self.assertEqual(res_beyond_strict.canonical_terminal, "Invalidate")
+        self.assertEqual(res_beyond_strict.late_events_rejected_or_quarantined, 1)
+
+        # Case 2: Same beyond-watermark event with reject_beyond_watermark=False -> Quarantine
+        wm_quarantine = WatermarkSpec(
+            allowed_lateness_seconds=10.0,
+            initial_watermark_seconds=0.0,
+            base_replica_lag_seconds=1.0,
+            packet_scope="regional_sales",
+            reject_beyond_watermark=False,
+        )
+        res_beyond_q = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=events_beyond_wm,
+            watermark_spec=wm_quarantine,
+            observer_poset=observer_poset,
+        )
+        self.assertTrue(res_beyond_q.certified)
+        self.assertEqual(res_beyond_q.terminal_route, "WatermarkedQuarantine")
+        self.assertEqual(res_beyond_q.canonical_terminal, "Quarantine")
+        self.assertEqual(res_beyond_q.events_submitted, 2)
+        self.assertEqual(res_beyond_q.events_applied, 1)
+        self.assertEqual(res_beyond_q.late_events_rejected_or_quarantined, 1)
+        self.assertEqual(res_beyond_q.step_receipts[1].cochain_step_terminal, "QuarantinedLateEvent")
+
+        # Case 3: Negative event-to-ingestion lag (t_ingest=8.0 < t_event=12.0) -> NegativeEventLagViolation
+        res_neg_lag = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=2,
+                    new_region="US-EAST",
+                    new_amount=35.0,
+                    new_row=r2,
+                    event_timestamp=12.0,
+                    ingestion_timestamp=8.0,
+                )
+            ],
+            watermark_spec=wm_strict,
+            observer_poset=observer_poset,
+        )
+        self.assertFalse(res_neg_lag.certified)
+        self.assertEqual(res_neg_lag.terminal_route, "NegativeEventLagViolation")
+        self.assertEqual(res_neg_lag.canonical_terminal, "ConservativeInvalidate")
+
+        # Case 4: Non-monotonic physical ingestion clock (t_ingest=20.0 followed by t_ingest=18.0)
+        res_bad_clock = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=2,
+                    new_region="US-EAST",
+                    new_amount=35.0,
+                    new_row=r2,
+                    event_timestamp=15.0,
+                    ingestion_timestamp=20.0,
+                ),
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=3,
+                    new_region="US-EAST",
+                    new_amount=45.0,
+                    new_row=r3,
+                    event_timestamp=16.0,
+                    ingestion_timestamp=18.0,
+                ),
+            ],
+            watermark_spec=wm_strict,
+            observer_poset=observer_poset,
+        )
+        self.assertFalse(res_bad_clock.certified)
+        self.assertEqual(res_bad_clock.terminal_route, "OutOfOrderIngestionClock")
+        self.assertEqual(res_bad_clock.canonical_terminal, "Invalidate")
+
+        # Case 5: Out-of-order causal key violation (DELETE for sale_id=99 before INSERT)
+        res_causal_del = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=99,
+                    old_region="US-EAST",
+                    old_amount=35.0,
+                    event_timestamp=10.0,
+                    ingestion_timestamp=11.0,
+                )
+            ],
+            watermark_spec=wm_strict,
+            observer_poset=observer_poset,
+        )
+        self.assertFalse(res_causal_del.certified)
+        self.assertEqual(res_causal_del.terminal_route, "CausalKeyViolation")
+        self.assertEqual(res_causal_del.canonical_terminal, "Invalidate")
+
+        # Case 6: Missing event_timestamp or ingestion_timestamp -> ConservativeInvalidate
+        res_missing_ts = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[
+                SalesCochainCdcSpec(
+                    op_type="INSERT",
+                    sale_id=2,
+                    new_region="US-EAST",
+                    new_amount=35.0,
+                    new_row=r2,
+                    event_timestamp=None,
+                    ingestion_timestamp=11.0,
+                )
+            ],
+            watermark_spec=wm_strict,
+            observer_poset=observer_poset,
+        )
+        self.assertFalse(res_missing_ts.certified)
+        self.assertEqual(res_missing_ts.terminal_route, "ConservativeInvalidate")
+
+        # Case 7: Invalid WatermarkSpec (negative allowed_lateness_seconds) -> Refuse
+        res_bad_wm = evaluate_watermarked_cdc_stream_with_observer_poset(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[],
+            watermark_spec=WatermarkSpec(allowed_lateness_seconds=-5.0),
+            observer_poset=observer_poset,
+        )
+        self.assertFalse(res_bad_wm.certified)
+        self.assertEqual(res_bad_wm.terminal_route, "Refuse")
+        self.assertEqual(res_bad_wm.canonical_terminal, "Refuse")
 
 
 if __name__ == "__main__":
