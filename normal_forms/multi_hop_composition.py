@@ -1,11 +1,21 @@
 """Multi-hop composition pipeline chaining relational synthesis (3NF/BCNF),
-streaming BQNF delta repair, and CODA_MUR representation transport across
+streaming BQNF delta repair (additive SPJA, non-invertible MIN/MAX priority-queue
+cochains, and epsilon-BQNF quantile sketches), CODA_MUR representation transport,
+and observer-relative freshness posets (nf.epistemic.freshness) across
 randomized schema mutations.
 
-Pipeline topology:
-    Stage 1 (At Rest: 3NF / BCNF synthesis & lossless join reconstruction)
-        --> Stage 2 (In Motion: BQNF incremental CDC coboundary repair)
-        --> Stage 3 (In Representation: CODA_MUR functorial transport & sealed loss ledgers)
+Pipeline topologies:
+  1. 3-Stage Additive Pipeline (`run_multi_hop_pipeline`):
+     Stage 1 (At Rest: 3NF / BCNF synthesis & lossless join reconstruction)
+         --> Stage 2 (In Motion: BQNF incremental CDC coboundary repair)
+         --> Stage 3 (In Representation: CODA_MUR functorial transport & sealed loss ledgers)
+
+  2. 4-Stage Extended Cochain + Poset Pipeline (`run_extended_multi_hop_pipeline`):
+     Stage 1 (At Rest: 3NF / BCNF synthesis & lossless join reconstruction)
+         --> Stage 2b (In Motion: Non-invertible MIN/MAX priority-queue cochains
+                       + epsilon-BQNF quantile sketches in SQLite)
+         --> Stage 3 (In Representation: CODA_MUR functorial transport & sealed loss ledgers)
+         --> Stage 4 (In Observation: nf.epistemic.freshness observer poset chain)
 
 AuthorityEffect: None.
 certified_implies_authorized: false.
@@ -13,7 +23,7 @@ certified_implies_authorized: false.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 import hashlib
 import json
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
@@ -39,6 +49,12 @@ from normal_forms.domain.relational_advanced import (
     decompose_bcnf_tree,
     project_functional_dependencies,
     synthesize_3nf_bernstein,
+)
+from normal_forms.evaluator import NormalFormsEvaluator
+from normal_forms.observer_freshness_example import (
+    ObserverSpec,
+    evaluate_freshness,
+    verify_observer_lattice_monotonicity,
 )
 from normal_forms.reconciliation_example import verify_loss_ledger_integrity
 
@@ -171,6 +187,45 @@ class BqnfStreamStageReceipt:
 
 
 @dataclass(frozen=True)
+class SalesCochainCdcSpec:
+    """Specification of a streaming CDC event for the SQLite extrema/quantile cochain engine."""
+
+    op_type: str
+    sale_id: int
+    old_region: Optional[str] = None
+    new_region: Optional[str] = None
+    old_amount: Optional[float] = None
+    new_amount: Optional[float] = None
+    old_row: Optional[Dict[str, Any]] = None
+    new_row: Optional[Dict[str, Any]] = None
+
+
+@dataclass(frozen=True)
+class CochainExtremaQuantileStageReceipt:
+    """Receipt emitted by Hop 2b (Non-invertible MIN/MAX priority-queue cochain & epsilon-BQNF quantile sketch)."""
+
+    terminal_route: str
+    canonical_terminal: str
+    step_terminals: Tuple[str, ...]
+    events_processed: int
+    verified_consistent: bool
+    commutes_with_3nf_rejoin: bool
+    quantile_accuracy_verified: bool
+    cached_state: Dict[str, Dict[str, Any]]
+    cached_extrema: Dict[str, Dict[str, Any]]
+    cached_medians: Dict[str, Any]
+    true_medians: Dict[str, Any]
+    extrema_repairs: int
+    fallback_recomputations: int
+    quantile_repairs: int
+    quantile_fallback_recomputations: int
+    certified: bool
+    authorized: bool = False
+    authority_effect: str = "None"
+    reason: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class CodaMurHopSpec:
     """Specification of a single representation transport hop F_j: Rep_{j-1} -> Rep_j."""
 
@@ -204,12 +259,46 @@ class CodaMurTransportStageReceipt:
 
 
 @dataclass(frozen=True)
+class ObserverPosetStageReceipt:
+    """Receipt emitted by Hop 4 (Observer-relative freshness poset evaluation nf.epistemic.freshness)."""
+
+    terminal_route: str
+    canonical_terminal: str
+    poset_chain_valid: bool
+    monotonicity_preserved: bool
+    observer_decisions: Tuple[Dict[str, Any], ...]
+    admitted_observers: Tuple[str, ...]
+    rejected_observers: Tuple[str, ...]
+    certified: bool
+    authorized: bool = False
+    certified_implies_authorized: bool = False
+    authority_effect: str = "None"
+    reason: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class MultiHopCompositionReceipt:
     """End-to-end receipt across Hop 1 (3NF/BCNF), Hop 2 (BQNF), and Hop 3 (CODA_MUR)."""
 
     stage1_relational: RelationalSynthesisStageReceipt
     stage2_bqnf: Optional[BqnfStreamStageReceipt]
     stage3_coda_mur: Optional[CodaMurTransportStageReceipt]
+    overall_terminal: str
+    end_to_end_commutes: bool
+    certified: bool
+    authorized: bool = False
+    certified_implies_authorized: bool = False
+    authority_effect: str = "None"
+
+
+@dataclass(frozen=True)
+class ExtendedMultiHopCompositionReceipt:
+    """End-to-end 4-stage receipt across 3NF/BCNF, Extrema+Quantile Cochains, CODA_MUR, and Observer Poset."""
+
+    stage1_relational: RelationalSynthesisStageReceipt
+    stage2_cochain: Optional[CochainExtremaQuantileStageReceipt]
+    stage3_coda_mur: Optional[CodaMurTransportStageReceipt]
+    stage4_observer_poset: Optional[ObserverPosetStageReceipt]
     overall_terminal: str
     end_to_end_commutes: bool
     certified: bool
@@ -522,6 +611,331 @@ def evaluate_stage2_bqnf_stream(
     )
 
 
+def evaluate_stage2b_cochain_extrema_quantiles(
+    schema: RelationalSchema,
+    nf3_components: Sequence[Sequence[str]],
+    initial_rows: Sequence[Mapping[str, Any]],
+    cochain_cdc_events: Sequence[SalesCochainCdcSpec],
+    use_cochain: bool = True,
+    track_quantiles: bool = True,
+    quantile_tolerance: float = 15.0,
+    pk_attribute: str = "sale_id",
+) -> Tuple[CochainExtremaQuantileStageReceipt, List[Dict[str, Any]]]:
+    """Hop 2b: Evaluates non-invertible MIN/MAX priority-queue cochains and epsilon-BQNF quantile
+    sketches in SQLite over a 3NF/BCNF-normalized relation, checking commutation with projection-join.
+    """
+    current_rows = [dict(r) for r in initial_rows]
+
+    with NormalFormsEvaluator(in_memory=True) as evaluator:
+        # 1. Seed baseline rows from the 3NF-rejoined initial instance
+        for row in current_rows:
+            if pk_attribute not in row or "region" not in row or "amount" not in row:
+                return (
+                    CochainExtremaQuantileStageReceipt(
+                        terminal_route="Refuse",
+                        canonical_terminal="Refuse",
+                        step_terminals=("Refuse",),
+                        events_processed=0,
+                        verified_consistent=False,
+                        commutes_with_3nf_rejoin=False,
+                        quantile_accuracy_verified=False,
+                        cached_state={},
+                        cached_extrema={},
+                        cached_medians={},
+                        true_medians={},
+                        extrema_repairs=0,
+                        fallback_recomputations=0,
+                        quantile_repairs=0,
+                        quantile_fallback_recomputations=0,
+                        certified=False,
+                        reason=f"Initial row missing required cochain attributes ({pk_attribute}, region, amount)",
+                    ),
+                    current_rows,
+                )
+            evaluator.apply_sales_cdc(
+                op_type="INSERT",
+                sale_id=int(row[pk_attribute]),
+                new_region=str(row["region"]),
+                new_amount=float(row["amount"]),
+                maintain_cochain=use_cochain,
+            )
+
+        # Materialize the initial cache state before streaming CDC deltas
+        init_audit = evaluator.process_bqnf_incremental_repair(
+            use_cochain=use_cochain,
+            track_quantiles=track_quantiles,
+            quantile_tolerance=quantile_tolerance,
+        )
+
+        total_events_processed = 0
+        total_extrema_repairs = 0
+        total_fallback_recomputations = 0
+        total_quantile_repairs = 0
+        total_quantile_fallback_recomputations = 0
+        step_terminals: List[str] = []
+        all_steps_consistent = bool(init_audit["verified_consistent"])
+        last_audit = init_audit
+
+        # 2. Stream CDC events and repair incrementally per event
+        for ev in cochain_cdc_events:
+            # Update relational instance rows and verify declared FDs
+            if ev.op_type == "INSERT":
+                if ev.new_region is None or ev.new_amount is None or ev.new_row is None:
+                    return (
+                        CochainExtremaQuantileStageReceipt(
+                            terminal_route="Invalidate",
+                            canonical_terminal="Invalidate",
+                            step_terminals=tuple(step_terminals + ["Invalidate"]),
+                            events_processed=total_events_processed,
+                            verified_consistent=False,
+                            commutes_with_3nf_rejoin=False,
+                            quantile_accuracy_verified=False,
+                            cached_state=dict(last_audit["cached_state"]),
+                            cached_extrema=dict(last_audit["cached_extrema"]),
+                            cached_medians=dict(last_audit["cached_medians"]),
+                            true_medians={},
+                            extrema_repairs=total_extrema_repairs,
+                            fallback_recomputations=total_fallback_recomputations,
+                            quantile_repairs=total_quantile_repairs,
+                            quantile_fallback_recomputations=total_quantile_fallback_recomputations,
+                            certified=False,
+                            reason="INSERT CDC event missing new_region, new_amount, or new_row payload",
+                        ),
+                        current_rows,
+                    )
+                candidate_rows = [r for r in current_rows if int(r[pk_attribute]) != ev.sale_id]
+                candidate_rows.append(dict(ev.new_row))
+            elif ev.op_type == "DELETE":
+                if ev.old_region is None or ev.old_amount is None:
+                    return (
+                        CochainExtremaQuantileStageReceipt(
+                            terminal_route="Invalidate",
+                            canonical_terminal="Invalidate",
+                            step_terminals=tuple(step_terminals + ["Invalidate"]),
+                            events_processed=total_events_processed,
+                            verified_consistent=False,
+                            commutes_with_3nf_rejoin=False,
+                            quantile_accuracy_verified=False,
+                            cached_state=dict(last_audit["cached_state"]),
+                            cached_extrema=dict(last_audit["cached_extrema"]),
+                            cached_medians=dict(last_audit["cached_medians"]),
+                            true_medians={},
+                            extrema_repairs=total_extrema_repairs,
+                            fallback_recomputations=total_fallback_recomputations,
+                            quantile_repairs=total_quantile_repairs,
+                            quantile_fallback_recomputations=total_quantile_fallback_recomputations,
+                            certified=False,
+                            reason="DELETE CDC event missing old_region or old_amount",
+                        ),
+                        current_rows,
+                    )
+                candidate_rows = [r for r in current_rows if int(r[pk_attribute]) != ev.sale_id]
+            elif ev.op_type == "UPDATE":
+                if (
+                    ev.old_region is None
+                    or ev.old_amount is None
+                    or ev.new_region is None
+                    or ev.new_amount is None
+                    or ev.new_row is None
+                ):
+                    return (
+                        CochainExtremaQuantileStageReceipt(
+                            terminal_route="Invalidate",
+                            canonical_terminal="Invalidate",
+                            step_terminals=tuple(step_terminals + ["Invalidate"]),
+                            events_processed=total_events_processed,
+                            verified_consistent=False,
+                            commutes_with_3nf_rejoin=False,
+                            quantile_accuracy_verified=False,
+                            cached_state=dict(last_audit["cached_state"]),
+                            cached_extrema=dict(last_audit["cached_extrema"]),
+                            cached_medians=dict(last_audit["cached_medians"]),
+                            true_medians={},
+                            extrema_repairs=total_extrema_repairs,
+                            fallback_recomputations=total_fallback_recomputations,
+                            quantile_repairs=total_quantile_repairs,
+                            quantile_fallback_recomputations=total_quantile_fallback_recomputations,
+                            certified=False,
+                            reason="UPDATE CDC event missing old/new region, amount, or new_row payload",
+                        ),
+                        current_rows,
+                    )
+                candidate_rows = []
+                for r in current_rows:
+                    if int(r[pk_attribute]) == ev.sale_id:
+                        candidate_rows.append(dict(ev.new_row))
+                    else:
+                        candidate_rows.append(dict(r))
+            else:
+                return (
+                    CochainExtremaQuantileStageReceipt(
+                        terminal_route="Unsupported",
+                        canonical_terminal="Unsupported",
+                        step_terminals=tuple(step_terminals + ["Unsupported"]),
+                        events_processed=total_events_processed,
+                        verified_consistent=False,
+                        commutes_with_3nf_rejoin=False,
+                        quantile_accuracy_verified=False,
+                        cached_state=dict(last_audit["cached_state"]),
+                        cached_extrema=dict(last_audit["cached_extrema"]),
+                        cached_medians=dict(last_audit["cached_medians"]),
+                        true_medians={},
+                        extrema_repairs=total_extrema_repairs,
+                        fallback_recomputations=total_fallback_recomputations,
+                        quantile_repairs=total_quantile_repairs,
+                        quantile_fallback_recomputations=total_quantile_fallback_recomputations,
+                        certified=False,
+                        reason=f"Unsupported CDC op_type '{ev.op_type}'",
+                    ),
+                    current_rows,
+                )
+
+            # Check FD preservation across normalized subschemas
+            fd_ok, fd_err = check_instance_satisfies_fds(candidate_rows, schema.dependencies)
+            if not fd_ok:
+                return (
+                    CochainExtremaQuantileStageReceipt(
+                        terminal_route="ClosureFailure",
+                        canonical_terminal="ClosureFailure",
+                        step_terminals=tuple(step_terminals + ["ClosureFailure"]),
+                        events_processed=total_events_processed,
+                        verified_consistent=False,
+                        commutes_with_3nf_rejoin=False,
+                        quantile_accuracy_verified=False,
+                        cached_state=dict(last_audit["cached_state"]),
+                        cached_extrema=dict(last_audit["cached_extrema"]),
+                        cached_medians=dict(last_audit["cached_medians"]),
+                        true_medians={},
+                        extrema_repairs=total_extrema_repairs,
+                        fallback_recomputations=total_fallback_recomputations,
+                        quantile_repairs=total_quantile_repairs,
+                        quantile_fallback_recomputations=total_quantile_fallback_recomputations,
+                        certified=False,
+                        reason=f"CDC mutation violated declared FD in 3NF relvars: {fd_err}",
+                    ),
+                    current_rows,
+                )
+
+            current_rows = candidate_rows
+            evaluator.apply_sales_cdc(
+                op_type=ev.op_type,
+                sale_id=ev.sale_id,
+                old_region=ev.old_region,
+                new_region=ev.new_region,
+                old_amount=ev.old_amount,
+                new_amount=ev.new_amount,
+                maintain_cochain=use_cochain,
+            )
+            step_audit = evaluator.process_bqnf_incremental_repair(
+                use_cochain=use_cochain,
+                track_quantiles=track_quantiles,
+                quantile_tolerance=quantile_tolerance,
+            )
+            total_events_processed += int(step_audit["events_processed"])
+            total_extrema_repairs += int(step_audit["extrema_repairs"])
+            total_fallback_recomputations += int(step_audit["fallback_recomputations"])
+            total_quantile_repairs += int(step_audit["quantile_repairs"])
+            total_quantile_fallback_recomputations += int(step_audit["quantile_fallback_recomputations"])
+            step_terminals.append(str(step_audit["terminal"]))
+            all_steps_consistent = all_steps_consistent and bool(step_audit["verified_consistent"])
+            last_audit = step_audit
+
+        # 3. Verify commutation with 3NF projection-join and true median error bounds
+        rejoin_ok, rejoined_rows, _ = project_and_rejoin(current_rows, schema.attributes, nf3_components)
+        by_region: Dict[str, List[float]] = {}
+        for r in rejoined_rows:
+            reg = str(r["region"])
+            by_region.setdefault(reg, []).append(float(r["amount"]))
+
+        cached_state = {
+            reg: (
+                {"total": float(v[0]), "count": int(v[1])}
+                if isinstance(v, (tuple, list))
+                else {"total": float(v.get("total", 0.0)), "count": int(v.get("count", 0))}
+            )
+            for reg, v in last_audit["cached_state"].items()
+        }
+        cached_extrema = {
+            reg: (
+                {"min": v[0], "max": v[1]}
+                if isinstance(v, (tuple, list))
+                else {"min": v.get("min"), "max": v.get("max")}
+            )
+            for reg, v in last_audit["cached_extrema"].items()
+        }
+        cached_medians = dict(last_audit["cached_medians"])
+
+        all_regs = set(cached_state.keys()) | set(by_region.keys())
+        commutes_3nf = rejoin_ok and all_steps_consistent
+        for reg in all_regs:
+            vals = by_region.get(reg, [])
+            c_state = cached_state.get(reg, {"total": 0.0, "count": 0})
+            c_ext = cached_extrema.get(reg, {"min": None, "max": None})
+            if not vals:
+                if c_state["count"] != 0 or c_ext["min"] is not None or c_ext["max"] is not None:
+                    commutes_3nf = False
+            else:
+                if c_state["count"] != len(vals):
+                    commutes_3nf = False
+                if abs(float(c_state["total"]) - sum(vals)) > 1e-9:
+                    commutes_3nf = False
+                if c_ext["min"] is None or abs(float(c_ext["min"]) - min(vals)) > 1e-9:
+                    commutes_3nf = False
+                if c_ext["max"] is None or abs(float(c_ext["max"]) - max(vals)) > 1e-9:
+                    commutes_3nf = False
+
+        true_medians: Dict[str, Any] = {}
+        quantile_ok = True
+        for reg in sorted(by_region.keys()):
+            t_med = evaluator.compute_true_median(reg)
+            true_medians[reg] = t_med
+            c_med = cached_medians.get(reg)
+            if t_med is not None:
+                if c_med is None or abs(float(c_med) - float(t_med)) > quantile_tolerance + 1e-9:
+                    quantile_ok = False
+
+    if not commutes_3nf or not quantile_ok:
+        final_route = "ClosureFailure"
+        canon_route = "ClosureFailure"
+        is_cert = False
+    elif "Recompute" in step_terminals:
+        final_route = "Recompute"
+        canon_route = "Recompute"
+        is_cert = True
+    elif "Repair" in step_terminals or total_events_processed > 0:
+        final_route = "Repair"
+        canon_route = "Repair"
+        is_cert = True
+    else:
+        final_route = "Preserve"
+        canon_route = "Preserve"
+        is_cert = True
+
+    return (
+        CochainExtremaQuantileStageReceipt(
+            terminal_route=final_route,
+            canonical_terminal=canon_route,
+            step_terminals=tuple(step_terminals),
+            events_processed=total_events_processed,
+            verified_consistent=all_steps_consistent,
+            commutes_with_3nf_rejoin=commutes_3nf,
+            quantile_accuracy_verified=quantile_ok,
+            cached_state=cached_state,
+            cached_extrema=cached_extrema,
+            cached_medians=cached_medians,
+            true_medians=true_medians,
+            extrema_repairs=total_extrema_repairs,
+            fallback_recomputations=total_fallback_recomputations,
+            quantile_repairs=total_quantile_repairs,
+            quantile_fallback_recomputations=total_quantile_fallback_recomputations,
+            certified=is_cert,
+            authorized=False,
+            reason=None if is_cert else "Cochain extrema/quantile state diverged from 3NF projection-join",
+        ),
+        rejoined_rows,
+    )
+
+
 def evaluate_stage3_coda_mur_chain(
     initial_rows: Sequence[Mapping[str, Any]],
     updated_rows: Sequence[Mapping[str, Any]],
@@ -688,8 +1102,7 @@ def evaluate_stage3_coda_mur_chain(
             groups=(hop.group_attribute,),
             aggregates=(f"SUM({hop.value_attribute})",),
         )
-        f_init_totals = _compute_boundary_group_totals(curr_init_totals_rows := curr_init_rows, hop_boundary)
-        del curr_init_totals_rows
+        f_init_totals = _compute_boundary_group_totals(curr_init_rows, hop_boundary)
         # Apply delta (bqnf_updated - bqnf_initial) on target representation
         all_g = set(f_init_totals.keys()) | set(bqnf_initial_totals.keys()) | set(bqnf_updated_totals.keys())
         d_target_after_f: Dict[Any, float] = {}
@@ -740,6 +1153,153 @@ def evaluate_stage3_coda_mur_chain(
     )
 
 
+def evaluate_stage4_observer_freshness_poset(
+    packet: Mapping[str, Any],
+    observer_poset: Sequence[ObserverSpec],
+) -> ObserverPosetStageReceipt:
+    """Hop 4: Evaluates observer-relative freshness (nf.epistemic.freshness) across a poset chain
+    O_1 <= O_2 <= ... <= O_m, verifying poset ordering, upward monotonicity, and fail-closed gates.
+    """
+    if not observer_poset:
+        return ObserverPosetStageReceipt(
+            terminal_route="Refuse",
+            canonical_terminal="Refuse",
+            poset_chain_valid=False,
+            monotonicity_preserved=False,
+            observer_decisions=(),
+            admitted_observers=(),
+            rejected_observers=(),
+            certified=False,
+            reason="Empty observer poset chain declared",
+        )
+
+    # 1. Verify that O_1 <= O_2 <= ... <= O_m forms a valid stringency poset chain
+    for idx in range(len(observer_poset) - 1):
+        curr_obs = observer_poset[idx]
+        next_obs = observer_poset[idx + 1]
+        if not curr_obs.is_more_stringent_than(next_obs):
+            return ObserverPosetStageReceipt(
+                terminal_route="PosetOrderViolation",
+                canonical_terminal="Refuse",
+                poset_chain_valid=False,
+                monotonicity_preserved=False,
+                observer_decisions=(),
+                admitted_observers=(),
+                rejected_observers=(),
+                certified=False,
+                reason=(
+                    f"Observer poset chain violated O_{idx} <= O_{idx + 1}: "
+                    f"{curr_obs.observer_id} (lag={curr_obs.max_lag_seconds}, scopes={curr_obs.authorized_scopes}) "
+                    f"is not more stringent than {next_obs.observer_id} "
+                    f"(lag={next_obs.max_lag_seconds}, scopes={next_obs.authorized_scopes})"
+                ),
+            )
+
+    obs_dicts = [
+        {
+            "observer_id": obs.observer_id,
+            "max_lag_seconds": obs.max_lag_seconds,
+            "authorized_scopes": list(obs.authorized_scopes),
+        }
+        for obs in observer_poset
+    ]
+    packet_dict = dict(packet)
+    decisions = evaluate_freshness({"packet": packet_dict, "observers": obs_dicts})
+    mono_ok, mono_violations = verify_observer_lattice_monotonicity(obs_dicts, packet_dict)
+
+    admitted = tuple(d["observer_id"] for d in decisions if d.get("terminal_route") == "AuthorizedFresh")
+    rejected = tuple(d["observer_id"] for d in decisions if d.get("terminal_route") != "AuthorizedFresh")
+    routes = [d.get("terminal_route") for d in decisions]
+
+    if not mono_ok:
+        return ObserverPosetStageReceipt(
+            terminal_route="MonotonicityViolation",
+            canonical_terminal="Refuse",
+            poset_chain_valid=True,
+            monotonicity_preserved=False,
+            observer_decisions=tuple(decisions),
+            admitted_observers=admitted,
+            rejected_observers=rejected,
+            certified=False,
+            reason="; ".join(mono_violations),
+        )
+
+    if any(r == "Refuse" for r in routes):
+        first_refuse = next(d for d in decisions if d.get("terminal_route") == "Refuse")
+        return ObserverPosetStageReceipt(
+            terminal_route="Refuse",
+            canonical_terminal="Refuse",
+            poset_chain_valid=True,
+            monotonicity_preserved=mono_ok,
+            observer_decisions=tuple(decisions),
+            admitted_observers=admitted,
+            rejected_observers=rejected,
+            certified=False,
+            reason=str(first_refuse.get("reason")),
+        )
+
+    if any(r == "ConservativeInvalidate" for r in routes):
+        first_ci = next(d for d in decisions if d.get("terminal_route") == "ConservativeInvalidate")
+        return ObserverPosetStageReceipt(
+            terminal_route="ConservativeInvalidate",
+            canonical_terminal="ConservativeInvalidate",
+            poset_chain_valid=True,
+            monotonicity_preserved=mono_ok,
+            observer_decisions=tuple(decisions),
+            admitted_observers=admitted,
+            rejected_observers=rejected,
+            certified=False,
+            reason=str(first_ci.get("reason")),
+        )
+
+    if len(admitted) == len(observer_poset):
+        return ObserverPosetStageReceipt(
+            terminal_route="AuthorizedFresh",
+            canonical_terminal="Preserve",
+            poset_chain_valid=True,
+            monotonicity_preserved=True,
+            observer_decisions=tuple(decisions),
+            admitted_observers=admitted,
+            rejected_observers=rejected,
+            certified=True,
+            authorized=False,
+            certified_implies_authorized=False,
+            authority_effect="None",
+            reason=None,
+        )
+
+    if len(admitted) > 0:
+        return ObserverPosetStageReceipt(
+            terminal_route="PartialPosetAdmissibility",
+            canonical_terminal="Preserve",
+            poset_chain_valid=True,
+            monotonicity_preserved=True,
+            observer_decisions=tuple(decisions),
+            admitted_observers=admitted,
+            rejected_observers=rejected,
+            certified=True,
+            authorized=False,
+            certified_implies_authorized=False,
+            authority_effect="None",
+            reason=None,
+        )
+
+    return ObserverPosetStageReceipt(
+        terminal_route="RefreshRequired",
+        canonical_terminal="Invalidate",
+        poset_chain_valid=True,
+        monotonicity_preserved=True,
+        observer_decisions=tuple(decisions),
+        admitted_observers=admitted,
+        rejected_observers=rejected,
+        certified=False,
+        authorized=False,
+        certified_implies_authorized=False,
+        authority_effect="None",
+        reason="Packet replica lag exceeded max_lag_seconds for every observer in the poset chain",
+    )
+
+
 def run_multi_hop_pipeline(
     schema: RelationalSchema,
     initial_rows: Sequence[Mapping[str, Any]],
@@ -748,7 +1308,7 @@ def run_multi_hop_pipeline(
     transport_hops: Sequence[CodaMurHopSpec],
     pk_attribute: str = "order_id",
 ) -> MultiHopCompositionReceipt:
-    """Executes the full 3-stage composition pipeline:
+    """Executes the 3-stage composition pipeline:
     Stage 1 (3NF/BCNF synthesis) -> Stage 2 (BQNF CDC stream) -> Stage 3 (CODA_MUR transport).
     """
     # Stage 1: Relational synthesis & lossless join check
@@ -823,18 +1383,141 @@ def run_multi_hop_pipeline(
     )
 
 
+def run_extended_multi_hop_pipeline(
+    schema: RelationalSchema,
+    initial_rows: Sequence[Mapping[str, Any]],
+    cochain_cdc_events: Sequence[SalesCochainCdcSpec],
+    transport_hops: Sequence[CodaMurHopSpec],
+    observer_poset: Sequence[ObserverSpec],
+    freshness_packet: Mapping[str, Any],
+    use_cochain: bool = True,
+    track_quantiles: bool = True,
+    quantile_tolerance: float = 15.0,
+    pk_attribute: str = "sale_id",
+) -> ExtendedMultiHopCompositionReceipt:
+    """Executes the 4-stage composition pipeline:
+    Stage 1 (3NF/BCNF synthesis)
+      -> Stage 2b (Non-invertible MIN/MAX priority-queue cochain & epsilon-BQNF quantile sketch)
+      -> Stage 3 (CODA_MUR representation transport)
+      -> Stage 4 (nf.epistemic.freshness observer-relative freshness poset chain).
+    """
+    # Stage 1: Relational synthesis & lossless join check
+    s1_receipt, rejoined_initial = evaluate_stage1_relational_synthesis(schema, initial_rows)
+    if not s1_receipt.certified:
+        return ExtendedMultiHopCompositionReceipt(
+            stage1_relational=s1_receipt,
+            stage2_cochain=None,
+            stage3_coda_mur=None,
+            stage4_observer_poset=None,
+            overall_terminal=s1_receipt.canonical_terminal,
+            end_to_end_commutes=False,
+            certified=False,
+        )
+
+    # Compute initial regional totals for Stage 3 descent check
+    init_totals: Dict[Any, float] = {}
+    for r in rejoined_initial:
+        reg = r.get("region")
+        init_totals[reg] = init_totals.get(reg, 0.0) + float(r.get("amount", 0.0))
+
+    # Stage 2b: Cochain extrema (MIN/MAX) + epsilon-BQNF quantile sketches in SQLite
+    s2b_receipt, rejoined_updated = evaluate_stage2b_cochain_extrema_quantiles(
+        schema=schema,
+        nf3_components=s1_receipt.nf3_components,
+        initial_rows=rejoined_initial,
+        cochain_cdc_events=cochain_cdc_events,
+        use_cochain=use_cochain,
+        track_quantiles=track_quantiles,
+        quantile_tolerance=quantile_tolerance,
+        pk_attribute=pk_attribute,
+    )
+    if not s2b_receipt.certified:
+        return ExtendedMultiHopCompositionReceipt(
+            stage1_relational=s1_receipt,
+            stage2_cochain=s2b_receipt,
+            stage3_coda_mur=None,
+            stage4_observer_poset=None,
+            overall_terminal=s2b_receipt.canonical_terminal,
+            end_to_end_commutes=False,
+            certified=False,
+        )
+
+    upd_totals = {
+        reg: float(state["total"])
+        for reg, state in s2b_receipt.cached_state.items()
+        if int(state.get("count", 0)) > 0 and abs(float(state["total"])) > 1e-12
+    }
+
+    # Stage 3: Multi-hop CODA_MUR representation transport
+    s3_receipt = evaluate_stage3_coda_mur_chain(
+        initial_rows=rejoined_initial,
+        updated_rows=rejoined_updated,
+        bqnf_initial_totals=init_totals,
+        bqnf_updated_totals=upd_totals,
+        hops=transport_hops,
+    )
+    if not s3_receipt.certified:
+        return ExtendedMultiHopCompositionReceipt(
+            stage1_relational=s1_receipt,
+            stage2_cochain=s2b_receipt,
+            stage3_coda_mur=s3_receipt,
+            stage4_observer_poset=None,
+            overall_terminal=s3_receipt.canonical_terminal,
+            end_to_end_commutes=False,
+            certified=False,
+        )
+
+    # Stage 4: Observer-relative freshness poset evaluation (nf.epistemic.freshness)
+    s4_receipt = evaluate_stage4_observer_freshness_poset(
+        packet=freshness_packet,
+        observer_poset=observer_poset,
+    )
+    if not s4_receipt.certified:
+        return ExtendedMultiHopCompositionReceipt(
+            stage1_relational=s1_receipt,
+            stage2_cochain=s2b_receipt,
+            stage3_coda_mur=s3_receipt,
+            stage4_observer_poset=s4_receipt,
+            overall_terminal=s4_receipt.canonical_terminal,
+            end_to_end_commutes=False,
+            certified=False,
+        )
+
+    if s3_receipt.canonical_terminal == "Quarantine":
+        overall = "Quarantine"
+    elif s2b_receipt.canonical_terminal == "Recompute":
+        overall = "Recompute"
+    elif s2b_receipt.canonical_terminal == "Repair":
+        overall = "Repair"
+    else:
+        overall = "Preserve"
+
+    return ExtendedMultiHopCompositionReceipt(
+        stage1_relational=s1_receipt,
+        stage2_cochain=s2b_receipt,
+        stage3_coda_mur=s3_receipt,
+        stage4_observer_poset=s4_receipt,
+        overall_terminal=overall,
+        end_to_end_commutes=True,
+        certified=True,
+        authorized=False,
+        certified_implies_authorized=False,
+        authority_effect="None",
+    )
+
+
 def main() -> None:
-    """Demo 05: Multi-hop composition across 3NF/BCNF, BQNF CDC repair, and CODA_MUR transport."""
+    """Demo 05: Multi-hop composition across 3NF/BCNF, BQNF cochains, CODA_MUR, and Observer Posets."""
     from dataclasses import asdict
 
-    heading = ("order_id", "customer_id", "customer_zip", "region", "status", "amount", "audit_nonce")
+    heading = ("sale_id", "customer_id", "customer_zip", "region", "amount", "audit_nonce")
     schema = RelationalSchema(
         attributes=frozenset(heading),
         dependencies=frozenset(
             [
                 FunctionalDependency(
-                    frozenset(["order_id"]),
-                    frozenset(["customer_id", "status", "amount", "audit_nonce"]),
+                    frozenset(["sale_id"]),
+                    frozenset(["customer_id", "amount", "audit_nonce"]),
                 ),
                 FunctionalDependency.from_str("customer_id", "customer_zip"),
                 FunctionalDependency.from_str("customer_zip", "region"),
@@ -844,70 +1527,102 @@ def main() -> None:
     )
     initial_rows = [
         {
-            "order_id": 101,
-            "customer_id": 7,
+            "sale_id": 1,
+            "customer_id": 10,
             "customer_zip": "10001",
             "region": "US-EAST",
-            "status": "pending",
-            "amount": 100.0,
-            "audit_nonce": "n_101",
+            "amount": 12.0,
+            "audit_nonce": "n_1",
         },
         {
-            "order_id": 102,
-            "customer_id": 7,
+            "sale_id": 2,
+            "customer_id": 10,
             "customer_zip": "10001",
             "region": "US-EAST",
-            "status": "paid",
-            "amount": 250.0,
-            "audit_nonce": "n_102",
+            "amount": 17.0,
+            "audit_nonce": "n_2",
+        },
+        {
+            "sale_id": 3,
+            "customer_id": 10,
+            "customer_zip": "10001",
+            "region": "US-EAST",
+            "amount": 95.0,
+            "audit_nonce": "n_3",
         },
     ]
-    boundary = BqnfBoundary(
-        relations=("Orders",),
-        attributes=("customer_id", "status", "amount"),
-        predicates=("status = paid",),
-        groups=("customer_id",),
-        aggregates=("SUM(amount)",),
-    )
-    events = [
-        BqnfCdcEvent(
-            op="UPDATE",
-            relation="Orders",
-            old=dict(initial_rows[0]),
-            new={**initial_rows[0], "status": "paid", "amount": 150.0},
-        )
+    cochain_events = [
+        # Destructive deletion of current MAX (95.0) resolved by priority-queue cochain in O(log K)
+        SalesCochainCdcSpec(
+            op_type="DELETE",
+            sale_id=3,
+            old_region="US-EAST",
+            old_amount=95.0,
+        ),
+        # Insertion of a new sale (55.0) updating extrema and quantile sketch
+        SalesCochainCdcSpec(
+            op_type="INSERT",
+            sale_id=4,
+            new_region="US-EAST",
+            new_amount=55.0,
+            new_row={
+                "sale_id": 4,
+                "customer_id": 10,
+                "customer_zip": "10001",
+                "region": "US-EAST",
+                "amount": 55.0,
+                "audit_nonce": "n_4",
+            },
+        ),
     ]
-    h1_target = ("order_id", "customer_id", "customer_zip", "region", "status", "amount")
-    h2_target = ("order_id", "customer_id", "status", "amount")
+    h1_target = ("sale_id", "customer_id", "customer_zip", "region", "amount")
+    h2_target = ("sale_id", "region", "amount")
     hops = [
         CodaMurHopSpec(
             hop_id="hop1_strip_audit_nonce",
             source_heading=heading,
             target_heading=h1_target,
-            group_attribute="customer_id",
+            group_attribute="region",
             value_attribute="amount",
-            predicate_attribute="status",
-            predicate_expected_value="paid",
-            loss_ledger=build_sealed_loss_ledger(["audit_nonce"], initial_rows, "order_id"),
+            loss_ledger=build_sealed_loss_ledger(["audit_nonce"], initial_rows, "sale_id"),
             target_verifier={"verifier_id": "verifier_hop1", "executed": True, "outcome": "verified"},
         ),
         CodaMurHopSpec(
-            hop_id="hop2_strip_geography",
+            hop_id="hop2_strip_customer_pii",
             source_heading=h1_target,
             target_heading=h2_target,
-            group_attribute="customer_id",
+            group_attribute="region",
             value_attribute="amount",
-            predicate_attribute="status",
-            predicate_expected_value="paid",
-            loss_ledger=build_sealed_loss_ledger(["customer_zip", "region"], initial_rows, "order_id"),
+            loss_ledger=build_sealed_loss_ledger(["customer_id", "customer_zip"], initial_rows, "sale_id"),
             target_verifier={"verifier_id": "verifier_hop2", "executed": True, "outcome": "verified"},
         ),
     ]
-    receipt = run_multi_hop_pipeline(schema, initial_rows, boundary, events, hops)
+    observer_poset = [
+        ObserverSpec("obs_rt_1s", max_lag_seconds=1, authorized_scopes=("regional_sales",)),
+        ObserverSpec("obs_dash_5s", max_lag_seconds=5, authorized_scopes=("regional_sales", "exec_summary")),
+        ObserverSpec("obs_batch_60s", max_lag_seconds=60, authorized_scopes=("regional_sales", "exec_summary", "archive")),
+    ]
+    freshness_packet = {
+        "value_ref": "region_sales_cache:US-EAST",
+        "packet_scope": "regional_sales",
+        "replica_lag_seconds": 3,
+    }
+    ext_receipt = run_extended_multi_hop_pipeline(
+        schema=schema,
+        initial_rows=initial_rows,
+        cochain_cdc_events=cochain_events,
+        transport_hops=hops,
+        observer_poset=observer_poset,
+        freshness_packet=freshness_packet,
+        use_cochain=True,
+        track_quantiles=True,
+        quantile_tolerance=15.0,
+        pk_attribute="sale_id",
+    )
     print("================================================================================")
-    print("DEMO 05: Multi-Hop Composition (3NF/BCNF -> BQNF Stream -> CODA_MUR Transport)")
+    print("DEMO 05: Extended 4-Hop Composition (3NF/BCNF -> Extrema/Quantile Cochain -> CODA_MUR -> Poset)")
     print("================================================================================")
-    print(json.dumps(asdict(receipt), indent=2))
+    print(json.dumps(asdict(ext_receipt), indent=2))
 
 
 if __name__ == "__main__":

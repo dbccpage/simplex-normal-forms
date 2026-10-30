@@ -21,9 +21,14 @@ if TYPE_CHECKING:
     from normal_forms.evaluator import NormalFormsEvaluator
     from normal_forms.migrate_contract import migrate_v0_to_v1
     from normal_forms.multi_hop_composition import (
+        CochainExtremaQuantileStageReceipt,
         CodaMurHopSpec,
+        ExtendedMultiHopCompositionReceipt,
         MultiHopCompositionReceipt,
+        ObserverPosetStageReceipt,
+        SalesCochainCdcSpec,
         build_sealed_loss_ledger,
+        run_extended_multi_hop_pipeline,
         run_multi_hop_pipeline,
     )
     from normal_forms._golden_nfs import NormalFormContract
@@ -55,9 +60,14 @@ __all__ = [
     "check_document",
     "check_catalog",
     "migrate_v0_to_v1",
+    "CochainExtremaQuantileStageReceipt",
     "CodaMurHopSpec",
+    "ExtendedMultiHopCompositionReceipt",
     "MultiHopCompositionReceipt",
+    "ObserverPosetStageReceipt",
+    "SalesCochainCdcSpec",
     "build_sealed_loss_ledger",
+    "run_extended_multi_hop_pipeline",
     "run_multi_hop_pipeline",
 ]
 
@@ -73,9 +83,23 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "NormalFormsDbContext": ("normal_forms.db_context", "NormalFormsDbContext"),
     "NormalFormsEvaluator": ("normal_forms.evaluator", "NormalFormsEvaluator"),
     "migrate_v0_to_v1": ("normal_forms.migrate_contract", "migrate_v0_to_v1"),
+    "CochainExtremaQuantileStageReceipt": (
+        "normal_forms.multi_hop_composition",
+        "CochainExtremaQuantileStageReceipt",
+    ),
     "CodaMurHopSpec": ("normal_forms.multi_hop_composition", "CodaMurHopSpec"),
+    "ExtendedMultiHopCompositionReceipt": (
+        "normal_forms.multi_hop_composition",
+        "ExtendedMultiHopCompositionReceipt",
+    ),
     "MultiHopCompositionReceipt": ("normal_forms.multi_hop_composition", "MultiHopCompositionReceipt"),
+    "ObserverPosetStageReceipt": ("normal_forms.multi_hop_composition", "ObserverPosetStageReceipt"),
+    "SalesCochainCdcSpec": ("normal_forms.multi_hop_composition", "SalesCochainCdcSpec"),
     "build_sealed_loss_ledger": ("normal_forms.multi_hop_composition", "build_sealed_loss_ledger"),
+    "run_extended_multi_hop_pipeline": (
+        "normal_forms.multi_hop_composition",
+        "run_extended_multi_hop_pipeline",
+    ),
     "run_multi_hop_pipeline": ("normal_forms.multi_hop_composition", "run_multi_hop_pipeline"),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),

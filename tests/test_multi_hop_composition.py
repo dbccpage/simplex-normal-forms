@@ -1,6 +1,9 @@
 """Property-based and randomized schema-mutation tests for multi-hop composition:
-Stage 1 (3NF / BCNF relational synthesis) -> Stage 2 (BQNF streaming CDC repair)
--> Stage 3 (CODA_MUR representation transport).
+Stage 1 (3NF / BCNF relational synthesis)
+  -> Stage 2 / 2b (BQNF streaming CDC repair, non-invertible MIN/MAX priority-queue
+                   cochains, and epsilon-BQNF quantile sketches)
+  -> Stage 3 (CODA_MUR representation transport)
+  -> Stage 4 (nf.epistemic.freshness observer-relative freshness poset chain).
 
 AuthorityEffect: None.
 """
@@ -28,17 +31,21 @@ from normal_forms.domain.relational_advanced import (
 from normal_forms.multi_hop_composition import (
     CODA_MUR_TRIGGER_ID,
     CodaMurHopSpec,
+    SalesCochainCdcSpec,
     build_sealed_loss_ledger,
+    evaluate_stage1_relational_synthesis,
+    evaluate_stage2b_cochain_extrema_quantiles,
     project_and_rejoin,
+    run_extended_multi_hop_pipeline,
     run_multi_hop_pipeline,
 )
+from normal_forms.observer_freshness_example import ObserverSpec
 
 
 def _generate_random_schema_and_instance(
     rng: random.Random,
 ) -> Tuple[RelationalSchema, List[Dict[str, Any]]]:
     """Generates a randomized relational schema with partial and transitive FDs and a valid instance."""
-    # Attributes: k1, k2 (composite key or single key), t1, t2 (transitive chain), p1 (partial), v1, v2 (payload)
     use_composite_key = rng.choice([True, False])
     attrs = ["order_id", "customer_id", "customer_zip", "region", "status", "amount", "audit_nonce"]
     fds: List[FunctionalDependency] = []
@@ -99,6 +106,25 @@ def _generate_random_schema_and_instance(
         rows.append(row)
 
     return schema, rows
+
+
+def _build_sales_cochain_schema() -> Tuple[Tuple[str, ...], RelationalSchema]:
+    heading = ("sale_id", "customer_id", "customer_zip", "region", "amount", "audit_nonce")
+    schema = RelationalSchema(
+        attributes=frozenset(heading),
+        dependencies=frozenset(
+            [
+                FunctionalDependency(
+                    frozenset(["sale_id"]),
+                    frozenset(["customer_id", "amount", "audit_nonce"]),
+                ),
+                FunctionalDependency.from_str("customer_id", "customer_zip"),
+                FunctionalDependency.from_str("customer_zip", "region"),
+            ]
+        ),
+        attribute_domains={a: "scalar" for a in heading},
+    )
+    return heading, schema
 
 
 class TestMultiHopCompositionProperties(unittest.TestCase):
@@ -174,7 +200,6 @@ class TestMultiHopCompositionProperties(unittest.TestCase):
         )
 
         for trial in range(100):
-            # Consistent lookup tables for transitive FDs
             cust_zip = {c: f"Z{c}00" for c in range(1, 6)}
             zip_reg = {f"Z{c}00": f"R{c % 2}" for c in range(1, 6)}
 
@@ -195,7 +220,6 @@ class TestMultiHopCompositionProperties(unittest.TestCase):
                 rows.append(r)
                 active_by_id[oid] = dict(r)
 
-            # Generate a random stream of 10 CDC events
             cdc_events: List[BqnfCdcEvent] = []
             next_oid = 100
             for _ in range(10):
@@ -235,10 +259,6 @@ class TestMultiHopCompositionProperties(unittest.TestCase):
                     cdc_events.append(BqnfCdcEvent(op="UPDATE", relation="Orders", old=old_row, new=new_row))
                     active_by_id[target_oid] = new_row
 
-            # Build a 3-hop CODA_MUR representation transport chain:
-            # Hop 1: drops audit_nonce (or keeps all if lossless trial)
-            # Hop 2: drops region and customer_zip
-            # Hop 3: lossless projection on remaining attributes
             is_lossless_chain = (trial % 5 == 0)
             if is_lossless_chain:
                 hops = [
@@ -340,6 +360,676 @@ class TestMultiHopCompositionProperties(unittest.TestCase):
                     receipt.stage3_coda_mur.loss_ledger_triggers,
                     (CODA_MUR_TRIGGER_ID, CODA_MUR_TRIGGER_ID),
                 )
+
+    def test_randomized_extrema_cochain_vs_fallback_recomputation_80_trials(self) -> None:
+        """Verifies non-invertible MIN/MAX priority-queue cochain O(log K) repair vs bounded
+        fallback recomputation across 80 randomized CDC streams containing destructive deletions.
+        """
+        rng = random.Random(27182818)
+        _, schema = _build_sales_cochain_schema()
+        cust_zip = {1: "10001", 2: "20002", 3: "30003", 4: "40004"}
+        zip_reg = {"10001": "REG_EAST", "20002": "REG_EAST", "30003": "REG_WEST", "40004": "REG_WEST"}
+
+        for trial in range(80):
+            initial_rows: List[Dict[str, Any]] = []
+            active_by_id: Dict[int, Dict[str, Any]] = {}
+            for sid in range(1, 9):
+                cid = (sid % 4) + 1
+                cz = cust_zip[cid]
+                r = {
+                    "sale_id": sid,
+                    "customer_id": cid,
+                    "customer_zip": cz,
+                    "region": zip_reg[cz],
+                    "amount": float(rng.randint(2, 40) * 5 + sid),
+                    "audit_nonce": f"n_{sid}",
+                }
+                initial_rows.append(r)
+                active_by_id[sid] = dict(r)
+
+            s1_receipt, rejoined_init = evaluate_stage1_relational_synthesis(schema, initial_rows)
+            self.assertTrue(s1_receipt.certified)
+
+            # Build a stream of 6 CDC events where the first event is a destructive deletion of
+            # the current maximum in REG_EAST (while REG_EAST still has remaining rows)
+            east_rows = [r for r in active_by_id.values() if r["region"] == "REG_EAST"]
+            max_east_row = max(east_rows, key=lambda x: float(x["amount"]))
+            del active_by_id[int(max_east_row["sale_id"])]
+
+            cochain_events: List[SalesCochainCdcSpec] = [
+                SalesCochainCdcSpec(
+                    op_type="DELETE",
+                    sale_id=int(max_east_row["sale_id"]),
+                    old_region=str(max_east_row["region"]),
+                    old_amount=float(max_east_row["amount"]),
+                )
+            ]
+
+            next_sid = 100
+            for _ in range(5):
+                op = rng.choice(["INSERT", "UPDATE", "DELETE_EXTREMUM"])
+                if op == "INSERT" or len(active_by_id) <= 3:
+                    cid = rng.randint(1, 4)
+                    cz = cust_zip[cid]
+                    reg = zip_reg[cz]
+                    amt = float(rng.randint(1, 50) * 4 + rng.randint(1, 3))
+                    new_r = {
+                        "sale_id": next_sid,
+                        "customer_id": cid,
+                        "customer_zip": cz,
+                        "region": reg,
+                        "amount": amt,
+                        "audit_nonce": f"n_{next_sid}",
+                    }
+                    cochain_events.append(
+                        SalesCochainCdcSpec(
+                            op_type="INSERT",
+                            sale_id=next_sid,
+                            new_region=reg,
+                            new_amount=amt,
+                            new_row=new_r,
+                        )
+                    )
+                    active_by_id[next_sid] = new_r
+                    next_sid += 1
+                elif op == "DELETE_EXTREMUM":
+                    # Pick a region with at least 2 rows and delete its current MIN
+                    west_rows = [r for r in active_by_id.values() if r["region"] == "REG_WEST"]
+                    if len(west_rows) >= 2:
+                        min_west = min(west_rows, key=lambda x: float(x["amount"]))
+                        del active_by_id[int(min_west["sale_id"])]
+                        cochain_events.append(
+                            SalesCochainCdcSpec(
+                                op_type="DELETE",
+                                sale_id=int(min_west["sale_id"]),
+                                old_region=str(min_west["region"]),
+                                old_amount=float(min_west["amount"]),
+                            )
+                        )
+                    else:
+                        target_sid = rng.choice(sorted(active_by_id.keys()))
+                        old_r = dict(active_by_id[target_sid])
+                        new_r = dict(old_r)
+                        new_r["amount"] = float(rng.randint(1, 60) * 3)
+                        active_by_id[target_sid] = new_r
+                        cochain_events.append(
+                            SalesCochainCdcSpec(
+                                op_type="UPDATE",
+                                sale_id=target_sid,
+                                old_region=str(old_r["region"]),
+                                new_region=str(new_r["region"]),
+                                old_amount=float(old_r["amount"]),
+                                new_amount=float(new_r["amount"]),
+                                old_row=old_r,
+                                new_row=new_r,
+                            )
+                        )
+                else:
+                    target_sid = rng.choice(sorted(active_by_id.keys()))
+                    old_r = dict(active_by_id[target_sid])
+                    new_r = dict(old_r)
+                    new_r["amount"] = float(rng.randint(1, 60) * 3)
+                    active_by_id[target_sid] = new_r
+                    cochain_events.append(
+                        SalesCochainCdcSpec(
+                            op_type="UPDATE",
+                            sale_id=target_sid,
+                            old_region=str(old_r["region"]),
+                            new_region=str(new_r["region"]),
+                            old_amount=float(old_r["amount"]),
+                            new_amount=float(new_r["amount"]),
+                            old_row=old_r,
+                            new_row=new_r,
+                        )
+                    )
+
+            # 1. Evaluate WITH priority-queue extremum cochain (use_cochain=True)
+            res_cochain, _ = evaluate_stage2b_cochain_extrema_quantiles(
+                schema=schema,
+                nf3_components=s1_receipt.nf3_components,
+                initial_rows=rejoined_init,
+                cochain_cdc_events=cochain_events,
+                use_cochain=True,
+                track_quantiles=False,
+                pk_attribute="sale_id",
+            )
+            self.assertTrue(res_cochain.certified, f"Trial {trial}: cochain repair failed certification")
+            self.assertTrue(res_cochain.verified_consistent)
+            self.assertTrue(res_cochain.commutes_with_3nf_rejoin)
+            self.assertEqual(res_cochain.fallback_recomputations, 0)
+            self.assertGreaterEqual(res_cochain.extrema_repairs, 1)
+            self.assertEqual(res_cochain.terminal_route, "Repair")
+
+            # 2. Evaluate WITHOUT priority-queue extremum cochain (use_cochain=False)
+            res_fallback, _ = evaluate_stage2b_cochain_extrema_quantiles(
+                schema=schema,
+                nf3_components=s1_receipt.nf3_components,
+                initial_rows=rejoined_init,
+                cochain_cdc_events=cochain_events,
+                use_cochain=False,
+                track_quantiles=False,
+                pk_attribute="sale_id",
+            )
+            self.assertTrue(res_fallback.certified, f"Trial {trial}: fallback recomputation failed certification")
+            self.assertTrue(res_fallback.verified_consistent)
+            self.assertTrue(res_fallback.commutes_with_3nf_rejoin)
+            self.assertGreaterEqual(res_fallback.fallback_recomputations, 1)
+            self.assertEqual(res_fallback.terminal_route, "Recompute")
+
+            # Both paths must converge to identical totals, counts, and MIN/MAX extrema
+            self.assertEqual(res_cochain.cached_state, res_fallback.cached_state)
+            self.assertEqual(res_cochain.cached_extrema, res_fallback.cached_extrema)
+
+    def test_randomized_epsilon_bqnf_quantile_sketch_tolerance_regimes_80_trials(self) -> None:
+        """Verifies epsilon-BQNF quantile sketch O(B) repair when |q_hat - q_true| <= epsilon
+        vs bounded fallback recomputation when |q_hat - q_true| > epsilon across 80 randomized trials.
+        """
+        rng = random.Random(16180339)
+        _, schema = _build_sales_cochain_schema()
+        cust_zip = {1: "10001", 2: "20002"}
+        zip_reg = {"10001": "REG_NORTH", "20002": "REG_SOUTH"}
+
+        for trial in range(80):
+            # Seed REG_NORTH with 3 rows whose amounts are non-multiples of 10 so histogram linear
+            # interpolation has a small non-zero discretization residual (0 < |q_hat - q_true| <= 10.0)
+            base_b = rng.randint(1, 8) * 10
+            initial_rows: List[Dict[str, Any]] = [
+                {
+                    "sale_id": 1,
+                    "customer_id": 1,
+                    "customer_zip": "10001",
+                    "region": "REG_NORTH",
+                    "amount": float(base_b + 1),
+                    "audit_nonce": "n_1",
+                },
+                {
+                    "sale_id": 2,
+                    "customer_id": 1,
+                    "customer_zip": "10001",
+                    "region": "REG_NORTH",
+                    "amount": float(base_b + 3),
+                    "audit_nonce": "n_2",
+                },
+                {
+                    "sale_id": 3,
+                    "customer_id": 1,
+                    "customer_zip": "10001",
+                    "region": "REG_NORTH",
+                    "amount": float(base_b + 42),
+                    "audit_nonce": "n_3",
+                },
+                {
+                    "sale_id": 4,
+                    "customer_id": 2,
+                    "customer_zip": "20002",
+                    "region": "REG_SOUTH",
+                    "amount": float(base_b + 14),
+                    "audit_nonce": "n_4",
+                },
+                {
+                    "sale_id": 5,
+                    "customer_id": 2,
+                    "customer_zip": "20002",
+                    "region": "REG_SOUTH",
+                    "amount": float(base_b + 28),
+                    "audit_nonce": "n_5",
+                },
+            ]
+            s1_receipt, rejoined_init = evaluate_stage1_relational_synthesis(schema, initial_rows)
+            self.assertTrue(s1_receipt.certified)
+
+            cochain_events: List[SalesCochainCdcSpec] = []
+            for step in range(4):
+                sid = 10 + step
+                cid = rng.choice([1, 2])
+                cz = cust_zip[cid]
+                reg = zip_reg[cz]
+                amt = float(rng.randint(1, 12) * 10 + rng.choice([1, 2, 3, 4, 6, 7, 8, 9]))
+                cochain_events.append(
+                    SalesCochainCdcSpec(
+                        op_type="INSERT",
+                        sale_id=sid,
+                        new_region=reg,
+                        new_amount=amt,
+                        new_row={
+                            "sale_id": sid,
+                            "customer_id": cid,
+                            "customer_zip": cz,
+                            "region": reg,
+                            "amount": amt,
+                            "audit_nonce": f"n_{sid}",
+                        },
+                    )
+                )
+
+            # Regime A: Generous quotient tolerance epsilon = 120.0 (all sketch interpolations within tolerance)
+            res_eps_ok, _ = evaluate_stage2b_cochain_extrema_quantiles(
+                schema=schema,
+                nf3_components=s1_receipt.nf3_components,
+                initial_rows=rejoined_init,
+                cochain_cdc_events=cochain_events,
+                use_cochain=True,
+                track_quantiles=True,
+                quantile_tolerance=120.0,
+                pk_attribute="sale_id",
+            )
+            self.assertTrue(res_eps_ok.certified, f"Trial {trial}: generous tolerance failed certification")
+            self.assertTrue(res_eps_ok.quantile_accuracy_verified)
+            self.assertEqual(res_eps_ok.quantile_fallback_recomputations, 0)
+            self.assertGreaterEqual(res_eps_ok.quantile_repairs, 1)
+            self.assertEqual(res_eps_ok.terminal_route, "Repair")
+
+            # Regime B: Intermediate quotient tolerance epsilon = 12.0 (guarantees error <= 12.0 via hybrid repair/fallback)
+            res_eps_mid, _ = evaluate_stage2b_cochain_extrema_quantiles(
+                schema=schema,
+                nf3_components=s1_receipt.nf3_components,
+                initial_rows=rejoined_init,
+                cochain_cdc_events=cochain_events,
+                use_cochain=True,
+                track_quantiles=True,
+                quantile_tolerance=12.0,
+                pk_attribute="sale_id",
+            )
+            self.assertTrue(res_eps_mid.certified, f"Trial {trial}: intermediate tolerance failed certification")
+            self.assertTrue(res_eps_mid.quantile_accuracy_verified)
+            for reg, t_med in res_eps_mid.true_medians.items():
+                self.assertLessEqual(abs(float(res_eps_mid.cached_medians[reg]) - float(t_med)), 12.0 + 1e-9)
+
+            # Regime C: Zero tolerance epsilon = 0.0 (forces fallback recomputation whenever sketch != exact median)
+            res_eps_zero, _ = evaluate_stage2b_cochain_extrema_quantiles(
+                schema=schema,
+                nf3_components=s1_receipt.nf3_components,
+                initial_rows=rejoined_init,
+                cochain_cdc_events=cochain_events,
+                use_cochain=True,
+                track_quantiles=True,
+                quantile_tolerance=0.0,
+                pk_attribute="sale_id",
+            )
+            self.assertTrue(res_eps_zero.certified, f"Trial {trial}: zero tolerance failed certification")
+            self.assertTrue(res_eps_zero.quantile_accuracy_verified)
+            self.assertGreaterEqual(res_eps_zero.quantile_fallback_recomputations, 1)
+            self.assertEqual(res_eps_zero.terminal_route, "Recompute")
+            # Under epsilon = 0.0, cached medians must equal the exact true medians
+            for reg, t_med in res_eps_zero.true_medians.items():
+                self.assertAlmostEqual(float(res_eps_zero.cached_medians[reg]), float(t_med), places=9)
+
+    def test_randomized_4hop_end_to_end_with_observer_poset_monotonicity_100_trials(self) -> None:
+        """100 randomized end-to-end trials chaining:
+        Hop 1 (3NF/BCNF synthesis)
+          -> Hop 2b (Extrema MIN/MAX priority-queue cochain + epsilon-BQNF quantile sketch)
+          -> Hop 3 (CODA_MUR multi-hop representation transport with sealed loss ledgers)
+          -> Hop 4 (nf.epistemic.freshness 4-observer poset chain O_1 <= O_2 <= O_3 <= O_4).
+        """
+        rng = random.Random(14142135)
+        heading, schema = _build_sales_cochain_schema()
+        cust_zip = {c: f"ZIP_{c}00" for c in range(1, 5)}
+        zip_reg = {"ZIP_100": "US-EAST", "ZIP_200": "US-EAST", "ZIP_300": "US-WEST", "ZIP_400": "US-WEST"}
+
+        # 4-observer poset chain O_1 <= O_2 <= O_3 <= O_4
+        observer_poset = [
+            ObserverSpec(
+                observer_id="O1_hft_2s",
+                max_lag_seconds=2,
+                authorized_scopes=("regional_sales",),
+            ),
+            ObserverSpec(
+                observer_id="O2_ops_10s",
+                max_lag_seconds=10,
+                authorized_scopes=("regional_sales", "ops_dashboard"),
+            ),
+            ObserverSpec(
+                observer_id="O3_exec_30s",
+                max_lag_seconds=30,
+                authorized_scopes=("regional_sales", "ops_dashboard", "exec_report"),
+            ),
+            ObserverSpec(
+                observer_id="O4_warehouse_60s",
+                max_lag_seconds=60,
+                authorized_scopes=("regional_sales", "ops_dashboard", "exec_report", "cold_archive"),
+            ),
+        ]
+
+        for trial in range(100):
+            initial_rows: List[Dict[str, Any]] = []
+            active_by_id: Dict[int, Dict[str, Any]] = {}
+            for sid in range(1, 8):
+                cid = rng.randint(1, 4)
+                cz = cust_zip[cid]
+                r = {
+                    "sale_id": sid,
+                    "customer_id": cid,
+                    "customer_zip": cz,
+                    "region": zip_reg[cz],
+                    "amount": float(rng.randint(1, 25) * 8 + rng.randint(1, 7)),
+                    "audit_nonce": f"n_{sid}",
+                }
+                initial_rows.append(r)
+                active_by_id[sid] = dict(r)
+
+            cochain_events: List[SalesCochainCdcSpec] = []
+            next_sid = 50
+            for _ in range(6):
+                op = rng.choice(["INSERT", "UPDATE", "DELETE"])
+                if op == "INSERT" or len(active_by_id) <= 3:
+                    cid = rng.randint(1, 4)
+                    cz = cust_zip[cid]
+                    reg = zip_reg[cz]
+                    amt = float(rng.randint(1, 30) * 6 + rng.randint(1, 5))
+                    new_r = {
+                        "sale_id": next_sid,
+                        "customer_id": cid,
+                        "customer_zip": cz,
+                        "region": reg,
+                        "amount": amt,
+                        "audit_nonce": f"n_{next_sid}",
+                    }
+                    cochain_events.append(
+                        SalesCochainCdcSpec(
+                            op_type="INSERT",
+                            sale_id=next_sid,
+                            new_region=reg,
+                            new_amount=amt,
+                            new_row=new_r,
+                        )
+                    )
+                    active_by_id[next_sid] = new_r
+                    next_sid += 1
+                elif op == "DELETE":
+                    target_sid = rng.choice(sorted(active_by_id.keys()))
+                    old_r = active_by_id.pop(target_sid)
+                    cochain_events.append(
+                        SalesCochainCdcSpec(
+                            op_type="DELETE",
+                            sale_id=target_sid,
+                            old_region=str(old_r["region"]),
+                            old_amount=float(old_r["amount"]),
+                        )
+                    )
+                else:
+                    target_sid = rng.choice(sorted(active_by_id.keys()))
+                    old_r = dict(active_by_id[target_sid])
+                    new_r = dict(old_r)
+                    new_r["amount"] = float(rng.randint(1, 35) * 5 + rng.randint(1, 4))
+                    active_by_id[target_sid] = new_r
+                    cochain_events.append(
+                        SalesCochainCdcSpec(
+                            op_type="UPDATE",
+                            sale_id=target_sid,
+                            old_region=str(old_r["region"]),
+                            new_region=str(new_r["region"]),
+                            old_amount=float(old_r["amount"]),
+                            new_amount=float(new_r["amount"]),
+                            old_row=old_r,
+                            new_row=new_r,
+                        )
+                    )
+
+            h1_target = ("sale_id", "customer_id", "customer_zip", "region", "amount")
+            h2_target = ("sale_id", "region", "amount")
+            hops = [
+                CodaMurHopSpec(
+                    hop_id="hop1_strip_nonce",
+                    source_heading=heading,
+                    target_heading=h1_target,
+                    group_attribute="region",
+                    value_attribute="amount",
+                    loss_ledger=build_sealed_loss_ledger(["audit_nonce"], initial_rows, "sale_id"),
+                    target_verifier={"verifier_id": "v_h1", "executed": True, "outcome": "verified"},
+                ),
+                CodaMurHopSpec(
+                    hop_id="hop2_strip_customer",
+                    source_heading=h1_target,
+                    target_heading=h2_target,
+                    group_attribute="region",
+                    value_attribute="amount",
+                    loss_ledger=build_sealed_loss_ledger(["customer_id", "customer_zip"], initial_rows, "sale_id"),
+                    target_verifier={"verifier_id": "v_h2", "executed": True, "outcome": "verified"},
+                ),
+            ]
+
+            # Sample lag in [0, 55] so at least O4 (60s) is always within SLA, testing all 4 poset cut points
+            lag_sec = rng.choice([1, 5, 15, 45])
+            packet = {
+                "value_ref": f"region_sales_cache:trial_{trial}",
+                "packet_scope": "regional_sales",
+                "replica_lag_seconds": lag_sec,
+            }
+
+            use_cochain = (trial % 4 != 0)
+            q_tol = 25.0 if (trial % 3 != 0) else 0.0
+
+            receipt = run_extended_multi_hop_pipeline(
+                schema=schema,
+                initial_rows=initial_rows,
+                cochain_cdc_events=cochain_events,
+                transport_hops=hops,
+                observer_poset=observer_poset,
+                freshness_packet=packet,
+                use_cochain=use_cochain,
+                track_quantiles=True,
+                quantile_tolerance=q_tol,
+                pk_attribute="sale_id",
+            )
+
+            self.assertTrue(receipt.certified, f"Trial {trial} failed certification: {receipt}")
+            self.assertTrue(receipt.end_to_end_commutes)
+            self.assertFalse(receipt.authorized)
+            self.assertFalse(receipt.certified_implies_authorized)
+            self.assertEqual(receipt.authority_effect, "None")
+
+            assert receipt.stage2_cochain is not None
+            assert receipt.stage3_coda_mur is not None
+            assert receipt.stage4_observer_poset is not None
+
+            self.assertTrue(receipt.stage2_cochain.verified_consistent)
+            self.assertTrue(receipt.stage2_cochain.commutes_with_3nf_rejoin)
+            self.assertTrue(receipt.stage2_cochain.quantile_accuracy_verified)
+            self.assertTrue(receipt.stage3_coda_mur.commutation_verified)
+            self.assertTrue(receipt.stage4_observer_poset.poset_chain_valid)
+            self.assertTrue(receipt.stage4_observer_poset.monotonicity_preserved)
+
+            # Verify exact upward-closed poset partition cut point based on lag_sec
+            if lag_sec == 1:
+                self.assertEqual(
+                    receipt.stage4_observer_poset.admitted_observers,
+                    ("O1_hft_2s", "O2_ops_10s", "O3_exec_30s", "O4_warehouse_60s"),
+                )
+                self.assertEqual(receipt.stage4_observer_poset.terminal_route, "AuthorizedFresh")
+            elif lag_sec == 5:
+                self.assertEqual(
+                    receipt.stage4_observer_poset.admitted_observers,
+                    ("O2_ops_10s", "O3_exec_30s", "O4_warehouse_60s"),
+                )
+                self.assertEqual(receipt.stage4_observer_poset.rejected_observers, ("O1_hft_2s",))
+                self.assertEqual(receipt.stage4_observer_poset.terminal_route, "PartialPosetAdmissibility")
+            elif lag_sec == 15:
+                self.assertEqual(
+                    receipt.stage4_observer_poset.admitted_observers,
+                    ("O3_exec_30s", "O4_warehouse_60s"),
+                )
+                self.assertEqual(
+                    receipt.stage4_observer_poset.rejected_observers,
+                    ("O1_hft_2s", "O2_ops_10s"),
+                )
+            elif lag_sec == 45:
+                self.assertEqual(
+                    receipt.stage4_observer_poset.admitted_observers,
+                    ("O4_warehouse_60s",),
+                )
+                self.assertEqual(
+                    receipt.stage4_observer_poset.rejected_observers,
+                    ("O1_hft_2s", "O2_ops_10s", "O3_exec_30s"),
+                )
+
+    def test_observer_freshness_and_cochain_mutation_refusal_matrix(self) -> None:
+        """Verifies fail-closed terminal routing across Stage 2b (cochain FD/payload mutations)
+        and Stage 4 (observer poset order violations, missing scope/lag, and SLA exhaustion).
+        """
+        heading, schema = _build_sales_cochain_schema()
+        initial_rows = [
+            {
+                "sale_id": 1,
+                "customer_id": 10,
+                "customer_zip": "10001",
+                "region": "US-EAST",
+                "amount": 25.0,
+                "audit_nonce": "n_1",
+            },
+            {
+                "sale_id": 2,
+                "customer_id": 10,
+                "customer_zip": "10001",
+                "region": "US-EAST",
+                "amount": 75.0,
+                "audit_nonce": "n_2",
+            },
+        ]
+        valid_events = [
+            SalesCochainCdcSpec(
+                op_type="DELETE",
+                sale_id=2,
+                old_region="US-EAST",
+                old_amount=75.0,
+            )
+        ]
+        hops = [
+            CodaMurHopSpec(
+                hop_id="h1_identity",
+                source_heading=heading,
+                target_heading=heading,
+                group_attribute="region",
+                value_attribute="amount",
+                target_verifier={"verifier_id": "v1", "executed": True, "outcome": "verified"},
+            )
+        ]
+        valid_poset = [
+            ObserverSpec("O1_strict", max_lag_seconds=5, authorized_scopes=("regional_sales",)),
+            ObserverSpec("O2_relaxed", max_lag_seconds=30, authorized_scopes=("regional_sales", "archive")),
+        ]
+
+        # Mutation 4A: Missing/empty packet_scope -> Refuse
+        r4a = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=valid_events,
+            transport_hops=hops,
+            observer_poset=valid_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "", "replica_lag_seconds": 2},
+        )
+        self.assertFalse(r4a.certified)
+        self.assertEqual(r4a.overall_terminal, "Refuse")
+        assert r4a.stage4_observer_poset is not None
+        self.assertEqual(r4a.stage4_observer_poset.terminal_route, "Refuse")
+
+        # Mutation 4B: Missing or negative replica_lag_seconds -> ConservativeInvalidate
+        r4b = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=valid_events,
+            transport_hops=hops,
+            observer_poset=valid_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "regional_sales", "replica_lag_seconds": -1},
+        )
+        self.assertFalse(r4b.certified)
+        self.assertEqual(r4b.overall_terminal, "ConservativeInvalidate")
+        assert r4b.stage4_observer_poset is not None
+        self.assertEqual(r4b.stage4_observer_poset.terminal_route, "ConservativeInvalidate")
+
+        # Mutation 4C: Unauthorized packet_scope -> Refuse
+        r4c = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=valid_events,
+            transport_hops=hops,
+            observer_poset=valid_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "restricted_pii", "replica_lag_seconds": 2},
+        )
+        self.assertFalse(r4c.certified)
+        self.assertEqual(r4c.overall_terminal, "Refuse")
+        assert r4c.stage4_observer_poset is not None
+        self.assertEqual(r4c.stage4_observer_poset.terminal_route, "Refuse")
+
+        # Mutation 4D: Non-monotonic observer poset chain (O_1 has looser max_lag_seconds than O_2) -> PosetOrderViolation
+        broken_poset = [
+            ObserverSpec("O1_loose", max_lag_seconds=60, authorized_scopes=("regional_sales",)),
+            ObserverSpec("O2_tight", max_lag_seconds=5, authorized_scopes=("regional_sales", "archive")),
+        ]
+        r4d = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=valid_events,
+            transport_hops=hops,
+            observer_poset=broken_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "regional_sales", "replica_lag_seconds": 2},
+        )
+        self.assertFalse(r4d.certified)
+        self.assertEqual(r4d.overall_terminal, "Refuse")
+        assert r4d.stage4_observer_poset is not None
+        self.assertFalse(r4d.stage4_observer_poset.poset_chain_valid)
+        self.assertEqual(r4d.stage4_observer_poset.terminal_route, "PosetOrderViolation")
+
+        # Mutation 4E: Replica lag exceeds SLA for all observers in the poset chain -> RefreshRequired (Invalidate)
+        r4e = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=valid_events,
+            transport_hops=hops,
+            observer_poset=valid_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "regional_sales", "replica_lag_seconds": 120},
+        )
+        self.assertFalse(r4e.certified)
+        self.assertEqual(r4e.overall_terminal, "Invalidate")
+        assert r4e.stage4_observer_poset is not None
+        self.assertEqual(r4e.stage4_observer_poset.terminal_route, "RefreshRequired")
+
+        # Mutation 4F: Cochain CDC INSERT violates declared 3NF transitive FD (customer_id 10 -> broken zip)
+        fd_breach_event = SalesCochainCdcSpec(
+            op_type="INSERT",
+            sale_id=3,
+            new_region="US-EAST",
+            new_amount=40.0,
+            new_row={
+                "sale_id": 3,
+                "customer_id": 10,
+                "customer_zip": "99999_CONFLICT",
+                "region": "US-EAST",
+                "amount": 40.0,
+                "audit_nonce": "n_3",
+            },
+        )
+        r4f = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[fd_breach_event],
+            transport_hops=hops,
+            observer_poset=valid_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "regional_sales", "replica_lag_seconds": 2},
+        )
+        self.assertFalse(r4f.certified)
+        self.assertEqual(r4f.overall_terminal, "ClosureFailure")
+        assert r4f.stage2_cochain is not None
+        self.assertEqual(r4f.stage2_cochain.terminal_route, "ClosureFailure")
+
+        # Mutation 4G: Cochain CDC DELETE missing old_amount -> Invalidate
+        malformed_delete = SalesCochainCdcSpec(
+            op_type="DELETE",
+            sale_id=2,
+            old_region="US-EAST",
+            old_amount=None,
+        )
+        r4g = run_extended_multi_hop_pipeline(
+            schema=schema,
+            initial_rows=initial_rows,
+            cochain_cdc_events=[malformed_delete],
+            transport_hops=hops,
+            observer_poset=valid_poset,
+            freshness_packet={"value_ref": "sales:US-EAST", "packet_scope": "regional_sales", "replica_lag_seconds": 2},
+        )
+        self.assertFalse(r4g.certified)
+        self.assertEqual(r4g.overall_terminal, "Invalidate")
+        assert r4g.stage2_cochain is not None
+        self.assertEqual(r4g.stage2_cochain.terminal_route, "Invalidate")
 
     def test_schema_mutation_matrix_stage1_relational_refusals(self) -> None:
         heading = ("order_id", "customer_id", "customer_zip", "status", "amount")
