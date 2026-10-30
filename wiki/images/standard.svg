@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <style>
+      .font-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+      .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+      .card { fill: #ffffff; stroke: #e2e8f0; stroke-width: 1.5; rx: 10; ry: 10; }
+      .section-hdr { font-size: 13px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; fill: #64748b; }
+      .item-hdr { font-size: 13px; font-weight: 700; fill: #0f172a; }
+      .item-text { font-size: 12.5px; font-weight: 400; fill: #334155; line-height: 1.4; }
+      .pill-text { font-size: 11px; font-weight: 700; text-anchor: middle; dominant-baseline: central; }
+      .tag-text { font-size: 11px; font-weight: 600; fill: #475569; }
+    </style>
+    <marker id="route-arr" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="800" fill="#f8fafc" />
+
+  <!-- ============================================================ -->
+  <!-- TOP HEADER CARD                                            -->
+  <!-- ============================================================ -->
+  <g transform="translate(24, 20)">
+    <rect class="card" width="1152" height="110" stroke="#cbd5e1" />
+    <rect x="0" y="0" width="8" height="110" rx="4" ry="4" fill="#475569" />
+
+    <!-- ID and Title -->
+    <text class="font-sans mono" x="24" y="28" font-size="12" font-weight="700" fill="#475569">CONTRACT SPECIFICATION • standard</text>
+    <text class="font-sans" x="24" y="58" font-size="22" font-weight="800" fill="#0f172a">standard</text>
+
+    <!-- Status Badges -->
+    <g transform="translate(24, 82)">
+      <rect x="0" y="-12" width="110" height="22" rx="11" fill="#f8fafc" stroke="#475569" stroke-width="1.2"/>
+      <text class="font-sans pill-text" x="55" y="-1" fill="#1e293b">FAMILY: DEFAULT</text>
+
+      <rect x="120" y="-12" width="130" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text class="font-sans pill-text" x="185" y="-1" fill="#334155">THEORY: PROPOSED</text>
+
+      <rect x="260" y="-12" width="120" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text class="font-sans pill-text" x="320" y="-1" fill="#334155">STATUS: ACTIVE</text>
+
+      <rect x="390" y="-12" width="160" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text class="font-sans pill-text" x="470" y="-1" fill="#334155">VERIFY: ABSENT</text>
+
+      <rect x="560" y="-12" width="220" height="22" rx="11" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1"/>
+      <text class="font-sans pill-text" x="670" y="-1" fill="#334155">POSTURE: unspecified / unspecified</text>
+    </g>
+
+    <!-- Large Short-Name Badge (Top Right) -->
+    <g transform="translate(1010, 20)">
+      <rect x="0" y="0" width="118" height="70" rx="10" fill="#f8fafc" stroke="#475569" stroke-width="2"/>
+      <text class="font-sans" x="59" y="38" font-size="22" font-weight="900" fill="#475569" text-anchor="middle" dominant-baseline="central">STANDARD</text>
+      <text class="font-sans mono" x="59" y="56" font-size="10" font-weight="700" fill="#1e293b" text-anchor="middle">v0</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- COLUMN 1: PURPOSE, ANOMALIES & INVARIANTS                   -->
+  <!-- ============================================================ -->
+  <g transform="translate(24, 146)">
+    <rect class="card" width="564" height="570" />
+    <text class="font-sans section-hdr" x="24" y="32">1. PURPOSE &amp; BOUNDARY SEMANTICS</text>
+
+    <!-- Excludes Anomaly Box -->
+    <g transform="translate(24, 48)">
+      <rect width="516" height="88" rx="8" fill="#fff1f2" stroke="#fecdd3" stroke-width="1.2"/>
+      <text class="font-sans item-hdr" x="16" y="24" fill="#9f1239">⚡ EXCLUDES ANOMALY</text>
+      <text class="font-sans item-text" x="16" y="44" fill="#881337">None declared</text>
+    </g>
+
+    <!-- Preserves Invariant Box -->
+    <g transform="translate(24, 148)">
+      <rect width="516" height="88" rx="8" fill="#ecfdf5" stroke="#a7f3d0" stroke-width="1.2"/>
+      <text class="font-sans item-hdr" x="16" y="24" fill="#065f46">🛡 PRESERVES INVARIANT</text>
+      <text class="font-sans item-text" x="16" y="44" fill="#064e3b">None declared</text>
+    </g>
+
+    <!-- Protected Skeleton Tags -->
+    <g transform="translate(24, 248)">
+      <text class="font-sans section-hdr" x="0" y="20">PROTECTED SKELETON ELEMENTS</text>
+    </g>
+
+    <!-- Non-Claims / Boundaries -->
+    <g transform="translate(24, 348)">
+      <text class="font-sans section-hdr" x="0" y="20">EXPLICIT NON-CLAIMS &amp; BARRIERS</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- COLUMN 2: DECLARATIONS, VALIDATION & TERMINAL ROUTES        -->
+  <!-- ============================================================ -->
+  <g transform="translate(612, 146)">
+    <rect class="card" width="564" height="570" />
+    <text class="font-sans section-hdr" x="24" y="32">2. OPERATIONAL SPECIFICATION &amp; ROUTES</text>
+
+    <!-- Declarations Required -->
+    <g transform="translate(24, 48)">
+      <text class="font-sans item-hdr" x="0" y="16">REQUIRED DECLARATIONS</text>
+    </g>
+
+    <!-- Validation Criteria -->
+    <g transform="translate(24, 89)">
+      <text class="font-sans item-hdr" x="0" y="16">VALIDATION CRITERIA</text>
+    </g>
+
+    <!-- Terminal Routes Flow -->
+    <g transform="translate(24, 360)">
+      <text class="font-sans item-hdr" x="0" y="16">TERMINAL ROUTE MAPPING</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM FOOTER BAR                                          -->
+  <!-- ============================================================ -->
+  <g transform="translate(24, 728)">
+    <rect class="card" width="1152" height="52" fill="#ffffff" stroke="#cbd5e1" />
+    <text class="font-sans mono" x="20" y="26" font-size="11" font-weight="600" fill="#64748b" dominant-baseline="central">SCHEMA: smplx.nf.contract.v0  |  CODA TOWER NORMAL FORM MONOGRAPH</text>
+    <text class="font-sans" x="1132" y="26" font-size="11" font-weight="700" fill="#475569" text-anchor="end" dominant-baseline="central">NF CONTRACT IMAGE • STANDARD</text>
+  </g>
+</svg>

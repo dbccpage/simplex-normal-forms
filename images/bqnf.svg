@@ -1,0 +1,376 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" style="background:#f8fafc; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <style>
+      .title { font-size: 38px; font-weight: 800; fill: #0f172a; letter-spacing: -0.5px; }
+      .subtitle { font-size: 18px; font-weight: 500; fill: #475569; }
+      .box { rx: 12px; stroke-width: 1.5px; }
+      .step-num { font-size: 15px; font-weight: 700; fill: #ffffff; }
+      .step-title { font-size: 16px; font-weight: 700; letter-spacing: 0.2px; }
+      .step-desc { font-size: 13px; fill: #475569; line-height: 1.4; }
+      .card-header { font-size: 15px; font-weight: 700; }
+      .code { font-family: 'JetBrains Mono', 'Fira Code', Menlo, monospace; font-size: 13px; }
+      .badge { rx: 4px; font-size: 11px; font-weight: 600; }
+      .arrow { stroke: #64748b; stroke-width: 2px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+      .arrow-head { fill: #64748b; }
+      .math { font-family: 'Cambria Math', 'Times New Roman', serif; font-style: italic; }
+    </style>
+    <marker id="arr" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b"/>
+    </marker>
+    <marker id="arr-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#16a34a"/>
+    </marker>
+    <marker id="arr-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Header -->
+  <g transform="translate(60, 45)">
+    <text class="title" x="0" y="0">BQNF – BOUNDARY-QUOTIENT NORMAL FORM</text>
+    <text class="subtitle" x="0" y="32">A certified normal form for runtime updates: decide Repair vs. Invalidate vs. other terminals by computing the obstruction.</text>
+  </g>
+
+  <!-- 5 STEPS PIPELINE (Top Half) -->
+  <!-- Step 1: Boundary Declared -->
+  <g transform="translate(60, 110)">
+    <rect class="box" x="0" y="0" width="330" height="420" fill="#ffffff" stroke="#16a34a" stroke-opacity="0.3"/>
+    <circle cx="28" cy="28" r="14" fill="#16a34a"/>
+    <text class="step-num" x="24" y="33">1</text>
+    <text class="step-title" x="52" y="33" fill="#15803d">BOUNDARY DECLARED</text>
+    <text class="step-desc" x="16" y="65">Declare the boundary of the view/cache (∂Q).</text>
+
+    <!-- Fingerprint Subcard -->
+    <rect class="box" x="16" y="90" width="298" height="260" fill="#f0fdf4" stroke="#86efac"/>
+    <text class="card-header" x="32" y="118" fill="#166534">Boundary Fingerprint (∂Q)</text>
+    
+    <g transform="translate(32, 140)" font-size="13" fill="#1e293b">
+      <text y="0"><tspan font-weight="700">Relations:</tspan> Orders</text>
+      <text y="28"><tspan font-weight="700">Attributes:</tspan> customer_id,</text>
+      <text y="46" fill="#64748b">amount, status, order_date</text>
+      <text y="78"><tspan font-weight="700">Predicate:</tspan> status = 'paid'</text>
+      <text y="106"><tspan font-weight="700">Group by:</tspan> customer_id</text>
+      <text y="134"><tspan font-weight="700">Aggregate:</tspan> SUM(amount)</text>
+      <text y="162"><tspan font-weight="700">Policy:</tspan> monetary updates only</text>
+    </g>
+    <rect class="box" x="16" y="365" width="298" height="36" fill="#dcfce7" stroke="#bbf7d0"/>
+    <text x="32" y="388" font-size="12" font-weight="600" fill="#15803d">This boundary is fixed before runtime.</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <path class="arrow" d="M 405 320 L 435 320" marker-end="url(#arr)"/>
+
+  <!-- Step 2: Delta Computable -->
+  <g transform="translate(450, 110)">
+    <rect class="box" x="0" y="0" width="330" height="420" fill="#ffffff" stroke="#0284c7" stroke-opacity="0.3"/>
+    <circle cx="28" cy="28" r="14" fill="#0284c7"/>
+    <text class="step-num" x="24" y="33">2</text>
+    <text class="step-title" x="52" y="33" fill="#0369a1">DELTA COMPUTABLE</text>
+    <text class="step-desc" x="16" y="65">Given write event e, delta program ΔQ(e) is computable.</text>
+
+    <rect class="box" x="16" y="100" width="298" height="60" fill="#f8fafc" stroke="#cbd5e1"/>
+    <text class="code" x="35" y="136" font-size="15" fill="#0f172a" font-weight="600">ΔQ(e) = Q(S + Δe) − Q(S)</text>
+
+    <g transform="translate(16, 190)" font-size="13" fill="#334155">
+      <text y="0" font-weight="600">For SUM(amount) grouped by</text>
+      <text y="20" font-weight="600">customer_id with status = 'paid':</text>
+      
+      <circle cx="12" cy="60" r="10" fill="#22c55e"/>
+      <path d="M 8 60 L 16 60 M 12 56 L 12 64" stroke="#ffffff" stroke-width="2"/>
+      <text x="32" y="58" font-size="12"><tspan font-weight="700">If row enters</tspan> (unpaid→paid):</text>
+      <text x="32" y="74" font-size="12" fill="#15803d">add new amount</text>
+
+      <circle cx="12" cy="115" r="10" fill="#ef4444"/>
+      <path d="M 8 115 L 16 115" stroke="#ffffff" stroke-width="2"/>
+      <text x="32" y="113" font-size="12"><tspan font-weight="700">If row exits</tspan> (paid→unpaid):</text>
+      <text x="32" y="129" font-size="12" fill="#b91c1c">subtract old amount</text>
+    </g>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <path class="arrow" d="M 795 320 L 825 320" marker-end="url(#arr)"/>
+
+  <!-- Step 3: Obstruction Computable -->
+  <g transform="translate(840, 110)">
+    <rect class="box" x="0" y="0" width="330" height="420" fill="#ffffff" stroke="#7c3aed" stroke-opacity="0.3"/>
+    <circle cx="28" cy="28" r="14" fill="#7c3aed"/>
+    <text class="step-num" x="24" y="33">3</text>
+    <text class="step-title" x="52" y="33" fill="#6d28d9">OBSTRUCTION COMPUTABLE</text>
+    <text class="step-desc" x="16" y="65">Map defect ω(e) to quotient class Q¹ = C¹/im(d₀).</text>
+
+    <!-- Simplicial complex diagram -->
+    <g transform="translate(20, 100)">
+      <rect x="0" y="0" width="130" height="110" rx="8" fill="#f5f3ff" stroke="#ddd6fe"/>
+      <text x="15" y="24" font-size="12" font-weight="700" fill="#6d28d9">C⁰ (Repairs)</text>
+      <!-- Small simplicial nodes -->
+      <circle cx="35" cy="65" r="5" fill="#10b981"/>
+      <circle cx="75" cy="50" r="5" fill="#10b981"/>
+      <circle cx="95" cy="85" r="5" fill="#10b981"/>
+      <path d="M 35 65 L 75 50 L 95 85 Z" stroke="#10b981" stroke-width="1.5" fill="#10b981" fill-opacity="0.1"/>
+
+      <!-- Arrow d0 -->
+      <path class="arrow" d="M 140 55 L 165 55" marker-end="url(#arr)"/>
+      <text class="math" x="146" y="46" font-size="14" fill="#475569">d₀</text>
+
+      <rect x="175" y="0" width="115" height="110" rx="8" fill="#faf5ff" stroke="#e9d5ff"/>
+      <text x="190" y="24" font-size="12" font-weight="700" fill="#7c3aed">C¹ (Defects)</text>
+      <circle cx="210" cy="55" r="5" fill="#8b5cf6"/>
+      <circle cx="250" cy="70" r="5" fill="#8b5cf6"/>
+      <circle cx="230" cy="90" r="5" fill="#8b5cf6"/>
+      <path d="M 210 55 L 250 70 L 230 90 Z" stroke="#8b5cf6" stroke-width="1.5" fill="#8b5cf6" fill-opacity="0.1"/>
+    </g>
+
+    <!-- Arrow down to Q1 -->
+    <path class="arrow" d="M 230 225 L 230 255" marker-end="url(#arr)"/>
+    <text class="math" x="238" y="244" font-size="14" fill="#475569">π</text>
+
+    <!-- Quotient Class Q1 -->
+    <rect class="box" x="16" y="270" width="298" height="75" fill="#ede9fe" stroke="#c4b5fd"/>
+    <text x="32" y="295" font-size="13" font-weight="700" fill="#5b21b6">Q¹ (Obstruction Classes)</text>
+    <g transform="translate(45, 305)">
+      <circle cx="20" cy="18" r="14" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="2"/>
+      <text x="16" y="23" font-weight="700" fill="#047857">0</text>
+      <text x="65" y="22" font-size="16" fill="#64748b">⋯</text>
+      <circle cx="130" cy="18" r="14" fill="#ef4444" fill-opacity="0.2" stroke="#ef4444" stroke-width="2"/>
+      <text x="122" y="23" font-weight="700" fill="#b91c1c">≠0</text>
+    </g>
+    <rect class="box" x="16" y="365" width="298" height="36" fill="#f5f3ff" stroke="#ddd6fe"/>
+    <text x="32" y="388" font-size="12" font-weight="600" fill="#6d28d9">Obstruction class [ω(e)] is computable.</text>
+  </g>
+
+  <!-- Arrow 3 -> 4 -->
+  <path class="arrow" d="M 1185 320 L 1215 320" marker-end="url(#arr)"/>
+
+  <!-- Step 4: Repair Image Declared -->
+  <g transform="translate(1230, 110)">
+    <rect class="box" x="0" y="0" width="310" height="420" fill="#ffffff" stroke="#2563eb" stroke-opacity="0.3"/>
+    <circle cx="28" cy="28" r="14" fill="#2563eb"/>
+    <text class="step-num" x="24" y="33">4</text>
+    <text class="step-title" x="52" y="33" fill="#1d4ed8">REPAIR IMAGE DECLARED</text>
+    <text class="step-desc" x="16" y="65">Exact repair is possible iff [ω(e)] = 0 (i.e., ω = d₀α).</text>
+
+    <rect class="box" x="16" y="95" width="278" height="45" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="30" y="123" font-size="14" font-weight="700" fill="#1e40af">Repair Image = im(d₀) ⊆ C¹</text>
+
+    <g transform="translate(16, 170)">
+      <circle cx="14" cy="14" r="12" fill="#22c55e"/>
+      <path d="M 8 14 L 12 18 L 20 10" stroke="#ffffff" stroke-width="2" fill="none"/>
+      <text x="36" y="14" font-size="13" font-weight="700" fill="#15803d">If [ω(e)] = 0</text>
+      <text x="36" y="32" font-size="12" fill="#334155">There exists α ∈ C⁰ such that</text>
+      <text x="36" y="48" font-size="12" fill="#334155">ω(e) = d₀α. Apply repair α.</text>
+    </g>
+
+    <g transform="translate(16, 255)">
+      <circle cx="14" cy="14" r="12" fill="#ef4444"/>
+      <path d="M 9 9 L 19 19 M 19 9 L 9 19" stroke="#ffffff" stroke-width="2" fill="none"/>
+      <text x="36" y="14" font-size="13" font-weight="700" fill="#b91c1c">If [ω(e)] ≠ 0</text>
+      <text x="36" y="32" font-size="12" fill="#334155">No exact repair exists within</text>
+      <text x="36" y="48" font-size="12" fill="#334155">the declared boundary.</text>
+    </g>
+
+    <rect class="box" x="16" y="365" width="278" height="36" fill="#eff6ff" stroke="#bfdbfe"/>
+    <text x="25" y="388" font-size="12" font-weight="600" fill="#1d4ed8">Only class zero admits exact repair.</text>
+  </g>
+
+  <!-- Arrow 4 -> 5 -->
+  <path class="arrow" d="M 1555 320 L 1585 320" marker-end="url(#arr)"/>
+
+  <!-- Step 5: Terminal Route Declared -->
+  <g transform="translate(1600, 110)">
+    <rect class="box" x="0" y="0" width="260" height="420" fill="#ffffff" stroke="#ea580c" stroke-opacity="0.3"/>
+    <circle cx="28" cy="28" r="14" fill="#ea580c"/>
+    <text class="step-num" x="24" y="33">5</text>
+    <text class="step-title" x="52" y="33" fill="#c2410c">TERMINAL ROUTE</text>
+    <text class="step-desc" x="16" y="65">If [ω(e)] ≠ 0 or evidence missing,</text>
+    <text class="step-desc" x="16" y="82">execute a declared terminal.</text>
+
+    <!-- Terminal Routes Table -->
+    <rect class="box" x="12" y="105" width="236" height="295" fill="#fff7ed" stroke="#fed7aa"/>
+    <text x="25" y="128" font-size="12" font-weight="700" fill="#9a3412">Terminal Routes (examples)</text>
+
+    <g transform="translate(25, 140)" font-size="11" fill="#334155">
+      <g transform="translate(0, 15)"><circle cx="8" cy="0" r="7" fill="#22c55e"/><text x="22" y="4"><tspan font-weight="700">Preserve</tspan> – no boundary impact</text></g>
+      <g transform="translate(0, 42)"><circle cx="8" cy="0" r="7" fill="#0284c7"/><text x="22" y="4"><tspan font-weight="700">Repair</tspan> – apply α</text></g>
+      <g transform="translate(0, 69)"><circle cx="8" cy="0" r="7" fill="#f59e0b"/><text x="22" y="4"><tspan font-weight="700">Invalidate</tspan> – cannot repair safely</text></g>
+      <g transform="translate(0, 96)"><circle cx="8" cy="0" r="7" fill="#8b5cf6"/><text x="22" y="4"><tspan font-weight="700">Recompute</tspan> – full recompute</text></g>
+      <g transform="translate(0, 123)"><circle cx="8" cy="0" r="7" fill="#64748b"/><text x="22" y="4"><tspan font-weight="700">Serialize</tspan> – require ordering</text></g>
+      <g transform="translate(0, 150)"><circle cx="8" cy="0" r="7" fill="#d97706"/><text x="22" y="4"><tspan font-weight="700">Lift</tspan> – escalate to higher boundary</text></g>
+      <g transform="translate(0, 177)"><circle cx="8" cy="0" r="7" fill="#ef4444"/><text x="22" y="4"><tspan font-weight="700">Unsupported</tspan> – feature not covered</text></g>
+      <g transform="translate(0, 204)"><circle cx="8" cy="0" r="7" fill="#dc2626"/><text x="22" y="4"><tspan font-weight="700">ClosureFailure</tspan> – d₁ω ≠ 0</text></g>
+      <g transform="translate(0, 231)"><circle cx="8" cy="0" r="7" fill="#b91c1c"/><text x="22" y="4"><tspan font-weight="700">BudgetUnknown</tspan> – missing evidence</text></g>
+    </g>
+  </g>
+
+  <!-- RUNNING EXAMPLE (Bottom Section) -->
+  <g transform="translate(60, 560)">
+    <rect class="box" x="0" y="0" width="1800" height="390" fill="#ffffff" stroke="#cbd5e1"/>
+    
+    <!-- Title banner -->
+    <rect x="0" y="0" width="1800" height="42" rx="12" fill="#f1f5f9"/>
+    <text x="25" y="27" font-size="16" font-weight="800" fill="#1e293b">RUNNING EXAMPLE – Materialized View: <tspan class="code" fill="#0369a1">paid_revenue_by_customer(customer_id, paid_revenue = SUM(amount))</tspan></text>
+
+    <!-- Table 1: Initial State -->
+    <g transform="translate(25, 65)">
+      <text font-size="13" font-weight="700" fill="#334155">Initial State S (materialized view)</text>
+      <rect x="0" y="15" width="220" height="180" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+      <line x1="0" y1="45" x2="220" y2="45" stroke="#cbd5e1" stroke-width="1.5"/>
+      <line x1="110" y1="15" x2="110" y2="195" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="15" y="35" font-size="12" font-weight="700" fill="#475569">customer_id</text>
+      <text x="120" y="35" font-size="12" font-weight="700" fill="#475569">paid_revenue</text>
+      <text x="35" y="75" font-size="13" fill="#0f172a">C001</text><text x="145" y="75" font-size="13" fill="#0f172a">120.00</text>
+      <text x="35" y="115" font-size="13" fill="#0f172a">C002</text><text x="145" y="115" font-size="13" fill="#0f172a">80.00</text>
+      <text x="45" y="155" font-size="15" fill="#94a3b8">⋯</text><text x="155" y="155" font-size="15" fill="#94a3b8">⋯</text>
+    </g>
+
+    <!-- Table 2: CDC Write Event -->
+    <g transform="translate(280, 65)">
+      <text font-size="13" font-weight="700" fill="#334155">CDC Write Event e</text>
+      <rect x="0" y="15" width="270" height="180" rx="6" fill="#f8fafc" stroke="#e2e8f0"/>
+      <line x1="0" y1="45" x2="270" y2="45" stroke="#cbd5e1" stroke-width="1.5"/>
+      <line x1="90" y1="15" x2="90" y2="195" stroke="#cbd5e1" stroke-width="1"/>
+      <line x1="180" y1="15" x2="180" y2="195" stroke="#cbd5e1" stroke-width="1"/>
+      <text x="15" y="35" font-size="12" font-weight="700" fill="#475569">Column</text>
+      <text x="110" y="35" font-size="12" font-weight="700" fill="#475569">Before</text>
+      <text x="205" y="35" font-size="12" font-weight="700" fill="#475569">After</text>
+      <text x="10" y="70" font-size="12">order_id</text><text x="110" y="70" font-size="12">O1001</text><text x="200" y="70" font-size="12">O1001</text>
+      <text x="10" y="100" font-size="12">customer_id</text><text x="115" y="100" font-size="12">C001</text><text x="205" y="100" font-size="12">C001</text>
+      <text x="10" y="130" font-size="12" font-weight="700" fill="#0284c7">amount</text><text x="115" y="130" font-size="12" font-weight="700" fill="#0284c7">50.00</text><text x="205" y="130" font-size="12" font-weight="700" fill="#0284c7">70.00</text>
+      <text x="10" y="160" font-size="12">status</text><text x="115" y="160" font-size="12">paid</text><text x="205" y="160" font-size="12">paid</text>
+      <text x="10" y="185" font-size="11" fill="#64748b">order_date</text><text x="100" y="185" font-size="11" fill="#64748b">2025-05-18</text><text x="190" y="185" font-size="11" fill="#64748b">2025-05-18</text>
+      
+      <text x="0" y="215" font-size="11" fill="#475569">Changed: amount. Predicate status='paid': both True</text>
+    </g>
+
+    <!-- SCENARIOS A, B, C -->
+    <!-- Scenario A -->
+    <g transform="translate(590, 65)">
+      <rect x="0" y="0" width="370" height="295" rx="8" fill="#f0fdf4" stroke="#86efac"/>
+      <text x="15" y="25" font-size="14" font-weight="800" fill="#15803d">SCENARIO A – Certifiable Repair</text>
+      
+      <g transform="translate(15, 50)" font-size="12" fill="#1e293b">
+        <text y="0" font-weight="700">1) Delta Computable</text>
+        <text y="20" class="code" fill="#047857">ΔQ(e) = +20.00 for customer C001</text>
+        
+        <text y="55" font-weight="700">2) Obstruction Class</text>
+        <text y="75">All required evidence present → <tspan font-weight="700" fill="#16a34a">[ω(e)] = 0</tspan></text>
+        
+        <text y="110" font-weight="700">3) Repair Image</text>
+        <text y="130">ω(e) = d₀α (α = "add 20 to C001")</text>
+
+        <text y="165" font-weight="700">4) Terminal Route</text>
+        <text y="185" fill="#15803d" font-weight="700">→ Repair (α)</text>
+      </g>
+
+      <!-- Mini resulting view table -->
+      <g transform="translate(230, 90)">
+        <text font-size="11" font-weight="700" fill="#15803d">Resulting View</text>
+        <rect x="0" y="10" width="125" height="85" rx="4" fill="#ffffff" stroke="#86efac"/>
+        <line x1="0" y1="28" x2="125" y2="28" stroke="#bbf7d0"/>
+        <line x1="62" y1="10" x2="62" y2="95" stroke="#bbf7d0"/>
+        <text x="5" y="22" font-size="9" font-weight="700">customer_id</text>
+        <text x="68" y="22" font-size="9" font-weight="700">paid_revenue</text>
+        <text x="15" y="48" font-size="11">C001</text><text x="75" y="48" font-size="11" font-weight="700" fill="#15803d">140.00</text>
+        <text x="15" y="75" font-size="11">C002</text><text x="75" y="75" font-size="11">80.00</text>
+      </g>
+
+      <rect x="15" y="250" width="340" height="32" rx="6" fill="#dcfce7"/>
+      <text x="30" y="271" font-size="12" font-weight="700" fill="#15803d">Outcome: Repair applied precisely and safely.</text>
+    </g>
+
+    <!-- Scenario B -->
+    <g transform="translate(990, 65)">
+      <rect x="0" y="0" width="370" height="295" rx="8" fill="#fffbeb" stroke="#fde68a"/>
+      <text x="15" y="25" font-size="14" font-weight="800" fill="#b45309">SCENARIO B – Missing Evidence</text>
+      
+      <g transform="translate(15, 50)" font-size="12" fill="#1e293b">
+        <text y="0" fill="#78350f">Suppose CDC omitted column 'status'.</text>
+        
+        <text y="35" font-weight="700">1) Delta Computable?</text>
+        <text y="55" fill="#b45309">Cannot determine entry/exit of predicate.</text>
+        
+        <text y="90" font-weight="700">2) Obstruction Class</text>
+        <text y="110">Evidence incomplete → <tspan font-weight="700" fill="#b45309">[ω(e)] = ?</tspan></text>
+        <text y="128" fill="#64748b">(unknown / nonzero possible)</text>
+
+        <text y="165" font-weight="700">3) Terminal Route</text>
+        <text y="185" fill="#b45309" font-weight="700">→ Invalidate or Recompute</text>
+        <text y="203" fill="#64748b">(conservative safe choice)</text>
+      </g>
+
+      <!-- Action badge -->
+      <g transform="translate(235, 110)">
+        <polygon points="40,10 75,70 5,70" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+        <text x="36" y="55" font-size="24" font-weight="800" fill="#b45309">!</text>
+        <text x="0" y="95" font-size="11" font-weight="700" fill="#92400e">Invalidate view</text>
+        <text x="0" y="110" font-size="11" fill="#78350f">or recompute</text>
+      </g>
+
+      <rect x="15" y="250" width="340" height="32" rx="6" fill="#fef3c7"/>
+      <text x="30" y="271" font-size="12" font-weight="700" fill="#b45309">Outcome: No silent incorrect repair.</text>
+    </g>
+
+    <!-- Scenario C -->
+    <g transform="translate(1390, 65)">
+      <rect x="0" y="0" width="380" height="295" rx="8" fill="#fef2f2" stroke="#fecaca"/>
+      <text x="15" y="25" font-size="14" font-weight="800" fill="#b91c1c">SCENARIO C – Closure Failure</text>
+      
+      <g transform="translate(15, 50)" font-size="12" fill="#1e293b">
+        <text y="0" fill="#991b1b">A write causes <tspan font-weight="700">d₁ω ≠ 0</tspan></text>
+        <text y="18" fill="#64748b">(e.g. violates aggregation closure).</text>
+        
+        <text y="55" font-weight="700">1) Obstruction Class</text>
+        <text y="75" font-weight="700" fill="#dc2626">[ω(e)] ≠ 0 and d₁ω ≠ 0</text>
+
+        <text y="110" font-weight="700">2) Terminal Route</text>
+        <text y="130" fill="#dc2626" font-weight="700">→ ClosureFailure (or Escalate)</text>
+      </g>
+
+      <g transform="translate(255, 95)">
+        <circle cx="35" cy="35" r="28" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <path d="M 23 23 L 47 47 M 47 23 L 23 47" stroke="#dc2626" stroke-width="3"/>
+        <text x="-15" y="85" font-size="11" font-weight="700" fill="#991b1b">Closure failure</text>
+        <text x="-15" y="100" font-size="11" fill="#7f1d1d">must be escalated</text>
+      </g>
+
+      <rect x="15" y="250" width="350" height="32" rx="6" fill="#fee2e2"/>
+      <text x="25" y="271" font-size="12" font-weight="700" fill="#b91c1c">Outcome: Escalate or recompute at higher level.</text>
+    </g>
+  </g>
+
+  <!-- FOOTER INVARIANTS & LEGEND -->
+  <g transform="translate(60, 980)">
+    <!-- Invariant Box -->
+    <rect x="0" y="0" width="460" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <circle cx="30" cy="35" r="14" fill="#0284c7" fill-opacity="0.1" stroke="#0284c7" stroke-width="1.5"/>
+    <path d="M 24 35 L 28 39 L 36 30" stroke="#0284c7" stroke-width="2" fill="none"/>
+    <text x="56" y="28" font-size="12" font-weight="800" fill="#0f172a">BQNF INVARIANT</text>
+    <text x="56" y="46" font-size="12" fill="#475569">A system should not guess what a write breaks.</text>
+    <text x="56" y="60" font-size="12" fill="#475569">It should compute the obstruction and follow a declared terminal.</text>
+
+    <!-- Mathematics Box -->
+    <rect x="490" y="0" width="580" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="20" y="25" font-size="12" font-weight="800" fill="#0f172a">Key Mathematics</text>
+    <text x="20" y="50" font-size="14" class="math" fill="#1e293b">Exact Repair ⟺ [ω(e)] = 0 in Q¹ ⟺ ω(e) ∈ im(d₀) ⟺ ∃α ∈ C⁰ : ω(e) = d₀α</text>
+
+    <!-- Professional Bar -->
+    <rect x="1100" y="0" width="400" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="20" y="22" font-size="12" font-weight="800" fill="#0f172a">Professional Bar</text>
+    <g transform="translate(20, 38)" font-size="11" fill="#334155">
+      <text y="0">☑ No silent under-invalidation.</text>
+      <text y="14">☑ No repair claim without evidence.</text>
+      <text y="28">☑ No unsupported feature quietly accepted.</text>
+    </g>
+
+    <!-- Legend -->
+    <rect x="1530" y="0" width="330" height="70" rx="8" fill="#ffffff" stroke="#cbd5e1"/>
+    <text x="20" y="22" font-size="12" font-weight="800" fill="#0f172a">Legend</text>
+    <g transform="translate(20, 44)" font-size="11" fill="#334155">
+      <circle cx="6" cy="-4" r="5" fill="#22c55e"/>
+      <text x="18" y="0">Exact / Safe</text>
+      <circle cx="100" cy="-4" r="5" fill="#f59e0b"/>
+      <text x="112" y="0">Unknown / Risk</text>
+      <circle cx="210" cy="-4" r="5" fill="#ef4444"/>
+      <text x="222" y="0">Failure / Terminal</text>
+    </g>
+  </g>
+</svg>

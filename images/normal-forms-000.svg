@@ -1,0 +1,289 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="100%" height="100%" style="background:#ffffff; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <style>
+      .main-title { font-size: 54px; font-weight: 900; fill: #0f172a; letter-spacing: -1px; text-anchor: middle; }
+      .mnemonic-lead { font-size: 26px; font-weight: 700; fill: #0f172a; text-anchor: middle; }
+      .col-box { rx: 20px; stroke-width: 2.5px; fill: #ffffff; }
+      .circle-num { font-size: 26px; font-weight: 900; fill: #ffffff; text-anchor: middle; dominant-baseline: central; }
+      .col-header { font-size: 50px; font-weight: 900; text-anchor: middle; }
+      .pill-text { font-size: 22px; font-weight: 800; fill: #ffffff; text-anchor: middle; dominant-baseline: central; }
+      .desc-text { font-size: 19px; font-weight: 600; fill: #1e293b; text-anchor: middle; line-height: 1.4; }
+      .arrow-flow { stroke: #64748b; stroke-width: 4px; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+    <marker id="flow-arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Title & Subtitle -->
+  <g transform="translate(960, 65)">
+    <text class="main-title" y="0">Database Normal Forms — Simple Interview Mnemonic</text>
+    <text class="mnemonic-lead" y="48">
+      Think: <tspan fill="#0284c7">Atomic</tspan> → <tspan fill="#16a34a">Whole</tspan> → <tspan fill="#ea580c">Direct</tspan> → <tspan fill="#7c3aed">Key</tspan> → <tspan fill="#0d9488">Independent</tspan> → <tspan fill="#d97706">Joinable</tspan> → <tspan fill="#e11d48">Irreducible</tspan>
+    </text>
+  </g>
+
+  <!-- 7 COLUMNS -->
+
+  <!-- 1: 1NF (Atomic) -->
+  <g transform="translate(60, 180)">
+    <rect class="col-box" x="0" y="30" width="230" height="580" stroke="#0284c7"/>
+    <circle cx="115" cy="30" r="30" fill="#0284c7"/>
+    <text class="circle-num" x="115" y="30">1</text>
+    <text class="col-header" x="115" y="130" fill="#0284c7">1NF</text>
+    <rect x="25" y="160" width="180" height="50" rx="25" fill="#0284c7"/>
+    <text class="pill-text" x="115" y="185">Atomic</text>
+
+    <!-- Table Graphic -->
+    <g transform="translate(45, 260)">
+      <rect x="0" y="0" width="140" height="120" rx="6" fill="#f8fafc" stroke="#0f172a" stroke-width="2.5"/>
+      <line x1="0" y1="30" x2="140" y2="30" stroke="#0f172a" stroke-width="2"/>
+      <line x1="0" y1="60" x2="140" y2="60" stroke="#0f172a" stroke-width="2"/>
+      <line x1="0" y1="90" x2="140" y2="90" stroke="#0f172a" stroke-width="2"/>
+      <line x1="46" y1="0" x2="46" y2="120" stroke="#0f172a" stroke-width="2"/>
+      <line x1="93" y1="0" x2="93" y2="120" stroke="#0f172a" stroke-width="2"/>
+      <rect x="52" y="6" width="35" height="18" rx="3" fill="#0284c7"/>
+      <rect x="52" y="36" width="35" height="18" rx="3" fill="#0284c7"/>
+      <rect x="52" y="66" width="35" height="18" rx="3" fill="#0284c7"/>
+      <rect x="52" y="96" width="35" height="18" rx="3" fill="#0284c7"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="430" x2="210" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="115" y="475">Each field</text>
+    <text class="desc-text" x="115" y="505">holds one value.</text>
+    <text class="desc-text" x="115" y="540">No repeating</text>
+    <text class="desc-text" x="115" y="570">groups.</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <path class="arrow-flow" d="M 295 400 L 325 400" marker-end="url(#flow-arrow)"/>
+
+  <!-- 2: 2NF (Whole) -->
+  <g transform="translate(330, 180)">
+    <rect class="col-box" x="0" y="30" width="230" height="580" stroke="#16a34a"/>
+    <circle cx="115" cy="30" r="30" fill="#16a34a"/>
+    <text class="circle-num" x="115" y="30">2</text>
+    <text class="col-header" x="115" y="130" fill="#16a34a">2NF</text>
+    <rect x="25" y="160" width="180" height="50" rx="25" fill="#16a34a"/>
+    <text class="pill-text" x="115" y="185">Whole</text>
+
+    <!-- Puzzle Graphic -->
+    <g transform="translate(45, 260)">
+      <rect x="0" y="0" width="140" height="120" rx="10" fill="#f8fafc" stroke="#0f172a" stroke-width="2.5"/>
+      <path d="M 0 60 Q 30 40 30 60 Q 30 80 0 60" fill="none" stroke="#0f172a" stroke-width="2"/>
+      <path d="M 70 0 Q 50 30 70 30 Q 90 30 70 0" fill="none" stroke="#0f172a" stroke-width="2"/>
+      <rect x="68" y="58" width="70" height="60" rx="4" fill="#16a34a"/>
+      <path d="M 68 85 Q 90 70 68 70" fill="#16a34a" stroke="#0f172a" stroke-width="2"/>
+      <path d="M 100 58 Q 115 80 115 58" fill="#16a34a" stroke="#0f172a" stroke-width="2"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="430" x2="210" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="115" y="475">Every non-key</text>
+    <text class="desc-text" x="115" y="505">attribute</text>
+    <text class="desc-text" x="115" y="540">depends on</text>
+    <text class="desc-text" x="115" y="570">the whole key.</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <path class="arrow-flow" d="M 565 400 L 595 400" marker-end="url(#flow-arrow)"/>
+
+  <!-- 3: 3NF (Direct) -->
+  <g transform="translate(600, 180)">
+    <rect class="col-box" x="0" y="30" width="230" height="580" stroke="#ea580c"/>
+    <circle cx="115" cy="30" r="30" fill="#ea580c"/>
+    <text class="circle-num" x="115" y="30">3</text>
+    <text class="col-header" x="115" y="130" fill="#ea580c">3NF</text>
+    <rect x="25" y="160" width="180" height="50" rx="25" fill="#ea580c"/>
+    <text class="pill-text" x="115" y="185">Direct</text>
+
+    <!-- Key -> Document Graphic -->
+    <g transform="translate(35, 260)">
+      <!-- Key -->
+      <circle cx="35" cy="40" r="22" fill="#ea580c"/>
+      <circle cx="35" cy="40" r="10" fill="#ffffff"/>
+      <path d="M 35 62 L 35 110 M 35 85 L 50 85 M 35 102 L 47 102" stroke="#ea580c" stroke-width="6" stroke-linecap="round"/>
+      <!-- Arrow -->
+      <path d="M 65 75 L 85 75" stroke="#0f172a" stroke-width="3" marker-end="url(#flow-arrow)"/>
+      <!-- Document -->
+      <rect x="95" y="20" width="60" height="95" rx="8" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+      <line x1="107" y1="42" x2="143" y2="42" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="107" y1="62" x2="143" y2="62" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="107" y1="82" x2="143" y2="82" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="430" x2="210" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="115" y="465">Non-key</text>
+    <text class="desc-text" x="115" y="495">attributes depend</text>
+    <text class="desc-text" x="115" y="525">only on the key,</text>
+    <text class="desc-text" x="115" y="555">not on other</text>
+    <text class="desc-text" x="115" y="585">non-key attributes.</text>
+  </g>
+
+  <!-- Arrow 3 -> BCNF -->
+  <path class="arrow-flow" d="M 835 400 L 865 400" marker-end="url(#flow-arrow)"/>
+
+  <!-- 4: BCNF (Key) -->
+  <g transform="translate(870, 180)">
+    <rect class="col-box" x="0" y="30" width="230" height="580" stroke="#7c3aed"/>
+    <circle cx="115" cy="30" r="30" fill="#7c3aed"/>
+    <text class="circle-num" x="115" y="30">4</text>
+    <text class="col-header" x="115" y="130" fill="#7c3aed">BCNF</text>
+    <rect x="25" y="160" width="180" height="50" rx="25" fill="#7c3aed"/>
+    <text class="pill-text" x="115" y="185">Key</text>
+
+    <!-- Round Key Graphic -->
+    <g transform="translate(45, 260)">
+      <circle cx="70" cy="60" r="58" fill="#f8fafc" stroke="#0f172a" stroke-width="2.5"/>
+      <g transform="translate(40, 25)">
+        <circle cx="40" cy="25" r="18" fill="#a855f7" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="40" cy="25" r="8" fill="#ffffff"/>
+        <path d="M 30 38 L 10 70 M 18 55 L 26 61 M 12 64 L 20 70" stroke="#a855f7" stroke-width="5" stroke-linecap="round"/>
+        <path d="M 30 38 L 10 70" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+      </g>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="430" x2="210" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="115" y="475">Every</text>
+    <text class="desc-text" x="115" y="505">determinant</text>
+    <text class="desc-text" x="115" y="540">must be a</text>
+    <text class="desc-text" x="115" y="570">candidate key.</text>
+  </g>
+
+  <!-- Arrow BCNF -> 4NF -->
+  <path class="arrow-flow" d="M 1105 400 L 1135 400" marker-end="url(#flow-arrow)"/>
+
+  <!-- 5: 4NF (Independent) -->
+  <g transform="translate(1140, 180)">
+    <rect class="col-box" x="0" y="30" width="230" height="580" stroke="#0d9488"/>
+    <circle cx="115" cy="30" r="30" fill="#0d9488"/>
+    <text class="circle-num" x="115" y="30">5</text>
+    <text class="col-header" x="115" y="130" fill="#0d9488">4NF</text>
+    <rect x="20" y="160" width="190" height="50" rx="25" fill="#0d9488"/>
+    <text class="pill-text" x="115" y="185">Independent</text>
+
+    <!-- Independent Multi-valued Star Graphic -->
+    <g transform="translate(45, 260)">
+      <circle cx="70" cy="60" r="16" fill="#0d9488"/>
+      <!-- 4 outward arrows and nodes -->
+      <path d="M 70 36 L 70 14" stroke="#0f172a" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+      <circle cx="70" cy="6" r="6" fill="#99f6e4" stroke="#0d9488" stroke-width="2"/>
+      
+      <path d="M 70 84 L 70 106" stroke="#0f172a" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+      <circle cx="70" cy="114" r="6" fill="#99f6e4" stroke="#0d9488" stroke-width="2"/>
+
+      <path d="M 46 60 L 24 60" stroke="#0f172a" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+      <circle cx="16" cy="60" r="6" fill="#99f6e4" stroke="#0d9488" stroke-width="2"/>
+
+      <path d="M 94 60 L 116 60" stroke="#0f172a" stroke-width="2.5" marker-end="url(#flow-arrow)"/>
+      <circle cx="124" cy="60" r="6" fill="#99f6e4" stroke="#0d9488" stroke-width="2"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="430" x2="210" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="115" y="475">Separate</text>
+    <text class="desc-text" x="115" y="505">independent</text>
+    <text class="desc-text" x="115" y="540">multi-valued</text>
+    <text class="desc-text" x="115" y="570">facts.</text>
+  </g>
+
+  <!-- Arrow 4NF -> 5NF -->
+  <path class="arrow-flow" d="M 1375 400 L 1405 400" marker-end="url(#flow-arrow)"/>
+
+  <!-- 6: 5NF (Joinable) -->
+  <g transform="translate(1410, 180)">
+    <rect class="col-box" x="0" y="30" width="230" height="580" stroke="#d97706"/>
+    <circle cx="115" cy="30" r="30" fill="#d97706"/>
+    <text class="circle-num" x="115" y="30">6</text>
+    <text class="col-header" x="115" y="130" fill="#d97706">5NF</text>
+    <rect x="25" y="160" width="180" height="50" rx="25" fill="#d97706"/>
+    <text class="pill-text" x="115" y="185">Joinable</text>
+
+    <!-- Joinable 3-part Puzzle Triad -->
+    <g transform="translate(45, 260)">
+      <g transform="translate(45, 5)">
+        <rect x="0" y="0" width="40" height="35" rx="6" fill="#f59e0b" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="20" cy="35" r="7" fill="#f59e0b" stroke="#0f172a" stroke-width="2"/>
+      </g>
+      <g transform="translate(10, 70)">
+        <rect x="0" y="0" width="40" height="35" rx="6" fill="#06b6d4" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="40" cy="18" r="7" fill="#06b6d4" stroke="#0f172a" stroke-width="2"/>
+      </g>
+      <g transform="translate(85, 70)">
+        <rect x="0" y="0" width="40" height="35" rx="6" fill="#ec4899" stroke="#0f172a" stroke-width="2"/>
+        <circle cx="0" cy="18" r="7" fill="#ec4899" stroke="#0f172a" stroke-width="2"/>
+      </g>
+      <path d="M 65 42 L 30 70 M 65 42 L 105 70 M 50 88 L 85 88" stroke="#0f172a" stroke-dasharray="3 3" stroke-width="2"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="430" x2="210" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="115" y="465">Decompose so</text>
+    <text class="desc-text" x="115" y="495">information can</text>
+    <text class="desc-text" x="115" y="525">be reconstructed</text>
+    <text class="desc-text" x="115" y="555">only by valid</text>
+    <text class="desc-text" x="115" y="585">joins.</text>
+  </g>
+
+  <!-- Arrow 5NF -> 6NF -->
+  <path class="arrow-flow" d="M 1645 400 L 1675 400" marker-end="url(#flow-arrow)"/>
+
+  <!-- 7: 6NF (Irreducible) -->
+  <g transform="translate(1680, 180)">
+    <rect class="col-box" x="0" y="30" width="180" height="580" stroke="#e11d48"/>
+    <circle cx="90" cy="30" r="30" fill="#e11d48"/>
+    <text class="circle-num" x="90" y="30">7</text>
+    <text class="col-header" x="90" y="130" fill="#e11d48">6NF</text>
+    <rect x="15" y="160" width="150" height="50" rx="25" fill="#e11d48"/>
+    <text class="pill-text" x="90" y="185" font-size="19">Irreducible</text>
+
+    <!-- 3D Isometric Cube Graphic -->
+    <g transform="translate(30, 260)">
+      <!-- Top Face -->
+      <polygon points="60,10 110,35 60,60 10,35" fill="#f43f5e" stroke="#0f172a" stroke-width="2.5"/>
+      <!-- Left Face -->
+      <polygon points="10,35 60,60 60,120 10,95" fill="#e11d48" stroke="#0f172a" stroke-width="2.5"/>
+      <!-- Right Face -->
+      <polygon points="60,60 110,35 110,95 60,120" fill="#be123c" stroke="#0f172a" stroke-width="2.5"/>
+    </g>
+
+    <!-- Divider -->
+    <line x1="15" y1="430" x2="165" y2="430" stroke="#cbd5e1" stroke-width="2"/>
+    <text class="desc-text" x="90" y="475">Relations are</text>
+    <text class="desc-text" x="90" y="505">reduced to</text>
+    <text class="desc-text" x="90" y="540">irreducible</text>
+    <text class="desc-text" x="90" y="570">facts.</text>
+  </g>
+
+  <!-- MEMORY TRICK FOOTER BANNER -->
+  <g transform="translate(60, 830)">
+    <rect x="0" y="0" width="1800" height="200" rx="16" fill="#f0f9ff" stroke="#0284c7" stroke-width="2"/>
+    
+    <!-- Lightbulb Icon -->
+    <g transform="translate(60, 45)">
+      <circle cx="45" cy="40" r="32" fill="#fef08a" stroke="#0f172a" stroke-width="3"/>
+      <path d="M 28 65 L 62 65 M 32 75 L 58 75 M 38 85 L 52 85" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <path d="M 33 35 Q 45 45 45 58 M 57 35 Q 45 45 45 58" stroke="#0f172a" stroke-width="2.5" fill="none"/>
+      <!-- Radiating lines -->
+      <line x1="10" y1="20" x2="2" y2="12" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="45" y1="0" x2="45" y2="-10" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+      <line x1="80" y1="20" x2="88" y2="12" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
+    </g>
+
+    <!-- Slogan -->
+    <text x="180" y="70" font-size="36" font-weight="900" fill="#0f172a">
+      Memory trick: <tspan fill="#0284c7">A</tspan> <tspan fill="#16a34a">Whole</tspan> <tspan fill="#ea580c">Direct</tspan> <tspan fill="#7c3aed">Key</tspan> Keeps <tspan fill="#0d9488">Independent</tspan> <tspan fill="#d97706">Joins</tspan> <tspan fill="#e11d48">Irreducible</tspan>
+    </text>
+
+    <!-- Dashed separator -->
+    <line x1="180" y1="105" x2="1740" y2="105" stroke="#94a3b8" stroke-dasharray="8 6" stroke-width="2"/>
+
+    <!-- Key mapping breakdown -->
+    <text x="960" y="155" font-size="25" font-weight="800" text-anchor="middle">
+      <tspan fill="#0284c7">Atomic</tspan> = 1NF,   <tspan fill="#16a34a">Whole</tspan> = 2NF,   <tspan fill="#ea580c">Direct</tspan> = 3NF,   <tspan fill="#7c3aed">Key</tspan> = BCNF,   <tspan fill="#0d9488">Independent</tspan> = 4NF,   <tspan fill="#d97706">Joinable</tspan> = 5NF,   <tspan fill="#e11d48">Irreducible</tspan> = 6NF
+    </text>
+  </g>
+</svg>

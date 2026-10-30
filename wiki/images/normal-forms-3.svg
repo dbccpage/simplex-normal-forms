@@ -1,0 +1,269 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1280" width="100%" height="100%">
+  <defs>
+    <style>
+      .card-title { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 800; fill: #0f172a; text-anchor: middle; letter-spacing: 0.05em; }
+      .obj-header { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; fill: #0f172a; text-anchor: middle; }
+      .obj-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 15px; font-weight: 500; fill: #334155; text-anchor: middle; line-height: 1.35; }
+      .sym-header { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 20px; font-weight: 700; fill: #0f172a; }
+      .sym-desc { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 16px; font-weight: 500; fill: #475569; }
+      .gloss-term { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 19px; font-weight: 700; fill: #0f172a; }
+      .gloss-def { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 17px; font-weight: 500; fill: #1e293b; }
+      .node-text { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; font-size: 24px; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+      .arrow { stroke: #0f172a; stroke-width: 2.5; fill: none; }
+      .card-border { rx: 12; ry: 12; fill: #ffffff; stroke: #e2e8f0; stroke-width: 1.5; }
+    </style>
+
+    <marker id="arrow-black" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#0f172a"/>
+    </marker>
+    <g id="check-icon">
+      <path d="M4 15 L11 22 L26 5" fill="none" stroke="#16a34a" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="cross-icon">
+      <path d="M6 6 L22 22 M22 6 L6 22" fill="none" stroke="#dc2626" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <g id="key-icon">
+      <circle cx="10" cy="10" r="7" fill="#0284c7" stroke="#0369a1" stroke-width="1.5"/>
+      <circle cx="10" cy="10" r="3" fill="#ffffff"/>
+      <path d="M10 17 L10 32 M10 24 L16 24 M10 28 L15 28" stroke="#0284c7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1920" height="1280" fill="#f8fafc" />
+
+  <!-- ============================================================ -->
+  <!-- TOP CARD: LETTERS (OBJECTS)                                  -->
+  <!-- ============================================================ -->
+  <g id="card-letters" transform="translate(24, 20)">
+    <rect class="card-border" width="1872" height="350" />
+    <text class="card-title" x="936" y="44">LETTERS (OBJECTS)</text>
+
+    <!-- Item 1: R -->
+    <g transform="translate(100, 110)">
+      <circle cx="0" cy="0" r="34" fill="#fee2e2" stroke="#ef4444" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#991b1b">R</text>
+      <text class="obj-header" x="0" y="72">R</text>
+      <text class="obj-desc" x="0" y="102">Relation</text>
+      <text class="obj-desc" x="0" y="124">(the whole table)</text>
+    </g>
+
+    <!-- Item 2: K -->
+    <g transform="translate(305, 110)">
+      <circle cx="0" cy="0" r="34" fill="#eff6ff" stroke="#3b82f6" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#1e40af">K</text>
+      <text class="obj-header" x="0" y="72">K</text>
+      <text class="obj-desc" x="0" y="102">Key (superkey):</text>
+      <text class="obj-desc" x="0" y="124">identifies every</text>
+      <text class="obj-desc" x="0" y="146">tuple</text>
+    </g>
+
+    <!-- Item 3: X -->
+    <g transform="translate(510, 110)">
+      <circle cx="0" cy="0" r="34" fill="#faf5ff" stroke="#a855f7" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#6b21a8">X</text>
+      <text class="obj-header" x="0" y="72">X</text>
+      <text class="obj-desc" x="0" y="102">Determinant</text>
+      <text class="obj-desc" x="0" y="124">attribute set</text>
+      <text class="obj-desc" x="0" y="146">(left side of FD)</text>
+    </g>
+
+    <!-- Item 4: B -->
+    <g transform="translate(715, 110)">
+      <circle cx="0" cy="0" r="34" fill="#faf5ff" stroke="#a855f7" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#6b21a8">B</text>
+      <text class="obj-header" x="0" y="72">B</text>
+      <text class="obj-desc" x="0" y="102">Non-key attribute</text>
+      <text class="obj-desc" x="0" y="124">determined via</text>
+      <text class="obj-desc" x="0" y="146">transitive step</text>
+    </g>
+
+    <!-- Item 5: A -->
+    <g transform="translate(920, 110)">
+      <rect x="-32" y="-32" width="64" height="64" rx="6" fill="#f0fdf4" stroke="#22c55e" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#15803d">A</text>
+      <text class="obj-header" x="0" y="72">A</text>
+      <text class="obj-desc" x="0" y="102">Attribute</text>
+      <text class="obj-desc" x="0" y="124">(right side of FD)</text>
+    </g>
+
+    <!-- Item 6: B (dashed) -->
+    <g transform="translate(1135, 110)">
+      <rect x="-34" y="-32" width="68" height="64" rx="8" fill="#faf5ff" stroke="#9333ea" stroke-width="2" stroke-dasharray="6 4"/>
+      <text class="node-text" x="0" y="0" fill="#6b21a8">B</text>
+      <text class="obj-header" x="0" y="72">B (dashed)</text>
+      <text class="obj-desc" x="0" y="102">Invalid dependency</text>
+      <text class="obj-desc" x="0" y="124">target (partial or</text>
+      <text class="obj-desc" x="0" y="146">transitive)</text>
+    </g>
+
+    <!-- Item 7: K_attr -->
+    <g transform="translate(1350, 110)">
+      <rect x="-40" y="-32" width="80" height="64" rx="8" fill="#fffbeb" stroke="#d97706" stroke-width="2" stroke-dasharray="6 4"/>
+      <text class="node-text" x="0" y="0" fill="#92400e">K<tspan baseline-shift="sub" font-size="14">attr</tspan></text>
+      <text class="obj-header" x="0" y="72">K<tspan baseline-shift="sub" font-size="14">attr</tspan></text>
+      <text class="obj-desc" x="0" y="102">Attribute that is</text>
+      <text class="obj-desc" x="0" y="124">part of a key (prime</text>
+      <text class="obj-desc" x="0" y="146">attribute)</text>
+    </g>
+
+    <!-- Item 8: R[X] -->
+    <g transform="translate(1565, 110)">
+      <polygon points="0,-36 50,0 0,36 -50,0" fill="#fff7ed" stroke="#ea580c" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" font-size="20" fill="#9a3412">R[X]</text>
+      <text class="obj-header" x="0" y="72">R[X]</text>
+      <text class="obj-desc" x="0" y="102">Projection of R</text>
+      <text class="obj-desc" x="0" y="124">on attribute set X</text>
+      <text class="obj-desc" x="0" y="146">(subrelation)</text>
+    </g>
+
+    <!-- Item 9: R_i -->
+    <g transform="translate(1765, 110)">
+      <polygon points="0,-36 48,0 0,36 -48,0" fill="#eff6ff" stroke="#2563eb" stroke-width="2.5"/>
+      <text class="node-text" x="0" y="0" fill="#1e40af">R<tspan baseline-shift="sub" font-size="16">i</tspan></text>
+      <text class="obj-header" x="0" y="72">R<tspan baseline-shift="sub" font-size="14">i</tspan></text>
+      <text class="obj-desc" x="0" y="102">Component relation</text>
+      <text class="obj-desc" x="0" y="124">in a decomposition</text>
+      <text class="obj-desc" x="0" y="146">(projection)</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM LEFT CARD: SYMBOLS (MORPHISMS / STRUCTURE)             -->
+  <!-- ============================================================ -->
+  <g id="card-symbols" transform="translate(24, 394)">
+    <rect class="card-border" width="1000" height="866" />
+    <text class="card-title" x="500" y="44">SYMBOLS (MORPHISMS / STRUCTURE)</text>
+
+    <!-- Row 1: Solid arrow -->
+    <g transform="translate(50, 110)">
+      <path class="arrow" d="M 0 0 L 100 0" marker-end="url(#arrow-black)"/>
+      <text class="sym-header" x="140" y="-10">Solid arrow</text>
+      <text class="sym-desc" x="140" y="16">Projection / functional dependency (a mapping that</text>
+      <text class="sym-desc" x="140" y="40">forgets some attributes or determines others)</text>
+    </g>
+
+    <!-- Row 2: Dashed arrow -->
+    <g transform="translate(50, 220)">
+      <path class="arrow" d="M 0 0 L 100 0" stroke-dasharray="8 6" marker-end="url(#arrow-black)"/>
+      <text class="sym-header" x="140" y="-10">Dashed arrow</text>
+      <text class="sym-desc" x="140" y="16">Not allowed / forbidden dependency or mapping</text>
+    </g>
+
+    <!-- Row 3: Dotted arrow -->
+    <g transform="translate(50, 315)">
+      <path class="arrow" d="M 0 0 L 100 0" stroke-dasharray="3 4" marker-end="url(#arrow-black)"/>
+      <text class="sym-header" x="140" y="-10">Dotted arrow</text>
+      <text class="sym-desc" x="140" y="16">Transitive dependency (occurs through an intermediate)</text>
+    </g>
+
+    <!-- Row 4: Filled dot with lines -->
+    <g transform="translate(50, 420)">
+      <line x1="0" y1="0" x2="100" y2="0" stroke="#0f172a" stroke-width="2.5"/>
+      <circle cx="50" cy="0" r="7" fill="#0f172a"/>
+      <text class="sym-header" x="140" y="-10">Filled dot with lines (•)</text>
+      <text class="sym-desc" x="140" y="16">Join / limit / pullback</text>
+      <text class="sym-desc" x="140" y="40">(recombining projections without creating spurious tuples)</text>
+    </g>
+
+    <!-- Row 5: Diamond -->
+    <g transform="translate(50, 535)">
+      <polygon points="50,-24 80,0 50,24 20,0" fill="#ffffff" stroke="#0f172a" stroke-width="2.5"/>
+      <text class="sym-header" x="140" y="-10">Diamond</text>
+      <text class="sym-desc" x="140" y="16">Projection / component obtained from R</text>
+      <text class="sym-desc" x="140" y="40">(a projected subrelation)</text>
+    </g>
+
+    <!-- Row 6: Dashed box -->
+    <g transform="translate(50, 650)">
+      <rect x="18" y="-25" width="64" height="50" rx="8" fill="#ffffff" stroke="#0f172a" stroke-width="2" stroke-dasharray="6 4"/>
+      <text class="sym-header" x="140" y="-10">Dashed box</text>
+      <text class="sym-desc" x="140" y="16">Decomposition result (after normalization)</text>
+      <text class="sym-desc" x="140" y="40">or an invalid intermediate that should be eliminated</text>
+    </g>
+
+    <!-- Row 7: Key icon -->
+    <g transform="translate(50, 770)">
+      <use href="#key-icon" x="35" y="-18" transform="scale(1.2)"/>
+      <text class="sym-header" x="140" y="-10">Key icon</text>
+      <text class="sym-desc" x="140" y="16">Superkey (a projection that uniquely identifies tuples;</text>
+      <text class="sym-desc" x="140" y="40">regular epi in categorical terms)</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM RIGHT TOP CARD: MARKS / OTHER SYMBOLS                 -->
+  <!-- ============================================================ -->
+  <g id="card-marks" transform="translate(1048, 394)">
+    <rect class="card-border" width="848" height="420" />
+    <text class="card-title" x="424" y="44">MARKS / OTHER SYMBOLS</text>
+
+    <!-- Row 1: Green check -->
+    <g transform="translate(45, 90)">
+      <use href="#check-icon" x="10" y="0" transform="scale(1.3)"/>
+      <text class="sym-header" x="80" y="15">Green check (✓)</text>
+      <text class="sym-desc" x="80" y="42">Allowed / satisfies the normal form rule</text>
+    </g>
+
+    <!-- Row 2: Red cross -->
+    <g transform="translate(45, 175)">
+      <use href="#cross-icon" x="10" y="0" transform="scale(1.3)"/>
+      <text class="sym-header" x="80" y="15">Red cross (✗)</text>
+      <text class="sym-desc" x="80" y="42">Forbidden / violates the normal form rule</text>
+    </g>
+
+    <!-- Row 3: Vertical dots -->
+    <g transform="translate(45, 260)">
+      <text class="node-text" x="25" y="24" font-size="34" fill="#0f172a">⋮</text>
+      <text class="sym-header" x="80" y="12">Vertical dots</text>
+      <text class="sym-desc" x="80" y="38">Continuation / more attributes or components</text>
+    </g>
+
+    <!-- Row 4: Horizontal dots -->
+    <g transform="translate(45, 345)">
+      <text class="node-text" x="25" y="15" font-size="34" fill="#0f172a">• • •</text>
+      <text class="sym-header" x="80" y="10">Horizontal dots</text>
+      <text class="sym-desc" x="80" y="36">More attributes or more components</text>
+    </g>
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- BOTTOM RIGHT BOTTOM CARD: TERSE GLOSSARY                     -->
+  <!-- ============================================================ -->
+  <g id="card-glossary" transform="translate(1048, 834)">
+    <rect width="848" height="426" rx="12" ry="12" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text class="card-title" x="424" y="44">TERSE GLOSSARY</text>
+
+    <g transform="translate(40, 88)">
+      <!-- FD -->
+      <g transform="translate(0, 0)">
+        <text class="gloss-term" x="0" y="0">FD</text>
+        <text class="gloss-def" x="70" y="0">Functional Dependency: <tspan font-weight="600">X → Y</tspan> means X determines Y.</text>
+      </g>
+
+      <!-- MVD -->
+      <g transform="translate(0, 58)">
+        <text class="gloss-term" x="0" y="0">MVD</text>
+        <text class="gloss-def" x="70" y="0">Multivalued Dependency: <tspan font-weight="600">X ↠ Y</tspan> means Y varies independently over X.</text>
+      </g>
+
+      <!-- JD -->
+      <g transform="translate(0, 116)">
+        <text class="gloss-term" x="0" y="0">JD</text>
+        <text class="gloss-def" x="70" y="0">Join Dependency: R is the join (limit) of its projections.</text>
+      </g>
+
+      <!-- Prime attribute -->
+      <g transform="translate(0, 180)">
+        <text class="gloss-term" x="0" y="0">Prime attribute</text>
+        <text class="gloss-def" x="180" y="0">Attribute that is part of some candidate key.</text>
+      </g>
+
+      <!-- Non-prime attribute -->
+      <g transform="translate(0, 244)">
+        <text class="gloss-term" x="0" y="0">Non-prime attribute</text>
+        <text class="gloss-def" x="220" y="0">Attribute not in any candidate key.</text>
+      </g>
+    </g>
+  </g>
+</svg>
