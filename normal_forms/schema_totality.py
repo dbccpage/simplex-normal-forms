@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from contextlib import closing
 import sqlite3
 from typing import Any
+
+_DECLARATIONS_CACHE: dict[str, list[tuple[str, list[tuple[Any, ...]]]]] = {}
 
 
 class SchemaContractError(ValueError):
@@ -80,9 +83,13 @@ def install_totality_fences(conn: sqlite3.Connection, schema_sql: str) -> None:
     Existing null facts cause a typed defect. Both INSERT and UPDATE are fenced.
     Optional columns remain optional. Run after additive column migrations.
     """
-    with sqlite3.connect(":memory:") as expected:
-        expected.executescript(schema_sql)
-        declarations = [(name, columns(expected, name)) for name in tables(expected)]
+    declarations = _DECLARATIONS_CACHE.get(schema_sql)
+    if declarations is None:
+        with closing(sqlite3.connect(":memory:")) as expected:
+            expected.executescript(schema_sql)
+            declarations = [(name, columns(expected, name)) for name in tables(expected)]
+        _DECLARATIONS_CACHE[schema_sql] = declarations
+
     conn.execute("SAVEPOINT nf_install_totality")
     try:
         for table, info in declarations:

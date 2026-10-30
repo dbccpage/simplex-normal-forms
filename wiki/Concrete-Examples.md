@@ -27,7 +27,7 @@ python -m normal_forms.observer_freshness_example
 # 5. Run Cross-Domain Reconciliation & Loss Ledger Example
 python -m normal_forms.reconciliation_example
 
-# 6. Run Demo 05: Multi-Hop Composition (3NF/BCNF -> BQNF Stream -> CODA_MUR Transport)
+# 6. Run Demo 05: 4-Hop Composition (3NF/BCNF -> Extrema & Quantile Cochains -> CODA_MUR -> Observer Poset)
 python -m normal_forms.multi_hop_composition
 ```
 
@@ -100,13 +100,24 @@ GROUP BY customer_id;
 
 ---
 
-## 5. Epistemic Claim Hygiene Quadrant
+## 5. Example D: 4-Hop Composition (`3NF`/`BCNF` $\to$ Extrema & $\epsilon$-Quantile Cochains $\to$ `CODA_MUR` $\to$ Observer Poset)
+
+`normal_forms/multi_hop_composition.py` chains four normal-form domains end to end:
+
+1. **Hop 1 (`3NF` / `BCNF` Relational Synthesis):** Decomposes `Sales(sale_id, customer_id, customer_zip, region, amount, audit_nonce)` via Bernstein `3NF` synthesis and Tsou-Fischer `BCNF` tree decomposition, verifying lossless join reconstruction.
+2. **Hop 2b (Non-Invertible `MIN`/`MAX` Priority-Queue Cochains + $\epsilon$-`BQNF` Quantile Sketches):** Streams `INSERT`/`UPDATE`/`DELETE` CDC operations through `NormalFormsEvaluator` (`normal_forms/bqnf_extrema.py`, `normal_forms/bqnf_repair.py`, `normal_forms/sales_cochain.py`), repairing destructive `MIN`/`MAX` deletions in $O(\log K)$ via `region_extremum_cochain` (or routing to bounded partition `Recompute` when disabled) and repairing regional medians within tolerance $\epsilon$ via `region_quantile_cochain` (or routing to `Recompute` when $|\hat{m}_r - m_r^{\text{true}}| > \epsilon$).
+3. **Hop 3 (`CODA_MUR` Representation Transport [`nf.coda.mur.transport`](nf.coda.mur.transport)):** Projects across multi-hop target schemas with cryptographically sealed `LossLedger` bookings (`coda_mur.unmapped_field_drop`), authenticated target verifiers, and commutation square checks $D_{\text{target}}(F(r)) = \bar{F}(D_{\text{source}}(r))$.
+4. **Hop 4 (Observer-Relative Freshness Poset [`nf.epistemic.freshness`](nf.epistemic.freshness)):** Evaluates the transported packet across a stringency-ordered observer poset chain $O_1 \le O_2 \le \dots \le O_m$, checking upward admissibility monotonicity ($O_i \text{ fresh} \implies O_{i+1} \text{ fresh}$) and fail-closed scope/SLA enforcement.
+
+---
+
+## 6. Epistemic Claim Hygiene Quadrant
 
 1. **What it supports:**
-   - Demonstrates in this toy setting that the Python evaluators reproduce the declared terminal routes for `0NF`–`5NF`, `BQNF`, `CODA_MUR` reconciliation, and observer freshness.
+   - Demonstrates in this toy setting that the Python evaluators reproduce the declared terminal routes for `0NF`–`5NF`, `BQNF` additive and cochain-backed extrema/quantile repair, `CODA_MUR` representation transport, and observer-relative freshness posets.
 2. **What it does not support:**
    - Does not substitute for production database concurrency control or physical distributed consensus.
 3. **The narrowest defensible claim:**
-   - Each worked example executes deterministically against the fixtures in `contracts/data/` with `AuthorityEffect: None`.
+   - Each worked example and multi-hop property test executes deterministically against the fixtures and randomized schemas in `tests/` with `AuthorityEffect: None`.
 4. **The next test needed:**
-   - Randomized fuzzing of mixed `INSERT`/`UPDATE`/`DELETE` sequences against priority-queue and quantile-sketch cochains.
+   - Concurrent multi-writer transaction interleaving over persistent disk-backed SQLite WAL journals.
