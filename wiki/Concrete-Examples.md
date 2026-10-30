@@ -26,6 +26,9 @@ python -m normal_forms.observer_freshness_example
 
 # 5. Run Cross-Domain Reconciliation & Loss Ledger Example
 python -m normal_forms.reconciliation_example
+
+# 6. Run Demo 05: Multi-Hop Composition (3NF/BCNF -> BQNF Stream -> CODA_MUR Transport)
+python -m normal_forms.multi_hop_composition
 ```
 
 ---
