@@ -28,8 +28,14 @@ if TYPE_CHECKING:
         ObserverPosetStageReceipt,
         SalesCochainCdcSpec,
         build_sealed_loss_ledger,
+        decode_composite_group_key,
+        encode_composite_group_key,
         run_extended_multi_hop_pipeline,
         run_multi_hop_pipeline,
+    )
+    from normal_forms.sales_cochain import (
+        rebalance_quantile_cochain,
+        verify_quantile_cochain_invariants,
     )
     from normal_forms._golden_nfs import NormalFormContract
     from normal_forms._golden_nfs import NormalFormContractMetaSchema
@@ -67,8 +73,12 @@ __all__ = [
     "ObserverPosetStageReceipt",
     "SalesCochainCdcSpec",
     "build_sealed_loss_ledger",
+    "decode_composite_group_key",
+    "encode_composite_group_key",
+    "rebalance_quantile_cochain",
     "run_extended_multi_hop_pipeline",
     "run_multi_hop_pipeline",
+    "verify_quantile_cochain_invariants",
 ]
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -96,11 +106,18 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "ObserverPosetStageReceipt": ("normal_forms.multi_hop_composition", "ObserverPosetStageReceipt"),
     "SalesCochainCdcSpec": ("normal_forms.multi_hop_composition", "SalesCochainCdcSpec"),
     "build_sealed_loss_ledger": ("normal_forms.multi_hop_composition", "build_sealed_loss_ledger"),
+    "decode_composite_group_key": ("normal_forms.multi_hop_composition", "decode_composite_group_key"),
+    "encode_composite_group_key": ("normal_forms.multi_hop_composition", "encode_composite_group_key"),
+    "rebalance_quantile_cochain": ("normal_forms.sales_cochain", "rebalance_quantile_cochain"),
     "run_extended_multi_hop_pipeline": (
         "normal_forms.multi_hop_composition",
         "run_extended_multi_hop_pipeline",
     ),
     "run_multi_hop_pipeline": ("normal_forms.multi_hop_composition", "run_multi_hop_pipeline"),
+    "verify_quantile_cochain_invariants": (
+        "normal_forms.sales_cochain",
+        "verify_quantile_cochain_invariants",
+    ),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),
     "NormalFormFoundationalDefinitions": ("normal_forms._golden_nfs", "NormalFormFoundationalDefinitions"),

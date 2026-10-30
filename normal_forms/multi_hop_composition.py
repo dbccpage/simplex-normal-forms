@@ -1,6 +1,7 @@
 """Multi-hop composition pipeline chaining relational synthesis (3NF/BCNF),
 streaming BQNF delta repair (additive SPJA, non-invertible MIN/MAX priority-queue
-cochains, and epsilon-BQNF quantile sketches), CODA_MUR representation transport,
+cochains, and dynamic-bucket epsilon-BQNF quantile sketches over single or
+multi-column composite grouping keys), CODA_MUR representation transport,
 and observer-relative freshness posets (nf.epistemic.freshness) across
 randomized schema mutations.
 
@@ -13,7 +14,7 @@ Pipeline topologies:
   2. 4-Stage Extended Cochain + Poset Pipeline (`run_extended_multi_hop_pipeline`):
      Stage 1 (At Rest: 3NF / BCNF synthesis & lossless join reconstruction)
          --> Stage 2b (In Motion: Non-invertible MIN/MAX priority-queue cochains
-                       + epsilon-BQNF quantile sketches in SQLite)
+                       + dynamic-bucket epsilon-BQNF quantile sketches in SQLite)
          --> Stage 3 (In Representation: CODA_MUR functorial transport & sealed loss ledgers)
          --> Stage 4 (In Observation: nf.epistemic.freshness observer poset chain)
 
@@ -23,7 +24,7 @@ certified_implies_authorized: false.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import hashlib
 import json
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
@@ -59,6 +60,29 @@ from normal_forms.observer_freshness_example import (
 from normal_forms.reconciliation_example import verify_loss_ledger_integrity
 
 CODA_MUR_TRIGGER_ID = "coda_mur.unmapped_field_drop"
+
+
+def encode_composite_group_key(
+    row: Mapping[str, Any],
+    group_attributes: Sequence[str],
+) -> str:
+    """Canonical string encoding for single-column or multi-column composite grouping keys."""
+    if not group_attributes:
+        raise ValueError("group_attributes must be non-empty")
+    return "|".join(str(row[attr]) for attr in group_attributes)
+
+
+def decode_composite_group_key(
+    encoded_key: str,
+    group_attributes: Sequence[str],
+) -> Dict[str, str]:
+    """Inverse decoding from a canonical composite group key into attribute-value pairs."""
+    parts = encoded_key.split("|")
+    if len(parts) != len(group_attributes):
+        raise ValueError(
+            f"Composite key '{encoded_key}' has {len(parts)} parts, expected {len(group_attributes)} for {group_attributes}"
+        )
+    return dict(zip(group_attributes, parts))
 
 
 def build_sealed_loss_ledger(
@@ -220,6 +244,12 @@ class CochainExtremaQuantileStageReceipt:
     quantile_repairs: int
     quantile_fallback_recomputations: int
     certified: bool
+    group_attributes: Tuple[str, ...] = ("region",)
+    dynamic_buckets_enabled: bool = False
+    bucket_splits_executed: int = 0
+    bucket_merges_executed: int = 0
+    quantile_invariants_verified: bool = True
+    active_bucket_counts: Dict[str, int] = field(default_factory=dict)
     authorized: bool = False
     authority_effect: str = "None"
     reason: Optional[str] = None
@@ -234,6 +264,7 @@ class CodaMurHopSpec:
     target_heading: Tuple[str, ...]
     group_attribute: str
     value_attribute: str
+    group_attributes: Optional[Tuple[str, ...]] = None
     predicate_attribute: Optional[str] = None
     predicate_expected_value: Optional[str] = None
     loss_ledger: Optional[Dict[str, Any]] = None
@@ -479,14 +510,18 @@ def evaluate_stage1_relational_synthesis(
 def _compute_boundary_group_totals(
     rows: Sequence[Mapping[str, Any]],
     boundary: BqnfBoundary,
+    force_string_key: bool = False,
 ) -> Dict[Any, float]:
-    group_attr = boundary.groups[0] if boundary.groups else "customer_id"
+    groups = boundary.groups if boundary.groups else ("customer_id",)
     val_attr = "amount" if "amount" in boundary.attributes else (boundary.attributes[-1] if boundary.attributes else "amount")
     pred_str = boundary.predicates[0] if boundary.predicates else ""
     totals: Dict[Any, float] = {}
     for row in rows:
         if BqnfValidator._parse_predicate(pred_str, dict(row)):
-            g_val = row.get(group_attr)
+            if len(groups) > 1 or force_string_key:
+                g_val: Any = encode_composite_group_key(row, groups)
+            else:
+                g_val = row.get(groups[0])
             totals[g_val] = totals.get(g_val, 0.0) + float(row.get(val_attr, 0.0))
     return {k: v for k, v in totals.items() if abs(v) > 1e-12}
 
@@ -620,16 +655,93 @@ def evaluate_stage2b_cochain_extrema_quantiles(
     track_quantiles: bool = True,
     quantile_tolerance: float = 15.0,
     pk_attribute: str = "sale_id",
+    group_attributes: Sequence[str] = ("region",),
+    dynamic_buckets: bool = False,
+    bucket_width: float = 10.0,
+    split_threshold: int = 8,
+    merge_threshold: int = 3,
+    min_bucket_width: float = 0.625,
 ) -> Tuple[CochainExtremaQuantileStageReceipt, List[Dict[str, Any]]]:
     """Hop 2b: Evaluates non-invertible MIN/MAX priority-queue cochains and epsilon-BQNF quantile
-    sketches in SQLite over a 3NF/BCNF-normalized relation, checking commutation with projection-join.
+    sketches (with optional dynamic dyadic bucket splitting/merging and multi-column composite
+    grouping keys) in SQLite over a 3NF/BCNF-normalized relation.
     """
     current_rows = [dict(r) for r in initial_rows]
+    grp_tuple = tuple(group_attributes)
+
+    # Validate group_attributes and dynamic bucket configuration (fail closed)
+    if not grp_tuple or any(g not in schema.attributes for g in grp_tuple):
+        return (
+            CochainExtremaQuantileStageReceipt(
+                terminal_route="Refuse",
+                canonical_terminal="Refuse",
+                step_terminals=("Refuse",),
+                events_processed=0,
+                verified_consistent=False,
+                commutes_with_3nf_rejoin=False,
+                quantile_accuracy_verified=False,
+                cached_state={},
+                cached_extrema={},
+                cached_medians={},
+                true_medians={},
+                extrema_repairs=0,
+                fallback_recomputations=0,
+                quantile_repairs=0,
+                quantile_fallback_recomputations=0,
+                certified=False,
+                group_attributes=grp_tuple,
+                dynamic_buckets_enabled=dynamic_buckets,
+                quantile_invariants_verified=False,
+                reason=f"Invalid or undeclared group_attributes: {grp_tuple}",
+            ),
+            current_rows,
+        )
+
+    if dynamic_buckets and (
+        bucket_width <= 0.0
+        or min_bucket_width <= 0.0
+        or min_bucket_width > bucket_width + 1e-12
+        or split_threshold < 2
+        or merge_threshold < 0
+        or merge_threshold >= split_threshold
+    ):
+        return (
+            CochainExtremaQuantileStageReceipt(
+                terminal_route="Refuse",
+                canonical_terminal="Refuse",
+                step_terminals=("Refuse",),
+                events_processed=0,
+                verified_consistent=False,
+                commutes_with_3nf_rejoin=False,
+                quantile_accuracy_verified=False,
+                cached_state={},
+                cached_extrema={},
+                cached_medians={},
+                true_medians={},
+                extrema_repairs=0,
+                fallback_recomputations=0,
+                quantile_repairs=0,
+                quantile_fallback_recomputations=0,
+                certified=False,
+                group_attributes=grp_tuple,
+                dynamic_buckets_enabled=dynamic_buckets,
+                quantile_invariants_verified=False,
+                reason=(
+                    f"Invalid dynamic bucket configuration: bucket_width={bucket_width}, "
+                    f"min_bucket_width={min_bucket_width}, split_threshold={split_threshold}, "
+                    f"merge_threshold={merge_threshold}"
+                ),
+            ),
+            current_rows,
+        )
+
+    total_splits = 0
+    total_merges = 0
 
     with NormalFormsEvaluator(in_memory=True) as evaluator:
         # 1. Seed baseline rows from the 3NF-rejoined initial instance
         for row in current_rows:
-            if pk_attribute not in row or "region" not in row or "amount" not in row:
+            if pk_attribute not in row or "amount" not in row or any(g not in row for g in grp_tuple):
                 return (
                     CochainExtremaQuantileStageReceipt(
                         terminal_route="Refuse",
@@ -648,17 +760,28 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                         quantile_repairs=0,
                         quantile_fallback_recomputations=0,
                         certified=False,
-                        reason=f"Initial row missing required cochain attributes ({pk_attribute}, region, amount)",
+                        group_attributes=grp_tuple,
+                        dynamic_buckets_enabled=dynamic_buckets,
+                        quantile_invariants_verified=False,
+                        reason=f"Initial row missing required cochain attributes ({pk_attribute}, {grp_tuple}, amount)",
                     ),
                     current_rows,
                 )
-            evaluator.apply_sales_cdc(
+            g_key = encode_composite_group_key(row, grp_tuple)
+            reb_info = evaluator.apply_sales_cdc(
                 op_type="INSERT",
                 sale_id=int(row[pk_attribute]),
-                new_region=str(row["region"]),
+                new_region=g_key,
                 new_amount=float(row["amount"]),
                 maintain_cochain=use_cochain,
+                dynamic_buckets=dynamic_buckets,
+                bucket_width=bucket_width,
+                split_threshold=split_threshold,
+                merge_threshold=merge_threshold,
+                min_bucket_width=min_bucket_width,
             )
+            total_splits += int(reb_info.get("splits_executed", 0))
+            total_merges += int(reb_info.get("merges_executed", 0))
 
         # Materialize the initial cache state before streaming CDC deltas
         init_audit = evaluator.process_bqnf_incremental_repair(
@@ -678,9 +801,20 @@ def evaluate_stage2b_cochain_extrema_quantiles(
 
         # 2. Stream CDC events and repair incrementally per event
         for ev in cochain_cdc_events:
+            old_g_key: Optional[str] = ev.old_region
+            new_g_key: Optional[str] = ev.new_region
+            if ev.old_row is not None and all(g in ev.old_row for g in grp_tuple):
+                old_g_key = encode_composite_group_key(ev.old_row, grp_tuple)
+            elif old_g_key is None and ev.op_type in ("DELETE", "UPDATE"):
+                matched = next((r for r in current_rows if int(r[pk_attribute]) == ev.sale_id), None)
+                if matched is not None and all(g in matched for g in grp_tuple):
+                    old_g_key = encode_composite_group_key(matched, grp_tuple)
+            if ev.new_row is not None and all(g in ev.new_row for g in grp_tuple):
+                new_g_key = encode_composite_group_key(ev.new_row, grp_tuple)
+
             # Update relational instance rows and verify declared FDs
             if ev.op_type == "INSERT":
-                if ev.new_region is None or ev.new_amount is None or ev.new_row is None:
+                if new_g_key is None or ev.new_amount is None or ev.new_row is None:
                     return (
                         CochainExtremaQuantileStageReceipt(
                             terminal_route="Invalidate",
@@ -690,23 +824,27 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                             verified_consistent=False,
                             commutes_with_3nf_rejoin=False,
                             quantile_accuracy_verified=False,
-                            cached_state=dict(last_audit["cached_state"]),
-                            cached_extrema=dict(last_audit["cached_extrema"]),
-                            cached_medians=dict(last_audit["cached_medians"]),
+                            cached_state={},
+                            cached_extrema={},
+                            cached_medians={},
                             true_medians={},
                             extrema_repairs=total_extrema_repairs,
                             fallback_recomputations=total_fallback_recomputations,
                             quantile_repairs=total_quantile_repairs,
                             quantile_fallback_recomputations=total_quantile_fallback_recomputations,
                             certified=False,
-                            reason="INSERT CDC event missing new_region, new_amount, or new_row payload",
+                            group_attributes=grp_tuple,
+                            dynamic_buckets_enabled=dynamic_buckets,
+                            bucket_splits_executed=total_splits,
+                            bucket_merges_executed=total_merges,
+                            reason="INSERT CDC event missing new group key, new_amount, or new_row payload",
                         ),
                         current_rows,
                     )
                 candidate_rows = [r for r in current_rows if int(r[pk_attribute]) != ev.sale_id]
                 candidate_rows.append(dict(ev.new_row))
             elif ev.op_type == "DELETE":
-                if ev.old_region is None or ev.old_amount is None:
+                if old_g_key is None or ev.old_amount is None:
                     return (
                         CochainExtremaQuantileStageReceipt(
                             terminal_route="Invalidate",
@@ -716,25 +854,29 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                             verified_consistent=False,
                             commutes_with_3nf_rejoin=False,
                             quantile_accuracy_verified=False,
-                            cached_state=dict(last_audit["cached_state"]),
-                            cached_extrema=dict(last_audit["cached_extrema"]),
-                            cached_medians=dict(last_audit["cached_medians"]),
+                            cached_state={},
+                            cached_extrema={},
+                            cached_medians={},
                             true_medians={},
                             extrema_repairs=total_extrema_repairs,
                             fallback_recomputations=total_fallback_recomputations,
                             quantile_repairs=total_quantile_repairs,
                             quantile_fallback_recomputations=total_quantile_fallback_recomputations,
                             certified=False,
-                            reason="DELETE CDC event missing old_region or old_amount",
+                            group_attributes=grp_tuple,
+                            dynamic_buckets_enabled=dynamic_buckets,
+                            bucket_splits_executed=total_splits,
+                            bucket_merges_executed=total_merges,
+                            reason="DELETE CDC event missing old group key or old_amount",
                         ),
                         current_rows,
                     )
                 candidate_rows = [r for r in current_rows if int(r[pk_attribute]) != ev.sale_id]
             elif ev.op_type == "UPDATE":
                 if (
-                    ev.old_region is None
+                    old_g_key is None
                     or ev.old_amount is None
-                    or ev.new_region is None
+                    or new_g_key is None
                     or ev.new_amount is None
                     or ev.new_row is None
                 ):
@@ -747,16 +889,20 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                             verified_consistent=False,
                             commutes_with_3nf_rejoin=False,
                             quantile_accuracy_verified=False,
-                            cached_state=dict(last_audit["cached_state"]),
-                            cached_extrema=dict(last_audit["cached_extrema"]),
-                            cached_medians=dict(last_audit["cached_medians"]),
+                            cached_state={},
+                            cached_extrema={},
+                            cached_medians={},
                             true_medians={},
                             extrema_repairs=total_extrema_repairs,
                             fallback_recomputations=total_fallback_recomputations,
                             quantile_repairs=total_quantile_repairs,
                             quantile_fallback_recomputations=total_quantile_fallback_recomputations,
                             certified=False,
-                            reason="UPDATE CDC event missing old/new region, amount, or new_row payload",
+                            group_attributes=grp_tuple,
+                            dynamic_buckets_enabled=dynamic_buckets,
+                            bucket_splits_executed=total_splits,
+                            bucket_merges_executed=total_merges,
+                            reason="UPDATE CDC event missing old/new group key, amount, or new_row payload",
                         ),
                         current_rows,
                     )
@@ -776,15 +922,19 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                         verified_consistent=False,
                         commutes_with_3nf_rejoin=False,
                         quantile_accuracy_verified=False,
-                        cached_state=dict(last_audit["cached_state"]),
-                        cached_extrema=dict(last_audit["cached_extrema"]),
-                        cached_medians=dict(last_audit["cached_medians"]),
+                        cached_state={},
+                        cached_extrema={},
+                        cached_medians={},
                         true_medians={},
                         extrema_repairs=total_extrema_repairs,
                         fallback_recomputations=total_fallback_recomputations,
                         quantile_repairs=total_quantile_repairs,
                         quantile_fallback_recomputations=total_quantile_fallback_recomputations,
                         certified=False,
+                        group_attributes=grp_tuple,
+                        dynamic_buckets_enabled=dynamic_buckets,
+                        bucket_splits_executed=total_splits,
+                        bucket_merges_executed=total_merges,
                         reason=f"Unsupported CDC op_type '{ev.op_type}'",
                     ),
                     current_rows,
@@ -802,30 +952,42 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                         verified_consistent=False,
                         commutes_with_3nf_rejoin=False,
                         quantile_accuracy_verified=False,
-                        cached_state=dict(last_audit["cached_state"]),
-                        cached_extrema=dict(last_audit["cached_extrema"]),
-                        cached_medians=dict(last_audit["cached_medians"]),
+                        cached_state={},
+                        cached_extrema={},
+                        cached_medians={},
                         true_medians={},
                         extrema_repairs=total_extrema_repairs,
                         fallback_recomputations=total_fallback_recomputations,
                         quantile_repairs=total_quantile_repairs,
                         quantile_fallback_recomputations=total_quantile_fallback_recomputations,
                         certified=False,
+                        group_attributes=grp_tuple,
+                        dynamic_buckets_enabled=dynamic_buckets,
+                        bucket_splits_executed=total_splits,
+                        bucket_merges_executed=total_merges,
                         reason=f"CDC mutation violated declared FD in 3NF relvars: {fd_err}",
                     ),
                     current_rows,
                 )
 
             current_rows = candidate_rows
-            evaluator.apply_sales_cdc(
+            reb_step = evaluator.apply_sales_cdc(
                 op_type=ev.op_type,
                 sale_id=ev.sale_id,
-                old_region=ev.old_region,
-                new_region=ev.new_region,
+                old_region=old_g_key,
+                new_region=new_g_key,
                 old_amount=ev.old_amount,
                 new_amount=ev.new_amount,
                 maintain_cochain=use_cochain,
+                dynamic_buckets=dynamic_buckets,
+                bucket_width=bucket_width,
+                split_threshold=split_threshold,
+                merge_threshold=merge_threshold,
+                min_bucket_width=min_bucket_width,
             )
+            total_splits += int(reb_step.get("splits_executed", 0))
+            total_merges += int(reb_step.get("merges_executed", 0))
+
             step_audit = evaluator.process_bqnf_incremental_repair(
                 use_cochain=use_cochain,
                 track_quantiles=track_quantiles,
@@ -840,11 +1002,11 @@ def evaluate_stage2b_cochain_extrema_quantiles(
             all_steps_consistent = all_steps_consistent and bool(step_audit["verified_consistent"])
             last_audit = step_audit
 
-        # 3. Verify commutation with 3NF projection-join and true median error bounds
+        # 3. Verify commutation with 3NF projection-join, quantile sketch invariants, and true median error bounds
         rejoin_ok, rejoined_rows, _ = project_and_rejoin(current_rows, schema.attributes, nf3_components)
         by_region: Dict[str, List[float]] = {}
         for r in rejoined_rows:
-            reg = str(r["region"])
+            reg = encode_composite_group_key(r, grp_tuple)
             by_region.setdefault(reg, []).append(float(r["amount"]))
 
         cached_state = {
@@ -894,7 +1056,20 @@ def evaluate_stage2b_cochain_extrema_quantiles(
                 if c_med is None or abs(float(c_med) - float(t_med)) > quantile_tolerance + 1e-9:
                     quantile_ok = False
 
-    if not commutes_3nf or not quantile_ok:
+        if use_cochain:
+            q_inv_ok, _ = evaluator.verify_quantile_cochain_invariants()
+        else:
+            q_inv_ok = True
+
+        active_bucket_counts: Dict[str, int] = {}
+        cur = evaluator.conn.cursor()
+        cur.execute(
+            "SELECT region, COUNT(*) AS b_cnt FROM region_quantile_cochain WHERE count > 0 GROUP BY region;"
+        )
+        for b_row in cur.fetchall():
+            active_bucket_counts[str(b_row["region"])] = int(b_row["b_cnt"])
+
+    if not commutes_3nf or not quantile_ok or not q_inv_ok:
         final_route = "ClosureFailure"
         canon_route = "ClosureFailure"
         is_cert = False
@@ -929,6 +1104,12 @@ def evaluate_stage2b_cochain_extrema_quantiles(
             quantile_repairs=total_quantile_repairs,
             quantile_fallback_recomputations=total_quantile_fallback_recomputations,
             certified=is_cert,
+            group_attributes=grp_tuple,
+            dynamic_buckets_enabled=dynamic_buckets,
+            bucket_splits_executed=total_splits,
+            bucket_merges_executed=total_merges,
+            quantile_invariants_verified=q_inv_ok,
+            active_bucket_counts=active_bucket_counts,
             authorized=False,
             reason=None if is_cert else "Cochain extrema/quantile state diverged from 3NF projection-join",
         ),
@@ -963,6 +1144,10 @@ def evaluate_stage3_coda_mur_chain(
 
     curr_init_rows = [dict(r) for r in initial_rows]
     curr_upd_rows = [dict(r) for r in updated_rows]
+
+    use_str_keys = any(isinstance(k, str) and "|" in k for k in bqnf_initial_totals) or any(
+        isinstance(k, str) and "|" in k for k in bqnf_updated_totals
+    )
 
     for hop in hops:
         # 1. Target verifier gate (never bypass target verification)
@@ -1069,7 +1254,8 @@ def evaluate_stage3_coda_mur_chain(
             triggers.append(trigger)
 
         # 4. Commutation square check: D_target(F(r)) == F_bar(D_source(r))
-        required_for_commutation = {hop.group_attribute, hop.value_attribute}
+        hop_group_attrs = hop.group_attributes if hop.group_attributes is not None else (hop.group_attribute,)
+        required_for_commutation = set(hop_group_attrs) | {hop.value_attribute}
         if hop.predicate_attribute:
             required_for_commutation.add(hop.predicate_attribute)
         if not required_for_commutation.issubset(tgt_set):
@@ -1099,10 +1285,12 @@ def evaluate_stage3_coda_mur_chain(
             relations=("TargetRep",),
             attributes=tuple(sorted(required_for_commutation)),
             predicates=pred_list,
-            groups=(hop.group_attribute,),
+            groups=tuple(hop_group_attrs),
             aggregates=(f"SUM({hop.value_attribute})",),
         )
-        f_init_totals = _compute_boundary_group_totals(curr_init_rows, hop_boundary)
+        f_init_totals = _compute_boundary_group_totals(
+            curr_init_rows, hop_boundary, force_string_key=use_str_keys
+        )
         # Apply delta (bqnf_updated - bqnf_initial) on target representation
         all_g = set(f_init_totals.keys()) | set(bqnf_initial_totals.keys()) | set(bqnf_updated_totals.keys())
         d_target_after_f: Dict[Any, float] = {}
@@ -1113,7 +1301,9 @@ def evaluate_stage3_coda_mur_chain(
                 d_target_after_f[g] = val
 
         # Path B: Apply D_source first, then transport via F_bar_j (F_bar_j o D_source)
-        f_bar_after_d_source = _compute_boundary_group_totals(curr_upd_rows, hop_boundary)
+        f_bar_after_d_source = _compute_boundary_group_totals(
+            curr_upd_rows, hop_boundary, force_string_key=use_str_keys
+        )
 
         check_groups = set(d_target_after_f.keys()) | set(f_bar_after_d_source.keys())
         commutes_at_hop = all(
@@ -1394,10 +1584,16 @@ def run_extended_multi_hop_pipeline(
     track_quantiles: bool = True,
     quantile_tolerance: float = 15.0,
     pk_attribute: str = "sale_id",
+    group_attributes: Sequence[str] = ("region",),
+    dynamic_buckets: bool = False,
+    bucket_width: float = 10.0,
+    split_threshold: int = 8,
+    merge_threshold: int = 3,
+    min_bucket_width: float = 0.625,
 ) -> ExtendedMultiHopCompositionReceipt:
     """Executes the 4-stage composition pipeline:
     Stage 1 (3NF/BCNF synthesis)
-      -> Stage 2b (Non-invertible MIN/MAX priority-queue cochain & epsilon-BQNF quantile sketch)
+      -> Stage 2b (Non-invertible MIN/MAX priority-queue cochain & dynamic-bucket epsilon-BQNF quantile sketch)
       -> Stage 3 (CODA_MUR representation transport)
       -> Stage 4 (nf.epistemic.freshness observer-relative freshness poset chain).
     """
@@ -1414,12 +1610,6 @@ def run_extended_multi_hop_pipeline(
             certified=False,
         )
 
-    # Compute initial regional totals for Stage 3 descent check
-    init_totals: Dict[Any, float] = {}
-    for r in rejoined_initial:
-        reg = r.get("region")
-        init_totals[reg] = init_totals.get(reg, 0.0) + float(r.get("amount", 0.0))
-
     # Stage 2b: Cochain extrema (MIN/MAX) + epsilon-BQNF quantile sketches in SQLite
     s2b_receipt, rejoined_updated = evaluate_stage2b_cochain_extrema_quantiles(
         schema=schema,
@@ -1430,6 +1620,12 @@ def run_extended_multi_hop_pipeline(
         track_quantiles=track_quantiles,
         quantile_tolerance=quantile_tolerance,
         pk_attribute=pk_attribute,
+        group_attributes=group_attributes,
+        dynamic_buckets=dynamic_buckets,
+        bucket_width=bucket_width,
+        split_threshold=split_threshold,
+        merge_threshold=merge_threshold,
+        min_bucket_width=min_bucket_width,
     )
     if not s2b_receipt.certified:
         return ExtendedMultiHopCompositionReceipt(
@@ -1441,6 +1637,12 @@ def run_extended_multi_hop_pipeline(
             end_to_end_commutes=False,
             certified=False,
         )
+
+    # Compute initial regional/composite group totals for Stage 3 descent check
+    init_totals: Dict[Any, float] = {}
+    for r in rejoined_initial:
+        g_key = encode_composite_group_key(r, group_attributes)
+        init_totals[g_key] = init_totals.get(g_key, 0.0) + float(r.get("amount", 0.0))
 
     upd_totals = {
         reg: float(state["total"])
@@ -1510,14 +1712,14 @@ def main() -> None:
     """Demo 05: Multi-hop composition across 3NF/BCNF, BQNF cochains, CODA_MUR, and Observer Posets."""
     from dataclasses import asdict
 
-    heading = ("sale_id", "customer_id", "customer_zip", "region", "amount", "audit_nonce")
+    heading = ("sale_id", "customer_id", "customer_zip", "region", "channel", "amount", "audit_nonce")
     schema = RelationalSchema(
         attributes=frozenset(heading),
         dependencies=frozenset(
             [
                 FunctionalDependency(
                     frozenset(["sale_id"]),
-                    frozenset(["customer_id", "amount", "audit_nonce"]),
+                    frozenset(["customer_id", "channel", "amount", "audit_nonce"]),
                 ),
                 FunctionalDependency.from_str("customer_id", "customer_zip"),
                 FunctionalDependency.from_str("customer_zip", "region"),
@@ -1531,7 +1733,8 @@ def main() -> None:
             "customer_id": 10,
             "customer_zip": "10001",
             "region": "US-EAST",
-            "amount": 12.0,
+            "channel": "B2B",
+            "amount": 11.2,
             "audit_nonce": "n_1",
         },
         {
@@ -1539,7 +1742,8 @@ def main() -> None:
             "customer_id": 10,
             "customer_zip": "10001",
             "region": "US-EAST",
-            "amount": 17.0,
+            "channel": "B2B",
+            "amount": 11.8,
             "audit_nonce": "n_2",
         },
         {
@@ -1547,6 +1751,7 @@ def main() -> None:
             "customer_id": 10,
             "customer_zip": "10001",
             "region": "US-EAST",
+            "channel": "B2B",
             "amount": 95.0,
             "audit_nonce": "n_3",
         },
@@ -1556,33 +1761,34 @@ def main() -> None:
         SalesCochainCdcSpec(
             op_type="DELETE",
             sale_id=3,
-            old_region="US-EAST",
             old_amount=95.0,
+            old_row=dict(initial_rows[2]),
         ),
-        # Insertion of a new sale (55.0) updating extrema and quantile sketch
+        # Insertion of a new sale (12.4) in composite group (US-EAST, B2B) triggering dynamic dyadic bucket split
         SalesCochainCdcSpec(
             op_type="INSERT",
             sale_id=4,
-            new_region="US-EAST",
-            new_amount=55.0,
+            new_amount=12.4,
             new_row={
                 "sale_id": 4,
                 "customer_id": 10,
                 "customer_zip": "10001",
                 "region": "US-EAST",
-                "amount": 55.0,
+                "channel": "B2B",
+                "amount": 12.4,
                 "audit_nonce": "n_4",
             },
         ),
     ]
-    h1_target = ("sale_id", "customer_id", "customer_zip", "region", "amount")
-    h2_target = ("sale_id", "region", "amount")
+    h1_target = ("sale_id", "customer_id", "customer_zip", "region", "channel", "amount")
+    h2_target = ("sale_id", "region", "channel", "amount")
     hops = [
         CodaMurHopSpec(
             hop_id="hop1_strip_audit_nonce",
             source_heading=heading,
             target_heading=h1_target,
             group_attribute="region",
+            group_attributes=("region", "channel"),
             value_attribute="amount",
             loss_ledger=build_sealed_loss_ledger(["audit_nonce"], initial_rows, "sale_id"),
             target_verifier={"verifier_id": "verifier_hop1", "executed": True, "outcome": "verified"},
@@ -1592,6 +1798,7 @@ def main() -> None:
             source_heading=h1_target,
             target_heading=h2_target,
             group_attribute="region",
+            group_attributes=("region", "channel"),
             value_attribute="amount",
             loss_ledger=build_sealed_loss_ledger(["customer_id", "customer_zip"], initial_rows, "sale_id"),
             target_verifier={"verifier_id": "verifier_hop2", "executed": True, "outcome": "verified"},
@@ -1603,7 +1810,7 @@ def main() -> None:
         ObserverSpec("obs_batch_60s", max_lag_seconds=60, authorized_scopes=("regional_sales", "exec_summary", "archive")),
     ]
     freshness_packet = {
-        "value_ref": "region_sales_cache:US-EAST",
+        "value_ref": "region_sales_cache:US-EAST|B2B",
         "packet_scope": "regional_sales",
         "replica_lag_seconds": 3,
     }
@@ -1618,9 +1825,15 @@ def main() -> None:
         track_quantiles=True,
         quantile_tolerance=15.0,
         pk_attribute="sale_id",
+        group_attributes=("region", "channel"),
+        dynamic_buckets=True,
+        bucket_width=10.0,
+        split_threshold=2,
+        merge_threshold=1,
+        min_bucket_width=1.25,
     )
     print("================================================================================")
-    print("DEMO 05: Extended 4-Hop Composition (3NF/BCNF -> Extrema/Quantile Cochain -> CODA_MUR -> Poset)")
+    print("DEMO 05: Extended 4-Hop Composition (Composite Keys + Dynamic Quantile Buckets)")
     print("================================================================================")
     print(json.dumps(asdict(ext_receipt), indent=2))
 

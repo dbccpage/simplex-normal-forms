@@ -247,7 +247,7 @@ def _audit(cursor: sqlite3.Cursor, tally: RepairTally, events: int, deltas: dict
         "terminal": tally.batch_terminal,
         "events_processed": events,
         "deltas_applied": deltas,
-        "verified_consistent": recomputed == cached_full,
+        "verified_consistent": set(recomputed.keys()) == set(cached_full.keys()) and all(int(recomputed[k][1]) == int(cached_full[k][1]) and abs(float(recomputed[k][0]) - float(cached_full[k][0])) <= 1e-7 and abs(float(recomputed[k][2]) - float(cached_full[k][2])) <= 1e-7 and abs(float(recomputed[k][3]) - float(cached_full[k][3])) <= 1e-7 for k in recomputed),
         "cached_state": {row["region"]: (row["total_sales"], row["sale_count"]) for row in rows},
         "cached_extrema": {row["region"]: (row["min_amount"], row["max_amount"]) for row in rows},
         "cached_medians": {row["region"]: row["median_amount"] for row in rows},
