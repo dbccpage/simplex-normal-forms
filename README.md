@@ -46,6 +46,7 @@ simplex-normal-forms/
 │   ├── evaluator.py            # SQLite session evaluator (0NF->1NF, 5NF witness, BQNF CDC repair, S_N)
 │   ├── domain/                 # Pure-Python relational (2NF/3NF/BCNF/4NF), BQNF, ASRF, Hodge & ZFNF verifiers
 │   └── *_example.py            # Executable demos for BQNF, Observer Freshness, Certificates & Reconciliation
+├── docs/research_forum/        # 6-document Research Forum & Commercial Strategy Dossier (SimpleCache vs IVM)
 ├── images/                     # 112 per-contract visual SVG diagrams + architectural overview SVGs
 ├── wiki/                       # Complete mirror of the GitHub Wiki (one markdown page per normal form)
 └── tests/                      # Automated verification suite (catalog totality, evaluator, claim hygiene)
@@ -87,6 +88,7 @@ Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wik
 - **[Observer-Relative Ontology](https://github.com/dbccpage/simplex-normal-forms/wiki/Observer-Relative-Ontology)** ([local](wiki/Observer-Relative-Ontology.md))
 - **[Concrete Worked Examples](https://github.com/dbccpage/simplex-normal-forms/wiki/Concrete-Examples)** ([local](wiki/Concrete-Examples.md))
 - **[Relational Geometrodynamics & Physics Substrate](https://github.com/dbccpage/simplex-normal-forms/wiki/Relational-Geometrodynamics-and-Physics-Substrate)** ([local](wiki/Relational-Geometrodynamics-and-Physics-Substrate.md))
+- **[SimpleCache Research Forum & Commercial Strategy Dossier](docs/research_forum/README.md)** ([Executive Whitepaper](docs/research_forum/01_executive_whitepaper.md) • [Competitive Analysis](docs/research_forum/02_competitive_analysis.md) • [5 Commercial Upgrades](docs/research_forum/03_commercial_upgrades.md) • [Cross-Program Foundations](docs/research_forum/04_cross_program_foundations.md) • [Forum Proceedings](docs/research_forum/05_research_forum_proceedings.md))
 
 ---
 
@@ -221,7 +223,7 @@ Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wik
 3. **The narrowest defensible claim:**
    - Every contract in `contracts/` satisfies the syntactic structure checked by `python -m normal_forms.catalog`, maps its local outcomes to canonical terminals, and is documented with an explicit Four-Pillar Quadrilateral and visual SVG diagram.
 4. **The next test needed:**
-   - Property-based composition tests chaining relational decomposition (`3NF`/`BCNF`), streaming `BQNF` delta repair, and `CODA_MUR` cross-representation transport under randomized schema mutations.
+   - Multi-node distributed benchmark replaying production PostgreSQL/MySQL logical replication WAL streams across concurrent observer poset tenants and diamond `CODA_MUR` representation DAGs.
 
 ---
 
