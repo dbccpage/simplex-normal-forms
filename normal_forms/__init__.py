@@ -9,6 +9,22 @@ import importlib
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from normal_forms.ai import (
+        AsrfEvaluationReceipt,
+        CodaMurContextEnvelope,
+        McpGateReceipt,
+        ObnfCollisionReceipt,
+        RagMcpPipelineReceipt,
+        WdnfEvaluationReceipt,
+        WitnessedDifference,
+        build_context_loss_ledger,
+        coda_mur_projection,
+        evaluate_asrf_guard,
+        evaluate_obnf_projection_collision,
+        evaluate_wdnf_candidate_cut,
+        observer_freshness_gate,
+        run_rag_mcp_pipeline,
+    )
     from normal_forms.catalog import check_catalog
     from normal_forms.catalog import check_document
     from normal_forms.catalog import validate_contract
@@ -87,6 +103,20 @@ __all__ = [
     "run_extended_multi_hop_pipeline",
     "run_multi_hop_pipeline",
     "verify_quantile_cochain_invariants",
+    "AsrfEvaluationReceipt",
+    "CodaMurContextEnvelope",
+    "McpGateReceipt",
+    "ObnfCollisionReceipt",
+    "RagMcpPipelineReceipt",
+    "WdnfEvaluationReceipt",
+    "WitnessedDifference",
+    "build_context_loss_ledger",
+    "coda_mur_projection",
+    "evaluate_asrf_guard",
+    "evaluate_obnf_projection_collision",
+    "evaluate_wdnf_candidate_cut",
+    "observer_freshness_gate",
+    "run_rag_mcp_pipeline",
 ]
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -133,6 +163,20 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "normal_forms.sales_cochain",
         "verify_quantile_cochain_invariants",
     ),
+    "AsrfEvaluationReceipt": ("normal_forms.ai", "AsrfEvaluationReceipt"),
+    "CodaMurContextEnvelope": ("normal_forms.ai", "CodaMurContextEnvelope"),
+    "McpGateReceipt": ("normal_forms.ai", "McpGateReceipt"),
+    "ObnfCollisionReceipt": ("normal_forms.ai", "ObnfCollisionReceipt"),
+    "RagMcpPipelineReceipt": ("normal_forms.ai", "RagMcpPipelineReceipt"),
+    "WdnfEvaluationReceipt": ("normal_forms.ai", "WdnfEvaluationReceipt"),
+    "WitnessedDifference": ("normal_forms.ai", "WitnessedDifference"),
+    "build_context_loss_ledger": ("normal_forms.ai", "build_context_loss_ledger"),
+    "coda_mur_projection": ("normal_forms.ai", "coda_mur_projection"),
+    "evaluate_asrf_guard": ("normal_forms.ai", "evaluate_asrf_guard"),
+    "evaluate_obnf_projection_collision": ("normal_forms.ai", "evaluate_obnf_projection_collision"),
+    "evaluate_wdnf_candidate_cut": ("normal_forms.ai", "evaluate_wdnf_candidate_cut"),
+    "observer_freshness_gate": ("normal_forms.ai", "observer_freshness_gate"),
+    "run_rag_mcp_pipeline": ("normal_forms.ai", "run_rag_mcp_pipeline"),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),
     "NormalFormFoundationalDefinitions": ("normal_forms._golden_nfs", "NormalFormFoundationalDefinitions"),
