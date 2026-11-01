@@ -35,6 +35,15 @@ if TYPE_CHECKING:
     from normal_forms.contract_paths import STANDARD_PATH
     from normal_forms.db_context import NormalFormsDbContext
     from normal_forms.evaluator import NormalFormsEvaluator
+    from normal_forms.ir_kernel import (
+        ConstructiveWitnessPair,
+        KernelEvaluationReceipt,
+        NFKernelSpec,
+        evaluate_fds_via_kernel,
+        evaluate_nf_kernel,
+        lower_coda_mur_to_kernel_spec,
+        lower_fd_to_kernel_spec,
+    )
     from normal_forms.migrate_contract import migrate_v0_to_v1
     from normal_forms.multi_hop_composition import (
         CochainExtremaQuantileStageReceipt,
@@ -117,6 +126,13 @@ __all__ = [
     "evaluate_wdnf_candidate_cut",
     "observer_freshness_gate",
     "run_rag_mcp_pipeline",
+    "ConstructiveWitnessPair",
+    "KernelEvaluationReceipt",
+    "NFKernelSpec",
+    "evaluate_fds_via_kernel",
+    "evaluate_nf_kernel",
+    "lower_coda_mur_to_kernel_spec",
+    "lower_fd_to_kernel_spec",
 ]
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -177,6 +193,13 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "evaluate_wdnf_candidate_cut": ("normal_forms.ai", "evaluate_wdnf_candidate_cut"),
     "observer_freshness_gate": ("normal_forms.ai", "observer_freshness_gate"),
     "run_rag_mcp_pipeline": ("normal_forms.ai", "run_rag_mcp_pipeline"),
+    "ConstructiveWitnessPair": ("normal_forms.ir_kernel", "ConstructiveWitnessPair"),
+    "KernelEvaluationReceipt": ("normal_forms.ir_kernel", "KernelEvaluationReceipt"),
+    "NFKernelSpec": ("normal_forms.ir_kernel", "NFKernelSpec"),
+    "evaluate_fds_via_kernel": ("normal_forms.ir_kernel", "evaluate_fds_via_kernel"),
+    "evaluate_nf_kernel": ("normal_forms.ir_kernel", "evaluate_nf_kernel"),
+    "lower_coda_mur_to_kernel_spec": ("normal_forms.ir_kernel", "lower_coda_mur_to_kernel_spec"),
+    "lower_fd_to_kernel_spec": ("normal_forms.ir_kernel", "lower_fd_to_kernel_spec"),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),
     "NormalFormFoundationalDefinitions": ("normal_forms._golden_nfs", "NormalFormFoundationalDefinitions"),
