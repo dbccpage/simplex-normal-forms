@@ -19,6 +19,29 @@ class RepairTally:
     batch_terminal: str = "Repair"
 
 
+_CREATE_LOG_TABLE = """
+CREATE TABLE IF NOT EXISTS extrema_repair_log (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    region TEXT NOT NULL,
+    op_type TEXT NOT NULL,
+    affected_amount REAL,
+    is_destructive INTEGER NOT NULL,
+    cochain_available INTEGER NOT NULL,
+    terminal_route TEXT NOT NULL,
+    old_min REAL,
+    new_min REAL,
+    old_max REAL,
+    new_max REAL,
+    recomputation_fallback_executed INTEGER NOT NULL DEFAULT 0
+);
+"""
+
+
+def ensure_extrema_repair_log_table(cursor: sqlite3.Cursor) -> None:
+    """Ensures the extrema_repair_log table exists on the target SQLite connection."""
+    cursor.execute(_CREATE_LOG_TABLE)
+
+
 _LOG = """
 INSERT INTO extrema_repair_log (
     region, op_type, affected_amount, is_destructive, cochain_available,
@@ -41,22 +64,27 @@ def _log(
     new_max: Optional[float],
     recomputed: int,
 ) -> None:
-    cursor.execute(
-        _LOG,
-        (
-            region,
-            op_type,
-            amount,
-            destructive,
-            cochain_available,
-            route,
-            old_min,
-            new_min,
-            old_max,
-            new_max,
-            recomputed,
-        ),
+    payload = (
+        region,
+        op_type,
+        amount,
+        destructive,
+        cochain_available,
+        route,
+        old_min,
+        new_min,
+        old_max,
+        new_max,
+        recomputed,
     )
+    try:
+        cursor.execute(_LOG, payload)
+    except sqlite3.OperationalError as exc:
+        if "no such table: extrema_repair_log" in str(exc).lower():
+            cursor.execute(_CREATE_LOG_TABLE)
+            cursor.execute(_LOG, payload)
+        else:
+            raise
 
 
 def accumulate_delta(
@@ -110,6 +138,7 @@ def apply_removal(
     use_cochain: bool,
     tally: RepairTally,
 ) -> None:
+    cursor.execute(_CREATE_LOG_TABLE)
     if region not in current_cache:
         return
     state = current_cache[region]

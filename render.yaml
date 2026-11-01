@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: smplxnf-studio
+    env: python
+    region: oregon
+    plan: starter
+    buildCommand: "pip install -e . && pip install -r web/requirements.txt"
+    startCommand: "uvicorn web.app:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /healthz
+    envVars:
+      - key: PYTHONUNBUFFERED
+        value: "1"
+      - key: APP_ENVIRONMENT
+        value: "production"
+    domains:
+      - smplxnf.anomalon.com

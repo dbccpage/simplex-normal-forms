@@ -103,7 +103,13 @@ def build_sealed_loss_ledger(
                 "erased_fields": dropped_payload,
             }
         )
-    canonical_bytes = json.dumps(entries, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    canonical_preimage = {
+        "entries": entries,
+        "erased_attributes": sorted_erased,
+        "record_count": len(entries),
+        "trigger_id": trigger_id,
+    }
+    canonical_bytes = json.dumps(canonical_preimage, sort_keys=True, separators=(",", ":")).encode("utf-8")
     digest = hashlib.sha256(canonical_bytes).hexdigest()
     return {
         "trigger_id": trigger_id,

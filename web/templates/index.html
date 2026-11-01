@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simplex Normal Forms Studio | smplxnf.anomalon.com</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              900: '#164e63',
+            },
+            slate: {
+              850: '#111827',
+              900: '#0f172a',
+              950: '#020617',
+            }
+          },
+          fontFamily: {
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black">
+
+  <!-- Top Header Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-9 w-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-black text-lg shadow-lg shadow-cyan-500/20">
+          Δ
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Simplex-NF Studio</span>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">v0.1.0</span>
+          </div>
+          <p class="text-xs text-slate-400 hidden sm:block">Relational Synthesis, Streaming BQNF & NF-IR Compiler Workbench</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-3">
+        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700">
+          <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          smplxnf.anomalon.com
+        </span>
+        <a href="#quickstart" onclick="switchTab('quickstart')" class="text-xs bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-3 py-1.5 rounded-md transition shadow shadow-cyan-500/20 flex items-center space-x-1">
+          <span>Clone & Import</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <div class="bg-slate-900 border-b border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-2.5 no-scrollbar" aria-label="Tabs">
+        <button onclick="switchTab('relational')" id="tab-btn-relational" class="tab-btn active-tab flex items-center space-x-2 px-3.5 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap">
+          <svg class="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2 1.5 3 3.5 3h9c2 0 3.5-1 3.5-3V7c0-2-1.5-3-3.5-3h-9C5.5 4 4 5 4 7z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 4v16M4 11h16"/></svg>
+          <span>Relational Synthesis & Chase</span>
+          <span class="text-[10px] px-1.5 py-0.2 bg-cyan-900/60 text-cyan-300 rounded border border-cyan-700 font-mono">Flagship</span>
+        </button>
+
+        <button onclick="switchTab('bqnf')" id="tab-btn-bqnf" class="tab-btn flex items-center space-x-2 px-3.5 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
+          <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <span>Streaming BQNF Delta Repair</span>
+        </button>
+
+        <button onclick="switchTab('compiler')" id="tab-btn-compiler" class="tab-btn flex items-center space-x-2 px-3.5 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
+          <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+          <span>NF-IR Compiler Explorer</span>
+        </button>
+
+        <button onclick="switchTab('ai')" id="tab-btn-ai" class="tab-btn flex items-center space-x-2 px-3.5 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
+          <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          <span>AI Context LossLedger Gateway</span>
+        </button>
+
+        <button onclick="switchTab('quickstart')" id="tab-btn-quickstart" class="tab-btn flex items-center space-x-2 px-3.5 py-2 text-sm font-medium rounded-lg text-slate-400 hover:text-slate-200 transition whitespace-nowrap">
+          <svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          <span>Quickstart & Import Guide</span>
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- =================================================================== -->
+    <!-- TAB 1: RELATIONAL SYNTHESIS & CHASE TABLEAU (FLAGSHIP) -->
+    <!-- =================================================================== -->
+    <div id="view-relational" class="tab-view space-y-6">
+      <!-- Banner / Subheading -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+              <span>Interactive Relational Normalization & Synthesis Studio</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800 font-mono">Codd 1970 • Bernstein 1976</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1 max-w-3xl">
+              Derive candidate keys under Armstrong's Axioms, inspect minimal covers, synthesize dependency-preserving lossless-join 3NF relations, decompose BCNF trees, and verify join dependency implication via the deterministic Tableau Chase with spurious tuple counterexamples.
+            </p>
+          </div>
+          <div class="flex items-center gap-2">
+            <label for="relational-preset-select" class="text-xs text-slate-400 font-medium">Load Preset:</label>
+            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+              <option value="ecommerce">E-Commerce Orders (3NF Violation)</option>
+              <option value="supply_chain">Supply Chain Logistics Fleet</option>
+              <option value="healthcare">Healthcare Attending Staff Wards</option>
+              <option value="lossy_decomposition">Lossy Decomposition (Spurious Counterexample)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <span>1. Relational Schema Input</span>
+              <span class="text-[11px] text-cyan-400 lowercase font-normal">Pure discrete evaluator</span>
+            </h2>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Heading Attributes (U)</label>
+              <input type="text" id="relational-attributes-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-cyan-300 focus:ring-1 focus:ring-cyan-500 focus:outline-none" placeholder="order_id, cust_id, item_id, price, zip, city">
+              <p class="text-[11px] text-slate-500 mt-1">Comma-separated list of attribute names.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Functional Dependencies (F)</label>
+              <textarea id="relational-dependencies-input" rows="5" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-200 focus:ring-1 focus:ring-cyan-500 focus:outline-none" placeholder="order_id -> cust_id, zip&#10;cust_id -> email&#10;zip -> city"></textarea>
+              <p class="text-[11px] text-slate-500 mt-1">One dependency per line: <code class="text-cyan-400">X -> Y</code>.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Custom Components for Chase (Optional)</label>
+              <input type="text" id="relational-components-input" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-slate-300 focus:ring-1 focus:ring-cyan-500 focus:outline-none" placeholder="e.g. (A, B), (B, C) — leave empty for auto 3NF synthesis">
+              <p class="text-[11px] text-slate-500 mt-1">Leave blank to chase Bernstein's 3NF synthesis, or enter subschemas to test for lossiness.</p>
+            </div>
+
+            <button onclick="executeRelationalNormalize()" id="btn-run-relational" class="w-full py-2.5 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-cyan-500/20 transition flex items-center justify-center space-x-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span>Execute Synthesis & Chase Audit</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Grid -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Status Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Candidate Keys</div>
+              <div id="relational-cand-keys" class="text-sm font-mono text-cyan-400 font-bold mt-1">—</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Prime Attributes</div>
+              <div id="relational-prime-attrs" class="text-sm font-mono text-emerald-400 font-bold mt-1">—</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Chase Join Status</div>
+              <div id="relational-chase-status" class="text-sm font-mono text-amber-400 font-bold mt-1">—</div>
+            </div>
+          </div>
+
+          <!-- Normal Form Audit Scorecard -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Normal Form Decision Invariants</h3>
+            <div id="relational-nf-scorecard" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              <!-- Dynamically populated badges -->
+            </div>
+          </div>
+
+          <!-- Minimal Cover & 3NF Bernstein Tables -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <span>Bernstein (1976) 3NF Synthesis (Lossless & Dependency-Preserving)</span>
+              <span id="relational-mincover-badge" class="text-[10px] font-mono text-cyan-400"></span>
+            </h3>
+            <div id="relational-3nf-tables" class="space-y-2">
+              <p class="text-xs text-slate-500">Run synthesis to generate decomposed relational tables.</p>
+            </div>
+          </div>
+
+          <!-- Interactive Tableau Chase Visualizer -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Relational Tableau Chase Execution Trace</h3>
+              <span id="chase-result-pill" class="text-xs px-2 py-0.5 rounded font-mono hidden"></span>
+            </div>
+            <div id="chase-witness-box" class="hidden p-3 rounded-lg border text-xs font-mono"></div>
+            <div id="chase-steps-container" class="overflow-x-auto max-h-56 border border-slate-800 rounded-lg text-xs font-mono">
+              <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-950 text-slate-400 text-[11px] border-b border-slate-800 sticky top-0">
+                  <tr>
+                    <th class="p-2">Step</th>
+                    <th class="p-2">FD Applied</th>
+                    <th class="p-2">Rows Equated</th>
+                    <th class="p-2">Attribute</th>
+                    <th class="p-2">Symbol Mutation</th>
+                  </tr>
+                </thead>
+                <tbody id="chase-steps-tbody" class="divide-y divide-slate-850 text-slate-300">
+                  <tr><td colspan="5" class="p-3 text-center text-slate-500">Awaiting execution...</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Tableau View Accordion -->
+            <details class="text-xs">
+              <summary class="cursor-pointer text-cyan-400 hover:text-cyan-300 font-mono py-1">View Final Tableau Matrix</summary>
+              <div id="chase-tableau-matrix" class="mt-2 overflow-x-auto p-2 bg-slate-950 rounded border border-slate-800 font-mono text-[11px]"></div>
+            </details>
+          </div>
+
+          <!-- Export SQL DDL Tab -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Generated Relational DDL</h3>
+              <button onclick="copyToClipboard('relational-sql-ddl')" class="text-xs text-cyan-400 hover:text-cyan-300 font-mono">Copy SQL</button>
+            </div>
+            <pre id="relational-sql-ddl" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-emerald-400 overflow-x-auto max-h-36">-- SQL DDL will appear here after synthesis</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 2: STREAMING BQNF DELTA REPAIR & COCHAIN SIMULATOR -->
+    <!-- =================================================================== -->
+    <div id="view-bqnf" class="tab-view hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+              <span>Streaming BQNF Delta Repair & Quantile Rebalancing</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 font-mono">Homological Quotient Repair</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1 max-w-3xl">
+              Simulate high-throughput Change Data Capture (CDC) events across query boundaries. Observe how Boundary-Quotient Normal Form commutes incremental signed coboundary updates, services destructive extremum deletions via $O(\log K)$ priority-queue cochains, and bisects dynamic dyadic quantile sketches under power-law skew without full table recomputations.
+            </p>
+          </div>
+          <button onclick="executeBqnfSimulation()" class="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-emerald-500/20 transition flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <span>Simulate CDC Stream</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Controls -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">1. Boundary & Stream Config</h2>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Declared Query Boundary</label>
+              <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono text-slate-300 space-y-1">
+                <div><span class="text-slate-500">Query:</span> SELECT region, SUM(amount), MAX(amount) FROM sales</div>
+                <div><span class="text-slate-500">Filter:</span> WHERE status = 'paid' GROUP BY region;</div>
+                <div><span class="text-slate-500">State:</span> region_extremum_cochain + region_quantile_cochain</div>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label class="flex items-center space-x-2 text-xs text-slate-300">
+                <input type="checkbox" id="bqnf-use-cochain-toggle" checked class="rounded bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500">
+                <span>Enable Priority-Queue Extremum Cochain (Bypasses $O(N)$ full scans)</span>
+              </label>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Dynamic Dyadic Bisection Thresholds</label>
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-[11px] text-slate-400">Split Threshold:</span>
+                  <input type="number" id="bqnf-split-thresh" value="4" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-slate-200 font-mono">
+                </div>
+                <div>
+                  <span class="text-[11px] text-slate-400">Merge Threshold:</span>
+                  <input type="number" id="bqnf-merge-thresh" value="1" class="w-full bg-slate-950 border border-slate-800 rounded px-2 py-1 text-slate-200 font-mono">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">CDC Event Stream (JSON)</label>
+              <textarea id="bqnf-events-input" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-emerald-300 focus:ring-1 focus:ring-emerald-500 focus:outline-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Output -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Metrics -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">CDC Events Processed</div>
+              <div id="bqnf-events-count" class="text-sm font-mono text-emerald-400 font-bold mt-1">—</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Extrema Cochain Hits</div>
+              <div id="bqnf-cochain-hits" class="text-sm font-mono text-cyan-400 font-bold mt-1">—</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Table Scan Fallbacks</div>
+              <div id="bqnf-fallback-count" class="text-sm font-mono text-amber-400 font-bold mt-1">—</div>
+            </div>
+          </div>
+
+          <!-- Extrema Repair Log -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <span>Extrema Repair Log (Database Audit Trail)</span>
+              <span id="bqnf-speedup-badge" class="text-[11px] font-mono text-emerald-400"></span>
+            </h3>
+            <div class="overflow-x-auto max-h-52 border border-slate-800 rounded-lg text-xs font-mono">
+              <table class="w-full text-left border-collapse">
+                <thead class="bg-slate-950 text-slate-400 text-[11px] border-b border-slate-800 sticky top-0">
+                  <tr>
+                    <th class="p-2">Op</th>
+                    <th class="p-2">Amount</th>
+                    <th class="p-2">Destructive?</th>
+                    <th class="p-2">Route</th>
+                    <th class="p-2">Extrema Transition</th>
+                    <th class="p-2">Fallback Scan</th>
+                  </tr>
+                </thead>
+                <tbody id="bqnf-repair-log-tbody" class="divide-y divide-slate-850 text-slate-300">
+                  <tr><td colspan="6" class="p-3 text-center text-slate-500">Run simulation to view SQLite execution log.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Dynamic Dyadic Quantile Histogram -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Dynamic Dyadic $\epsilon$-Quantiles Sketch Histogram</h3>
+              <span id="bqnf-rebalance-badge" class="text-xs font-mono text-cyan-400"></span>
+            </div>
+            <div id="bqnf-buckets-visual" class="space-y-2 p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono">
+              <p class="text-slate-500">Bucket intervals will be rendered here...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 3: NF-IR COMPILER EXPLORER (GODBOLT INSPECTOR) -->
+    <!-- =================================================================== -->
+    <div id="view-compiler" class="tab-view hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+              <span>NF-IR Compiler Playground</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-purple-950 text-purple-300 border border-purple-800 font-mono">Godbolt-Style Multi-Target Lowering</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1 max-w-3xl">
+              Inspect the 4-layer compiler intermediate representation. Transform declarative normal form contracts into micro-kernel witness triples $K = (X, F, L)$, optimize via monotone poset subsumption lattices with dead-check elimination (DCE), and lower to executable SQLite triggers, Python guards, and automated counterexample test fixtures.
+            </p>
+          </div>
+          <button onclick="executeCompilerLowering()" class="py-2.5 px-4 bg-purple-500 hover:bg-purple-400 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-purple-500/20 transition flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+            <span>Compile & Lower NF-IR</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Compiler Input -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">1. Contract & Invariant Spec</h2>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Contract ID</label>
+                <input type="text" id="compiler-contract-id" value="nf.classical.bcnf" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-purple-300 font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Table Name</label>
+                <input type="text" id="compiler-table-name" value="employees" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Key Field</label>
+              <input type="text" id="compiler-key-field" value="employee_id" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono">
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Heading Fields (U)</label>
+              <input type="text" id="compiler-heading" value="employee_id, dept_id, manager_id, office_location" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono">
+            </div>
+
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Determinant (Collapse Map)</label>
+                <input type="text" id="compiler-determinant" value="dept_id" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-cyan-300 font-mono">
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-slate-300 mb-1">Dependent (Protected Law)</label>
+                <input type="text" id="compiler-dependent" value="manager_id" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-emerald-300 font-mono">
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Test Carrier Data (JSON Array)</label>
+              <textarea id="compiler-carrier-json" rows="6" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-purple-300 focus:ring-1 focus:ring-purple-500 focus:outline-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lowered Outputs (Godbolt Multi-Pane) -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Subsumption & DCE Banner -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Layer 2 Poset Subsumption & Dead-Check Elimination</h3>
+            <div id="compiler-subsumption-card" class="p-3 bg-slate-950 rounded-lg border border-slate-800 text-xs font-mono space-y-1">
+              <p class="text-slate-500">Compile contract to evaluate subsumption ordering...</p>
+            </div>
+          </div>
+
+          <!-- Sub-Tabs for Target Codegen -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
+            <div class="bg-slate-950 border-b border-slate-800 flex space-x-1 p-2">
+              <button onclick="switchCompilerSubTab('sqlite')" id="subtab-btn-sqlite" class="px-3 py-1 text-xs font-mono rounded bg-slate-800 text-purple-300 border border-slate-700">Target B: SQLite Triggers</button>
+              <button onclick="switchCompilerSubTab('python')" id="subtab-btn-python" class="px-3 py-1 text-xs font-mono rounded text-slate-400 hover:text-slate-200">Target A: Python Guard</button>
+              <button onclick="switchCompilerSubTab('fuzzers')" id="subtab-btn-fuzzers" class="px-3 py-1 text-xs font-mono rounded text-slate-400 hover:text-slate-200">Target C: Fuzzing Fixtures</button>
+            </div>
+
+            <!-- Panel 1: SQLite Triggers -->
+            <div id="compiler-subpanel-sqlite" class="p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400">Executable SQLite DDL with <code class="text-purple-400">BEFORE INSERT/UPDATE</code> abort triggers</span>
+                <button onclick="copyToClipboard('compiler-sqlite-code')" class="text-xs text-purple-400 hover:text-purple-300 font-mono">Copy SQL</button>
+              </div>
+              <pre id="compiler-sqlite-code" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-purple-300 overflow-x-auto max-h-72">-- SQLite DDL and triggers will be emitted here</pre>
+            </div>
+
+            <!-- Panel 2: Python Guard -->
+            <div id="compiler-subpanel-python" class="hidden p-4 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400">Zero-overhead fail-closed Python decorator</span>
+                <button onclick="copyToClipboard('compiler-python-code')" class="text-xs text-purple-400 hover:text-purple-300 font-mono">Copy Python</button>
+              </div>
+              <pre id="compiler-python-code" class="bg-slate-950 p-3 rounded-lg border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto max-h-72"># Python guard code will be emitted here</pre>
+            </div>
+
+            <!-- Panel 3: Counterexamples -->
+            <div id="compiler-subpanel-fuzzers" class="hidden p-4 space-y-3">
+              <span class="text-xs text-slate-400">Algorithmic minimal counterexample fixtures generated for contract</span>
+              <div id="compiler-fuzzers-container" class="space-y-2 text-xs font-mono"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 4: AI AGENT CONTEXT LOSSLEDGER GATEWAY -->
+    <!-- =================================================================== -->
+    <div id="view-ai" class="tab-view hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+              <span>AI Agent Model Context Protocol (MCP) LossLedger Gateway</span>
+              <span class="text-xs px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 font-mono">Token Conservation & Cryptographic Audit</span>
+            </h1>
+            <p class="text-sm text-slate-400 mt-1 max-w-3xl">
+              Auditable RAG context compression and token truncation. Enforces exact token conservation (<code class="text-amber-400">source_tokens == retained_tokens + truncated_tokens</code>), emits SHA-256 Merkle-sealed LossLedgers documenting erased attributes, and enforces the epistemic firewall (<code class="text-slate-300">certified_implies_authorized: false</code>).
+            </p>
+          </div>
+          <button onclick="executeAiLossLedger()" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            <span>Evaluate Context Transport</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left Input -->
+        <div class="lg:col-span-5 space-y-4">
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">1. RAG Context Budgeting Input</h2>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Token Budget Ceiling</label>
+              <input type="number" id="ai-token-budget" value="35" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-amber-300 font-mono">
+              <p class="text-[11px] text-slate-500 mt-1">Maximum allowed tokens in projected prompt context.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Target Retained Fields</label>
+              <input type="text" id="ai-target-fields" value="chunk_id, doc_title, text, relevance_score" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 font-mono">
+              <p class="text-[11px] text-slate-500 mt-1">Any unlisted source fields (e.g. debug traces, raw embeddings) will be safely erased and recorded in the LossLedger.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-medium text-slate-300 mb-1">Source Chunks (JSON)</label>
+              <textarea id="ai-chunks-input" rows="8" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs font-mono text-amber-300 focus:ring-1 focus:ring-amber-500 focus:outline-none"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Output -->
+        <div class="lg:col-span-7 space-y-4">
+          <!-- Token Conservation Card -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Source Tokens</div>
+              <div id="ai-source-tokens" class="text-sm font-mono text-slate-200 font-bold mt-1">—</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Retained Tokens</div>
+              <div id="ai-retained-tokens" class="text-sm font-mono text-emerald-400 font-bold mt-1">—</div>
+            </div>
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-3.5">
+              <div class="text-[11px] uppercase tracking-wider text-slate-400 font-medium">Truncated Tokens</div>
+              <div id="ai-truncated-tokens" class="text-sm font-mono text-amber-400 font-bold mt-1">—</div>
+            </div>
+          </div>
+
+          <!-- Merkle LossLedger Seal -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-3">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <span>Cryptographic SHA-256 Merkle LossLedger Seal</span>
+              <span id="ai-merkle-verified-badge" class="text-[11px] font-mono text-emerald-400"></span>
+            </h3>
+            <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-xs font-mono">
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Root Merkle Digest:</span>
+                <span id="ai-merkle-digest" class="text-amber-400 select-all">—</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Erased Metadata Fields:</span>
+                <span id="ai-erased-fields" class="text-rose-400">—</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-slate-500">Token Conservation Law:</span>
+                <span id="ai-conservation-equation" class="text-cyan-400">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Epistemic Authority Firewall Card -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 space-y-2">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
+              <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+              <span>Epistemic Authority Firewall</span>
+            </h3>
+            <p class="text-xs text-slate-400">
+              In accordance with <code class="text-slate-300">certified_implies_authorized: false</code>, a verified context projection remains strictly unauthorized until validated by an independent policy verifier. This prevents hallucinated or truncated context from automatically triggering irreversible real-world tool execution.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- TAB 5: QUICKSTART & DEVELOPER ADOPTION GUIDE -->
+    <!-- =================================================================== -->
+    <div id="view-quickstart" class="tab-view hidden space-y-6">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-850 to-slate-900 border border-slate-800 rounded-xl p-6 shadow-sm">
+        <h1 class="text-xl font-bold text-white">Zero-Friction Developer Adoption: 3 Lines of Python</h1>
+        <p class="text-sm text-slate-400 mt-2 max-w-3xl">
+          Integrate relational schema normalization, streaming BQNF delta repair, and intermediate representation guards directly into your database migration pipelines, backend services, and AI agents.
+        </p>
+      </div>
+
+      <!-- Installation Commands -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">1. Clone & Install in Editable Mode</h2>
+          <button onclick="copyToClipboard('install-bash')" class="text-xs text-cyan-400 hover:text-cyan-300 font-mono">Copy Bash</button>
+        </div>
+        <pre id="install-bash" class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto"># Clone repository
+git clone https://github.com/dbccpage/simplex-normal-forms.git
+cd simplex-normal-forms
+
+# Install editable package
+pip install -e .
+
+# Run test suite
+python -m pytest tests/ -v</pre>
+      </div>
+
+      <!-- Snippet 1 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">2. Relational Schema Normalization & 3NF Synthesis</h2>
+          <button onclick="copyToClipboard('snippet-relational')" class="text-xs text-cyan-400 hover:text-cyan-300 font-mono">Copy Python</button>
+        </div>
+        <pre id="snippet-relational" class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-slate-300 overflow-x-auto">from normal_forms.domain.relational import FunctionalDependency, RelationalSchema, check_3nf, chase_join_dependency
+from normal_forms.domain.relational_advanced import synthesize_3nf_bernstein
+
+# 1. Declare attributes and functional dependencies
+schema = RelationalSchema(
+    attributes=frozenset({"order_id", "cust_id", "zip", "amount"}),
+    dependencies=frozenset({
+        FunctionalDependency.from_str("order_id", "cust_id,amount"),
+        FunctionalDependency.from_str("cust_id", "zip")
+    })
+)
+
+# 2. Synthesize 3NF subschemas (Bernstein 1976)
+tables = synthesize_3nf_bernstein(schema)
+print("3NF Decomposed Tables:", [sorted(t) for t in tables])
+
+# 3. Verify lossless join via Relational Tableau Chase
+chase = chase_join_dependency(schema.attributes, schema.dependencies, tables)
+assert chase.is_implied is True, "Lossless join verified!"</pre>
+      </div>
+
+      <!-- Snippet 2 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">3. Lowering Normal-Form Contracts to SQLite Triggers</h2>
+          <button onclick="copyToClipboard('snippet-compiler')" class="text-xs text-cyan-400 hover:text-cyan-300 font-mono">Copy Python</button>
+        </div>
+        <pre id="snippet-compiler" class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-purple-300 overflow-x-auto">import sqlite3
+from normal_forms.domain.relational import FunctionalDependency
+from normal_forms.ir_kernel import lower_fd_to_kernel_spec
+from normal_forms.ir_lowering import compile_to_sqlite_triggers, install_and_verify_sqlite_bundle
+
+# 1. Lower BCNF contract to SQLite triggers
+spec = lower_fd_to_kernel_spec(
+    fd=FunctionalDependency.from_str("dept_id", "manager_id"),
+    key_field="employee_id",
+    heading=("employee_id", "dept_id", "manager_id", "office"),
+    contract_id="nf.classical.bcnf"
+)
+bundle = compile_to_sqlite_triggers(spec, table_name="employees")
+
+# 2. Install and enforce in SQLite database
+conn = sqlite3.connect(":memory:")
+ok, err = install_and_verify_sqlite_bundle(conn, bundle, rows=[
+    {"employee_id": "1", "dept_id": "D1", "manager_id": "M1", "office": "101"},
+    {"employee_id": "2", "dept_id": "D1", "manager_id": "M2", "office": "102"} # Conflicts on dept_id -> manager_id!
+])
+assert ok is False, "Database trigger blocked invalid insert!"</pre>
+      </div>
+
+      <!-- Snippet 3 -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">4. Verifiable AI Context Transport with Merkle LossLedger</h2>
+          <button onclick="copyToClipboard('snippet-ai')" class="text-xs text-cyan-400 hover:text-cyan-300 font-mono">Copy Python</button>
+        </div>
+        <pre id="snippet-ai" class="bg-slate-950 p-4 rounded-lg border border-slate-800 font-mono text-xs text-amber-300 overflow-x-auto">from normal_forms.ai import coda_mur_projection, verify_loss_ledger_integrity
+
+@coda_mur_projection(
+    source_fields=("chunk_id", "text", "doc_title", "internal_debug_trace"),
+    target_fields=("chunk_id", "text", "doc_title"),
+    key_field="chunk_id",
+    protected_fields=("chunk_id", "doc_title"),
+    max_token_budget=30
+)
+def compress_context(chunks):
+    return None # Return None for canonical projection
+
+envelope = compress_context([{"chunk_id": "c1", "text": "...", "doc_title": "T1", "internal_debug_trace": "xyz"}])
+assert envelope.token_conservation_commutes is True
+print("SHA-256 Merkle LossLedger:", envelope.loss_ledger["merkle_digest"])</pre>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-950 py-6 mt-12 text-xs text-slate-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <span class="font-mono text-cyan-400 font-semibold">Simplex-NF Studio</span>
+        <span>•</span>
+        <span>Hosted at <code class="text-slate-400">smplxnf.anomalon.com</code> via Render</span>
+      </div>
+      <div class="flex items-center space-x-4 font-mono text-[11px]">
+        <span>AuthorityEffect: None</span>
+        <span>•</span>
+        <span>certified_implies_authorized: false</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

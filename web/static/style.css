@@ -1,0 +1,50 @@
+/* Custom styles for Simplex Normal Forms Studio */
+
+.active-tab {
+  background-color: #1e293b;
+  color: #22d3ee;
+  border-bottom: 2px solid #06b6d4;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom scrollbars for code blocks and tables */
+pre::-webkit-scrollbar, div::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+pre::-webkit-scrollbar-track, div::-webkit-scrollbar-track {
+  background: #020617;
+}
+pre::-webkit-scrollbar-thumb, div::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+pre::-webkit-scrollbar-thumb:hover, div::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Badge styles */
+.badge-pass {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.badge-fail {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: #fb7185;
+  border: 1px solid rgba(244, 63, 94, 0.4);
+}
+
+.badge-warn {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}

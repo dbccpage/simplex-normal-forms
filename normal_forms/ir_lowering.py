@@ -465,3 +465,12 @@ def synthesize_counterexample_fixtures(
         )
 
     return valid_rows, counterexamples
+
+
+# -----------------------------------------------------------------------------
+# Canonical NF-IR Public API Lowering Aliases
+# -----------------------------------------------------------------------------
+lower_to_sqlite_trigger = compile_to_sqlite_triggers
+lower_kernel_to_sqlite_trigger = compile_to_sqlite_triggers
+lower_to_python_guard = compile_to_python_decorator
+lower_kernel_to_python_guard = compile_to_python_decorator
