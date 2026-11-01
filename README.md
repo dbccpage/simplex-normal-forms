@@ -41,11 +41,17 @@ simplex-normal-forms/
 │   ├── bqnf/                   # BQNF & Fermion Sign contracts and boundary quotient SVGs
 │   ├── data/                   # JSON fixtures for CDC events, observers, orders, and certificates
 │   └── nf.<family>.<name>.yaml # Individual machine-checkable normal form contracts
-├── normal_forms/               # Standalone Python verifier, SQLite cochain evaluator & domain library
+├── normal_forms/               # Standalone Python verifier, SQLite cochain evaluator & NF-IR compiler
 │   ├── catalog.py              # CLI & library validator checking all 112 contracts against standard.yaml
 │   ├── evaluator.py            # SQLite session evaluator (0NF->1NF, 5NF witness, BQNF CDC repair, S_N)
+│   ├── ai.py                   # @coda_mur_projection & @observer_freshness_gate RAG/MCP decorator pipeline
+│   ├── ir_kernel.py            # NF-IR Layer 1: Primitive WDP/OBNF witness micro-kernel (NFKernelSpec)
+│   ├── ir_subsumption.py       # NF-IR Layer 2: Poset subsumption (NF_A <= NF_B) & dead-check elimination
+│   ├── ir_wiring.py            # NF-IR Layer 3: Operadic DAG wiring (seq, par, guard) & Merkle loss chains
+│   ├── ir_lowering.py          # NF-IR Layer 4: Python @nf_kernel_guard, SQLite triggers & counterexample fuzzer
 │   ├── domain/                 # Pure-Python relational (2NF/3NF/BCNF/4NF), BQNF, ASRF, Hodge & ZFNF verifiers
 │   └── *_example.py            # Executable demos for BQNF, Observer Freshness, Certificates & Reconciliation
+├── docs/plans/                 # Master Plan of Plans (plan_of_plans.md) & Plans 1-4 NF-IR specifications
 ├── docs/research_forum/        # 6-document Research Forum & Commercial Strategy Dossier (SimpleCache vs IVM)
 ├── images/                     # 112 per-contract visual SVG diagrams + architectural overview SVGs
 ├── wiki/                       # Complete mirror of the GitHub Wiki (one markdown page per normal form)
@@ -88,6 +94,7 @@ Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wik
 - **[Observer-Relative Ontology](https://github.com/dbccpage/simplex-normal-forms/wiki/Observer-Relative-Ontology)** ([local](wiki/Observer-Relative-Ontology.md))
 - **[Concrete Worked Examples](https://github.com/dbccpage/simplex-normal-forms/wiki/Concrete-Examples)** ([local](wiki/Concrete-Examples.md))
 - **[Relational Geometrodynamics & Physics Substrate](https://github.com/dbccpage/simplex-normal-forms/wiki/Relational-Geometrodynamics-and-Physics-Substrate)** ([local](wiki/Relational-Geometrodynamics-and-Physics-Substrate.md))
+- **[Master Plan of Plans (NF-IR Architecture)](docs/plans/plan_of_plans.md)** ([Plan 1: Micro-Kernel](docs/plans/plan_01_wdp_obnf_micro_kernel.md) • [Plan 2: Subsumption & DCE](docs/plans/plan_02_subsumption_lattice.md) • [Plan 3: Operadic Wiring](docs/plans/plan_03_operadic_wiring_compiler.md) • [Plan 4: Multi-Target Lowering](docs/plans/plan_04_multi_target_lowering.md))
 - **[SimpleCache Research Forum & Commercial Strategy Dossier](docs/research_forum/README.md)** ([Executive Whitepaper](docs/research_forum/01_executive_whitepaper.md) • [Competitive Analysis](docs/research_forum/02_competitive_analysis.md) • [5 Commercial Upgrades](docs/research_forum/03_commercial_upgrades.md) • [Cross-Program Foundations](docs/research_forum/04_cross_program_foundations.md) • [Forum Proceedings](docs/research_forum/05_research_forum_proceedings.md))
 
 ---
