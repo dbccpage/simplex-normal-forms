@@ -29,6 +29,9 @@ python -m normal_forms.reconciliation_example
 
 # 6. Run Demo 05: 4-Hop Composition (3NF/BCNF -> Extrema & Quantile Cochains -> CODA_MUR -> Observer Poset)
 python -m normal_forms.multi_hop_composition
+
+# 7. Run Demo 06: AI RAG / MCP Pipeline with @coda_mur_projection & @observer_freshness_gate
+python -m normal_forms.ai
 ```
 
 ---
@@ -111,10 +114,31 @@ GROUP BY customer_id;
 
 ---
 
-## 6. Epistemic Claim Hygiene Quadrant
+## 6. Example E: AI RAG / MCP Decorator Layer (`normal_forms.ai`)
+
+`normal_forms/ai.py` provides decorators for Retrieval-Augmented Generation (RAG) context compression and Model Context Protocol (MCP) tool execution:
+
+- **Stage 0 (`evaluate_wdnf_candidate_cut` — [`nf.wdp.wdnf`](nf.wdp.wdnf) / [`nf.derivation.pdnf`](nf.derivation.pdnf)):** Checks the support floor ($|X| \ge 2$), irreflexivity ($\neg(x \mathrel{\Delta} x)$), and constructive witness presence on retrieved RAG candidate chunks.
+- **Stage 1 (`@coda_mur_projection` — [`nf.coda.mur.transport`](nf.coda.mur.transport) & [`nf.representation.tbnf`](nf.representation.tbnf)):** Tracks dropped metadata attributes, truncated token suffixes, and budget-evicted chunks in a SHA-256 Merkle-sealed `LossLedger` while checking exact additive token conservation (`retained_token_count + truncated_token_count == source_token_count`).
+- **Stage 2 (`@observer_freshness_gate` — [`nf.epistemic.freshness`](nf.epistemic.freshness) & [`nf.recursion.asrf`](nf.recursion.asrf)):** Enforces `LossLedger` seal verification, `ASRF` call-graph acyclicity (`producer_identity != evaluator_identity`), observer poset SLA lag bounds, and the epistemic authority firewall (`certified_implies_authorized == False`).
+
+---
+
+## 7. Example F: The 4-Layer `NF-IR` Compiler Stack (`ir_kernel`, `ir_subsumption`, `ir_wiring`, `ir_lowering`)
+
+The internal Normal-Form Intermediate Representation (`NF-IR`) stack lowers normal-form contracts into composable passes and multi-target enforcement artifacts:
+
+1. **Layer 1 (`normal_forms/ir_kernel.py`):** Evaluates `NFKernelSpec(carrier, collapse_fields, protected_law_fields)` (`evaluate_nf_kernel`, `lower_fd_to_kernel_spec`, `lower_coda_mur_to_kernel_spec`) and extracts minimal 2-row counterexample pairs (`ConstructiveWitnessPair`).
+2. **Layer 2 (`normal_forms/ir_subsumption.py`):** Encodes the refinement poset $\text{NF}_A \preceq \text{NF}_B$ (`subsumes_contract`, `subsumes_kernel_spec`) and eliminates redundant downstream checks via `run_kernel_pipeline_with_dce`.
+3. **Layer 3 (`normal_forms/ir_wiring.py`):** Composes `NFKernelSpec` passes into sequential (`seq_passes`), parallel (`par_passes`), and policy-guarded (`guard_pass`) DAGs (`evaluate_wiring_dag`) with cumulative SHA-256 Merkle loss-chain tracking.
+4. **Layer 4 (`normal_forms/ir_lowering.py`):** Compiles any `NFKernelSpec` into a Python `@nf_kernel_guard` decorator (`compile_to_python_decorator`), SQLite `BEFORE INSERT` / `BEFORE UPDATE` triggers (`compile_to_sqlite_triggers`), and automated counterexample fuzzers (`synthesize_counterexample_fixtures`).
+
+---
+
+## 8. Epistemic Claim Hygiene Quadrant
 
 1. **What it supports:**
-   - Demonstrates in this toy setting that the Python evaluators reproduce the declared terminal routes for `0NF`–`5NF`, `BQNF` additive and cochain-backed extrema/quantile repair, `CODA_MUR` representation transport, and observer-relative freshness posets.
+   - Demonstrates in this toy setting that the Python evaluators reproduce the declared terminal routes for `0NF`–`5NF`, `BQNF` additive and cochain-backed extrema/quantile repair, `CODA_MUR` representation transport, observer-relative freshness posets, the `normal_forms.ai` RAG/MCP decorator pipeline, and the 4-layer `NF-IR` compiler stack.
 2. **What it does not support:**
    - Does not substitute for production database concurrency control or physical distributed consensus.
 3. **The narrowest defensible claim:**
