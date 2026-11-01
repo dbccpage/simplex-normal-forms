@@ -44,6 +44,15 @@ if TYPE_CHECKING:
         lower_coda_mur_to_kernel_spec,
         lower_fd_to_kernel_spec,
     )
+    from normal_forms.ir_lowering import (
+        LoweredDecoratorReceipt,
+        SqliteLoweredBundle,
+        SynthesizedCounterexampleFixture,
+        compile_to_python_decorator,
+        compile_to_sqlite_triggers,
+        install_and_verify_sqlite_bundle,
+        synthesize_counterexample_fixtures,
+    )
     from normal_forms.ir_subsumption import (
         CANONICAL_SUBSUMPTION_EDGES,
         ElidedCheckRecord,
@@ -171,6 +180,13 @@ __all__ = [
     "leaf_pass",
     "par_passes",
     "seq_passes",
+    "LoweredDecoratorReceipt",
+    "SqliteLoweredBundle",
+    "SynthesizedCounterexampleFixture",
+    "compile_to_python_decorator",
+    "compile_to_sqlite_triggers",
+    "install_and_verify_sqlite_bundle",
+    "synthesize_counterexample_fixtures",
 ]
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -255,6 +271,28 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "leaf_pass": ("normal_forms.ir_wiring", "leaf_pass"),
     "par_passes": ("normal_forms.ir_wiring", "par_passes"),
     "seq_passes": ("normal_forms.ir_wiring", "seq_passes"),
+    "LoweredDecoratorReceipt": ("normal_forms.ir_lowering", "LoweredDecoratorReceipt"),
+    "SqliteLoweredBundle": ("normal_forms.ir_lowering", "SqliteLoweredBundle"),
+    "SynthesizedCounterexampleFixture": (
+        "normal_forms.ir_lowering",
+        "SynthesizedCounterexampleFixture",
+    ),
+    "compile_to_python_decorator": (
+        "normal_forms.ir_lowering",
+        "compile_to_python_decorator",
+    ),
+    "compile_to_sqlite_triggers": (
+        "normal_forms.ir_lowering",
+        "compile_to_sqlite_triggers",
+    ),
+    "install_and_verify_sqlite_bundle": (
+        "normal_forms.ir_lowering",
+        "install_and_verify_sqlite_bundle",
+    ),
+    "synthesize_counterexample_fixtures": (
+        "normal_forms.ir_lowering",
+        "synthesize_counterexample_fixtures",
+    ),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),
     "NormalFormFoundationalDefinitions": ("normal_forms._golden_nfs", "NormalFormFoundationalDefinitions"),
