@@ -44,6 +44,16 @@ if TYPE_CHECKING:
         lower_coda_mur_to_kernel_spec,
         lower_fd_to_kernel_spec,
     )
+    from normal_forms.ir_subsumption import (
+        CANONICAL_SUBSUMPTION_EDGES,
+        ElidedCheckRecord,
+        SubsumptionEdge,
+        SubsumptionOptimizationReceipt,
+        run_kernel_pipeline_with_dce,
+        subsumes_contract,
+        subsumes_kernel_spec,
+        verify_subsumption_poset_laws,
+    )
     from normal_forms.migrate_contract import migrate_v0_to_v1
     from normal_forms.multi_hop_composition import (
         CochainExtremaQuantileStageReceipt,
@@ -133,6 +143,14 @@ __all__ = [
     "evaluate_nf_kernel",
     "lower_coda_mur_to_kernel_spec",
     "lower_fd_to_kernel_spec",
+    "CANONICAL_SUBSUMPTION_EDGES",
+    "ElidedCheckRecord",
+    "SubsumptionEdge",
+    "SubsumptionOptimizationReceipt",
+    "run_kernel_pipeline_with_dce",
+    "subsumes_contract",
+    "subsumes_kernel_spec",
+    "verify_subsumption_poset_laws",
 ]
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -200,6 +218,14 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "evaluate_nf_kernel": ("normal_forms.ir_kernel", "evaluate_nf_kernel"),
     "lower_coda_mur_to_kernel_spec": ("normal_forms.ir_kernel", "lower_coda_mur_to_kernel_spec"),
     "lower_fd_to_kernel_spec": ("normal_forms.ir_kernel", "lower_fd_to_kernel_spec"),
+    "CANONICAL_SUBSUMPTION_EDGES": ("normal_forms.ir_subsumption", "CANONICAL_SUBSUMPTION_EDGES"),
+    "ElidedCheckRecord": ("normal_forms.ir_subsumption", "ElidedCheckRecord"),
+    "SubsumptionEdge": ("normal_forms.ir_subsumption", "SubsumptionEdge"),
+    "SubsumptionOptimizationReceipt": ("normal_forms.ir_subsumption", "SubsumptionOptimizationReceipt"),
+    "run_kernel_pipeline_with_dce": ("normal_forms.ir_subsumption", "run_kernel_pipeline_with_dce"),
+    "subsumes_contract": ("normal_forms.ir_subsumption", "subsumes_contract"),
+    "subsumes_kernel_spec": ("normal_forms.ir_subsumption", "subsumes_kernel_spec"),
+    "verify_subsumption_poset_laws": ("normal_forms.ir_subsumption", "verify_subsumption_poset_laws"),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),
     "NormalFormFoundationalDefinitions": ("normal_forms._golden_nfs", "NormalFormFoundationalDefinitions"),
