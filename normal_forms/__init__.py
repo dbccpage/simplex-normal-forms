@@ -54,6 +54,17 @@ if TYPE_CHECKING:
         subsumes_kernel_spec,
         verify_subsumption_poset_laws,
     )
+    from normal_forms.ir_wiring import (
+        MerkleLossChainEntry,
+        NFWiringNode,
+        WiringEvaluationReceipt,
+        evaluate_wiring_dag,
+        guard_pass,
+        join_canonical_terminals,
+        leaf_pass,
+        par_passes,
+        seq_passes,
+    )
     from normal_forms.migrate_contract import migrate_v0_to_v1
     from normal_forms.multi_hop_composition import (
         CochainExtremaQuantileStageReceipt,
@@ -151,6 +162,15 @@ __all__ = [
     "subsumes_contract",
     "subsumes_kernel_spec",
     "verify_subsumption_poset_laws",
+    "MerkleLossChainEntry",
+    "NFWiringNode",
+    "WiringEvaluationReceipt",
+    "evaluate_wiring_dag",
+    "guard_pass",
+    "join_canonical_terminals",
+    "leaf_pass",
+    "par_passes",
+    "seq_passes",
 ]
 
 _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
@@ -226,6 +246,15 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     "subsumes_contract": ("normal_forms.ir_subsumption", "subsumes_contract"),
     "subsumes_kernel_spec": ("normal_forms.ir_subsumption", "subsumes_kernel_spec"),
     "verify_subsumption_poset_laws": ("normal_forms.ir_subsumption", "verify_subsumption_poset_laws"),
+    "MerkleLossChainEntry": ("normal_forms.ir_wiring", "MerkleLossChainEntry"),
+    "NFWiringNode": ("normal_forms.ir_wiring", "NFWiringNode"),
+    "WiringEvaluationReceipt": ("normal_forms.ir_wiring", "WiringEvaluationReceipt"),
+    "evaluate_wiring_dag": ("normal_forms.ir_wiring", "evaluate_wiring_dag"),
+    "guard_pass": ("normal_forms.ir_wiring", "guard_pass"),
+    "join_canonical_terminals": ("normal_forms.ir_wiring", "join_canonical_terminals"),
+    "leaf_pass": ("normal_forms.ir_wiring", "leaf_pass"),
+    "par_passes": ("normal_forms.ir_wiring", "par_passes"),
+    "seq_passes": ("normal_forms.ir_wiring", "seq_passes"),
     "NormalFormContract": ("normal_forms._golden_nfs", "NormalFormContract"),
     "NormalFormContractMetaSchema": ("normal_forms._golden_nfs", "NormalFormContractMetaSchema"),
     "NormalFormFoundationalDefinitions": ("normal_forms._golden_nfs", "NormalFormFoundationalDefinitions"),
