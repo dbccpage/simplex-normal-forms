@@ -1,0 +1,19 @@
+{
+  "checked_at_utc": "2026-11-02T22:06:17.249622+00:00",
+  "base_url": "https://simplxnf.anomalon.com",
+  "workers": 1,
+  "repeats": 1,
+  "tls_certificate_validation": "enabled",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "passed": false,
+      "error": "<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1081)>",
+      "elapsed_ms": 73.5
+    }
+  ],
+  "scope": "HTTP and semantic smoke only; deployment commit and browser UX require separate verification.",
+  "passed": false,
+  "remaining_checks": "skipped: health check failed"
+}

@@ -3,7 +3,7 @@
 **Boundary-Certified Data Architecture, Relational Normalization, Cochain Retraction & Representation Transport (`CODA_MUR`)**  
 **Epistemic Standard:** Landau Rigor / Claim Discipline Compliant (`AuthorityEffect: None`, `certified_implies_authorized: false`)
 
-[![Live Demo: smplxnf.anomalon.com](https://img.shields.io/badge/Live_Demo-smplxnf.anomalon.com-0284c7)](https://smplxnf.anomalon.com)
+[![Deployment status](https://img.shields.io/badge/Deployment-verification_pending-amber)](docs/PROJECT_STATUS.md)
 [![Deployment: Render](https://img.shields.io/badge/Deploy-onrender.com-46e3b7)](https://render.com)
 [![Adoption Guide: IMPORT_GUIDE.md](https://img.shields.io/badge/Adoption_Guide-IMPORT__GUIDE.md-10b981)](IMPORT_GUIDE.md)
 [![Architecture Spec: MVP_SELECTION.md](https://img.shields.io/badge/Architecture-MVP__SELECTION.md-8b5cf6)](docs/MVP_SELECTION.md)
@@ -19,12 +19,15 @@
 
 Experience the core theoretical and engineering capabilities of `simplex-normal-forms` in real time:
 
-👉 **[Launch Simplex-NF Studio at smplxnf.anomalon.com](https://smplxnf.anomalon.com)** (Hosted on Render via `onrender.com`)
+**Target URL:** [smplxnf.anomalon.com](https://smplxnf.anomalon.com). As of 2026-11-02,
+the application is merged and locally tested; public DNS/HTTPS verification is
+pending. See [project status](docs/PROJECT_STATUS.md) and the
+[Render deployment and smoke-test runbook](docs/DEPLOYMENT.md).
 
 ### Four Flagship Engineering Workbenches
 1. **Relational Synthesis & Tableau Chase Studio (Flagship Landing View):** Interactive attribute closure, candidate key derivation, prime/non-prime attribute partitioning, minimal canonical cover, Bernstein (1976) dependency-preserving 3NF synthesis, Tsou-Fischer BCNF decomposition trees, and step-by-step Tableau Chase verification with spurious tuple counterexample witnesses.
 2. **Streaming BQNF Delta Repair Simulator:** Incremental Change Data Capture (CDC) boundary maintenance, signed coboundary delta calculation, priority-queue extremum cochain tracking in $O(\log K)$ without base table scans, and dynamic dyadic-bucket $\epsilon$-quantile sketch rebalancing under skewed streams.
-3. **4-Layer NF-IR Compiler Explorer:** Godbolt-style intermediate representation inspector demonstrating multi-pass lowering: Declarative Contract $\to$ Layer 1 Micro-Kernel $\to$ Layer 2 Poset Subsumption & Dead-Check Elimination (DCE) $\to$ Layer 3 Operadic DAG Wiring $\to$ Layer 4 Codegen for SQLite Triggers (`BEFORE INSERT/UPDATE`) and Python `@nf_kernel_guard` decorators.
+3. **NF-IR Compiler Explorer:** Functional-dependency lowering into SQLite triggers (`BEFORE INSERT/UPDATE`), Python guards, and counterexample fixtures, with a constructed subsumption comparison. The four-layer library architecture includes operadic wiring; this endpoint does not execute arbitrary wiring DAGs or compile the full contract catalog.
 4. **AI Agent LossLedger Gateway:** Context projection and token budget truncation for RAG and Model Context Protocol (MCP) tool pipelines with cryptographic SHA-256 Merkle `LossLedger` generation, exact additive token conservation ($\text{retained} + \text{truncated} == \text{source}$), and strict authority firewall gating (`certified_implies_authorized: false`).
 
 📖 **Read the Full Architectural Specification:** [`docs/MVP_SELECTION.md`](docs/MVP_SELECTION.md)  

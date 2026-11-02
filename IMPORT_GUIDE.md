@@ -573,7 +573,7 @@ def check_strict_auditing_nf(schema: RelationalSchema) -> Tuple[bool, Optional[s
 
 ## 5. Deployment Guide: Companion Web Interface
 
-The repository includes a companion web application, **Simplex-NF Studio ("The Normal Form Workbench")**, configured for production deployment at `smplxnf.anomalon.com` on Render (`onrender.com`).
+The repository includes a companion web application, **Simplex-NF Studio ("The Normal Form Workbench")**, with a Render blueprint targeting `smplxnf.anomalon.com`. Configuration is not deployment evidence: see [current status](docs/PROJECT_STATUS.md) and the [deployment runbook](docs/DEPLOYMENT.md).
 
 ### 5.1 Local Development Server
 
@@ -621,9 +621,9 @@ services:
 2. Select **New > Blueprint** and link the repository. Render will automatically parse `render.yaml`.
 3. Configure the custom domain in your DNS provider:
    - Record Type: `CNAME`
-   - Host: `smplxnf.anomalon.com`
-   - Value: `smplxnf-studio.onrender.com`
-4. Render provisions and renews TLS/SSL certificates automatically via Let's Encrypt.
+   - Host: `smplxnf` within the `anomalon.com` zone
+   - Value: the actual assigned Render hostname (do not infer it from the service name)
+4. Verify the custom domain and certificate in Render, then run `python scripts/http_smoke.py https://smplxnf.anomalon.com`. The [runbook](docs/DEPLOYMENT.md) covers the user-operated DNS handoff and browser checks.
 
 ---
 

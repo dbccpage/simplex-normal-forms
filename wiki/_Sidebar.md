@@ -1,5 +1,6 @@
 ### 🏛️ Simplex Normal Forms
 - **[Home (Master Index)](Home)**
+- **[Project Status & Evidence](Project-Status)**
 - **[Theory & Cochain Substrate](Theory-and-Cochain-Substrate)**
 - **[Observer-Relative Ontology](Observer-Relative-Ontology)**
 - **[Concrete Worked Examples](Concrete-Examples)**

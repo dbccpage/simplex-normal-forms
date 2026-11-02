@@ -1,0 +1,166 @@
+{
+  "checked_at_utc": "2026-11-02T22:02:18.842115+00:00",
+  "base_url": "http://127.0.0.1:8765",
+  "workers": 2,
+  "repeats": 2,
+  "tls_certificate_validation": "not applicable (loopback)",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/healthz",
+      "response_sha256": "c7e0c2a5ccb41ba909833e6a4e943d254bdb4efd296c3b930c7dcdf45eed9a46",
+      "passed": true,
+      "elapsed_ms": 60.5
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/",
+      "response_sha256": "a4f86bbc503e80fed790367bb01adb2eb969c42259c44940f17dfb6aa73ce67a",
+      "passed": true,
+      "elapsed_ms": 10.43
+    },
+    {
+      "method": "GET",
+      "path": "/static/app.js",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/static/app.js",
+      "response_sha256": "140a36b0929e725a074e312f44242f0cf19f71df8a3cd3aeca910766afaa53bd",
+      "passed": true,
+      "elapsed_ms": 146.62
+    },
+    {
+      "method": "GET",
+      "path": "/static/style.css",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/static/style.css",
+      "response_sha256": "de95408663815d3c523d76a49c73f291bae565ab00faa83c96a2ebe86fbbfaa6",
+      "passed": true,
+      "elapsed_ms": 28.93
+    },
+    {
+      "method": "GET",
+      "path": "/api/presets",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/presets",
+      "response_sha256": "09de81e08ac6b20e42bbfcdf0141d87e763f3e037aa30977b37086c89d1d83ab",
+      "passed": true,
+      "elapsed_ms": 3.01
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "8620280aa10745b8d19bd9cbe96dca19ba6b13e63a3577c04a33ffc412b2706b",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/relational/normalize",
+      "response_sha256": "792c67faa1854068bcda5c5e037bff728a9ec8a2b425fe67da7e826302e67c1c",
+      "passed": true,
+      "elapsed_ms": 92.99,
+      "preset": "ecommerce"
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "6d60e85b14af5b7fe8b02df1e0621caa55b18f5ca79cb720aa07afcb20429d5d",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/relational/normalize",
+      "response_sha256": "effe7ca618c18e5cabac8ad6106093d98f7fe6153917d8efb56d35b76d33c3db",
+      "passed": true,
+      "elapsed_ms": 4.21,
+      "preset": "lossy_decomposition"
+    },
+    {
+      "method": "POST",
+      "path": "/api/bqnf/simulate",
+      "request_sha256": "b129f3da473c83dd477e03e9154bc521c6fa07d1c0c8f9d7a4bbc5d79561d4dc",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/bqnf/simulate",
+      "response_sha256": "279027ce2a31f451ad1e03fb0e8c0ec63fe3b6e0bdcf1c8e265ca15f07e43c0a",
+      "passed": true,
+      "elapsed_ms": 88.71,
+      "preset": "financial_ledger"
+    },
+    {
+      "method": "POST",
+      "path": "/api/compiler/lower",
+      "request_sha256": "33dac6350d1c2aacfa4744beec696030729e3a6b2521779748dcc441b456bcf5",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/compiler/lower",
+      "response_sha256": "4e37fefc27234f53411540e9e597e3da4df46fe2dff819f539dbf10d373def5b",
+      "passed": true,
+      "elapsed_ms": 32.0,
+      "preset": "employee_bcnf"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/lossledger",
+      "request_sha256": "59baf8400215a7d0fe4c330f1fdbd7ff04de370f3f991c9df6c2c8a1e0908138",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/ai/lossledger",
+      "response_sha256": "02012e08df212dd1f880e894633aea6cbb4b74893cb9820b29a1a2a98682729a",
+      "passed": true,
+      "elapsed_ms": 31.15,
+      "preset": "rag_research_context"
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "8620280aa10745b8d19bd9cbe96dca19ba6b13e63a3577c04a33ffc412b2706b",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/relational/normalize",
+      "response_sha256": "792c67faa1854068bcda5c5e037bff728a9ec8a2b425fe67da7e826302e67c1c",
+      "passed": true,
+      "elapsed_ms": 43.74,
+      "preset": "ecommerce"
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "6d60e85b14af5b7fe8b02df1e0621caa55b18f5ca79cb720aa07afcb20429d5d",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/relational/normalize",
+      "response_sha256": "effe7ca618c18e5cabac8ad6106093d98f7fe6153917d8efb56d35b76d33c3db",
+      "passed": true,
+      "elapsed_ms": 44.48,
+      "preset": "lossy_decomposition"
+    },
+    {
+      "method": "POST",
+      "path": "/api/bqnf/simulate",
+      "request_sha256": "b129f3da473c83dd477e03e9154bc521c6fa07d1c0c8f9d7a4bbc5d79561d4dc",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/bqnf/simulate",
+      "response_sha256": "279027ce2a31f451ad1e03fb0e8c0ec63fe3b6e0bdcf1c8e265ca15f07e43c0a",
+      "passed": true,
+      "elapsed_ms": 12.31,
+      "preset": "financial_ledger"
+    },
+    {
+      "method": "POST",
+      "path": "/api/compiler/lower",
+      "request_sha256": "33dac6350d1c2aacfa4744beec696030729e3a6b2521779748dcc441b456bcf5",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/compiler/lower",
+      "response_sha256": "4e37fefc27234f53411540e9e597e3da4df46fe2dff819f539dbf10d373def5b",
+      "passed": true,
+      "elapsed_ms": 27.06,
+      "preset": "employee_bcnf"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/lossledger",
+      "request_sha256": "59baf8400215a7d0fe4c330f1fdbd7ff04de370f3f991c9df6c2c8a1e0908138",
+      "status": 200,
+      "final_url": "http://127.0.0.1:8765/api/ai/lossledger",
+      "response_sha256": "02012e08df212dd1f880e894633aea6cbb4b74893cb9820b29a1a2a98682729a",
+      "passed": true,
+      "elapsed_ms": 15.78,
+      "preset": "rag_research_context"
+    }
+  ],
+  "scope": "HTTP and semantic smoke only; deployment commit and browser UX require separate verification.",
+  "passed": true
+}

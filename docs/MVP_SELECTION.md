@@ -18,7 +18,7 @@ The objective of this specification is to define, evaluate, and architect the si
 2. Enable an external developer to clone the repository, install the package via standard tooling, and import the core normal-form logic into their own database, compiler, or AI workflows in under fifteen minutes to support the author's technical resume.
 
 ### 1.2 The Production Vision on Render
-The application is provisioned as a lightweight, production-ready Web Service on Render bound to the custom hostname `smplxnf.anomalon.com`. Operating under a stateless ASGI process model powered by FastAPI and Uvicorn, the service serves:
+The application is designed for a lightweight Web Service on Render bound to the custom hostname `smplxnf.anomalon.com`. Public provisioning and HTTPS verification remain separate gates; see [current status](PROJECT_STATUS.md). Operating under a stateless ASGI process model powered by FastAPI and Uvicorn, the service serves:
 - A responsive, high-contrast single-page application (SPA) dashboard styled with modern systems-grade typography and Tailwind CSS.
 - Strongly typed REST endpoints exposing relational synthesis, Tableau Chase verification, streaming CDC delta repair, 4-layer NF-IR compilation to SQLite triggers and Python guards, and AI context compression with Merkle LossLedger generation.
 - Sub-50 millisecond algorithmic execution latencies for typical schemas and streams, executing purely in-process with zero external database dependencies.
@@ -601,7 +601,7 @@ services:
 ```
 
 #### 5.3.2 Subdomain Routing via CNAME
-1. **Render Hostname:** The service receives an internal endpoint: `smplxnf-studio.onrender.com`.
+1. **Render Hostname:** Record the actual assigned public `onrender.com` endpoint from the service dashboard. `smplxnf-studio.onrender.com` below is an example, not a verified assignment.
 2. **DNS Configuration:** In the DNS control panel for `anomalon.com`, a canonical name record is created:
    ```text
    smplxnf.anomalon.com.  CNAME  smplxnf-studio.onrender.com.
@@ -609,7 +609,7 @@ services:
 3. **Automated TLS Termination:** Render automatically provisions and renews a Let's Encrypt SSL/TLS certificate for `smplxnf.anomalon.com`.
 
 #### 5.3.3 Operational Bounds & Resource Footprint
-- **Memory Footprint:** The complete process (FastAPI + Uvicorn + `normal_forms` libraries) consumes approximately 45MB of RAM at idle, fitting comfortably within Render's 512MB entry tier.
+- **Memory Footprint:** The original design estimated approximately 45MB at idle. No retained production measurement establishes this figure; measure memory on the deployed instance.
 - **CPU & Latency Profile:** Core synthesis, Tableau Chase fixed-point calculation, and trigger compilation execute in 5ms to 35ms on standard cloud vCPUs.
 - **Cold-Start Latency:** Process startup takes approximately 1.2 seconds, ensuring rapid recovery on cold instances.
 
@@ -847,17 +847,17 @@ In compliance with the project Claim Hygiene standard, all architectural evaluat
 4. Does not assert that 3NF or BCNF normalization eliminates application-level anomalies outside declared functional dependencies.
 
 ### 7.3 Narrowest Defensible Claim
-In the declared discrete Python implementation, the relational synthesis algorithms, Chase tableau procedures, BQNF delta accumulation, and 4-layer NF-IR pipeline execute deterministically and pass all 136 automated tests in `simplex-normal-forms/tests/`.
+The original MVP handoff reported 136 pytest items (89 unittest methods). Subsequent correctness and packaging work was merged in PRs #18–19, with 232 tests passing in premerge verification and hosted CI passing on merged `da498e5`. These are bounded implementation checks, not certification of every contract or a live deployment. See [current evidence and scope](PROJECT_STATUS.md).
 
 ### 7.4 Next Test Needed
-Implement the FastAPI presentation prototype in `web/app.py`, deploy the service to Render under `smplxnf.anomalon.com`, and execute automated HTTP end-to-end integration tests measuring sub-200 millisecond response latencies across synthesis, streaming simulation, and compiler endpoints.
+The FastAPI presentation prototype is implemented and PRs #17–19 are merged. Inspect/provision the Render service, verify its assigned hostname, hand off the exact CNAME target to the user, then verify custom-domain TLS and all four workbenches. Use [DEPLOYMENT.md](DEPLOYMENT.md) and `scripts/http_smoke.py`; record measured latency rather than treating the original sub-200 ms target as an established result.
 
 ---
 
 ## 8. Conclusion & Actionable Execution Sequence
 
 1. **Approved Architecture:** Option E (Simplex-NF Studio) is established as the single canonical MVP for `smplxnf.anomalon.com`.
-2. **Immediate Execution Phase:**
+2. **Original implementation milestones (now implemented; live deployment pending):**
    - **M2 (Web Prototype & Deployment):** Author `pyproject.toml`, implement `web/app.py`, author `render.yaml`, and build the responsive single-page studio dashboard.
    - **M3 (Documentation & Import Guide):** Author comprehensive `docs/IMPORT_GUIDE.md` and update `README.md` with complete installation and code usage instructions.
    - **M4 (Automated Tests & Verification):** Add test suites covering API endpoints, UI rendering, and external package import workflows.

@@ -2,6 +2,12 @@
 
 ## 1. Gate Status
 
+**Current status (2026-11-02):** Implemented and merged in PR #12 (`db4150f`).
+The approval gates below are retained as the original planning record, not
+pending authorization. See [current project status](../PROJECT_STATUS.md).
+
+### Original planning gates
+
 * **Master Plan of Plans ([`plan_of_plans.md`](./plan_of_plans.md)):** Approved
 * **Current Gate:** Review & Approve **Plan 1 (`plan_01_wdp_obnf_micro_kernel.md`)** before writing any production code.
 * **Next Gate After Approval:** Execute Plan 1 (`normal_forms/ir_kernel.py` + `tests/test_ir_kernel.py`) while drafting **Plan 2 (`plan_02_subsumption_lattice.md`)** in parallel; open, review, and merge **PR #12** before executing Plan 2.
