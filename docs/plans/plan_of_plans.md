@@ -1,6 +1,10 @@
-# Master Plan of Plans: Simplex Normal Forms IR (`NF-IR`) — Completed
+# Master Plan of Plans: Simplex Normal Forms IR (`NF-IR`) — Historical completion record
 
-## 1. Final Status on `origin/main` @ `dffdb87`
+The four-plan implementation was completed at `dffdb87`. The 44-test receipt
+below belongs to that milestone. For the later web MVP, correctness fixes,
+packaging, CI and deployment gate, see [current project status](../PROJECT_STATUS.md).
+
+## 1. Historical status at `dffdb87`
 
 All 11 pull requests (**PR #5 through PR #15**) are **committed, verified (`Ran 44 tests in 31.448s — OK`), merged, and synced to `origin/main`**:
 

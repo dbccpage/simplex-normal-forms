@@ -1,0 +1,19 @@
+{
+  "checked_at_utc": "2026-11-02T22:08:43.691595+00:00",
+  "base_url": "https://smplxnf.anomalon.com",
+  "workers": 1,
+  "repeats": 1,
+  "tls_certificate_validation": "enabled",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "passed": false,
+      "error": "<urlopen error [Errno 11001] getaddrinfo failed>",
+      "elapsed_ms": 58.61
+    }
+  ],
+  "scope": "HTTP and semantic smoke only; deployment commit and browser UX require separate verification.",
+  "passed": false,
+  "remaining_checks": "skipped: health check failed"
+}

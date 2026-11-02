@@ -109,7 +109,7 @@ async function executeRelationalNormalize() {
   let custom_components = null;
   if (compStr.trim()) {
     // Parse "(A, B), (B, C)" or "A, B; B, C"
-    const parts = compStr.replace(/[()]/g, '').split(';').map(x => x.split(',').map(y => y.trim()).filter(Boolean));
+    const parts = compStr.replace(/\)\s*,\s*\(/g, ';').replace(/[()]/g, '').split(';').map(x => x.split(',').map(y => y.trim()).filter(Boolean));
     if (parts.length > 0 && parts[0].length > 0) {
       custom_components = parts;
     }
@@ -226,7 +226,10 @@ function renderRelationalResults(data) {
   const tbody = document.getElementById('chase-steps-tbody');
   tbody.innerHTML = '';
   if (data.chase.steps.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="p-3 text-center text-slate-500">Initial tableau was already distinguished (0 substitution steps needed).</td></tr>';
+    const message = data.chase.is_implied
+      ? 'Initial tableau was already distinguished (0 substitution steps needed).'
+      : 'No substitutions applied; no distinguished row was reached.';
+    tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-slate-500">${message}</td></tr>`;
   } else {
     data.chase.steps.forEach(s => {
       const tr = document.createElement('tr');

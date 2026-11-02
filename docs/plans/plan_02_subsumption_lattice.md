@@ -2,6 +2,12 @@
 
 ## 1. Gate Status
 
+**Current status (2026-11-02):** Implemented and merged in PR #13 (`d0e834c`).
+The approval gates below are retained as the original planning record, not
+pending authorization. See [current project status](../PROJECT_STATUS.md).
+
+### Original planning gates
+
 * **Master Plan of Plans ([`plan_of_plans.md`](./plan_of_plans.md)):** Approved
 * **Plan 1 ([`plan_01_wdp_obnf_micro_kernel.md`](./plan_01_wdp_obnf_micro_kernel.md)):** Executed (`normal_forms/ir_kernel.py` + `tests/test_ir_kernel.py` passing) & PR #12 (`https://github.com/dbccpage/simplex-normal-forms/pull/12`) merging to `origin/main`.
 * **Current Gate:** Review & Approve **Plan 2 (`plan_02_subsumption_lattice.md`)** before writing any Plan 2 production code.
