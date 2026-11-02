@@ -17,7 +17,8 @@ Implementation, catalog declarations, and public deployment have separate gates.
 | Corrected CNAME, 2026-11-02 22:07 UTC | Public resolver `1.1.1.1` returned `smplxnf.anomalon.com → smplxnf-live.onrender.com`, TTL 3600 | DNS record observed; assignment to the intended service not yet verified |
 | Supplied Render target, 2026-11-02 22:07 UTC | [Receipt](verification/2026-11-02-corrected-render-http.json): HTTPS `/healthz` returned 404 | Application health check failed |
 | Canonical hostname retry, 2026-11-02 22:08 UTC | [Receipt](verification/2026-11-02-corrected-domain-http.json): local resolver still failed | Propagation/cache discrepancy; no TLS verdict for this hostname |
-| Render account/service state | Supplied project `prj-dbj5ei942hec73c30pu0`; dashboard required sign-in; no connected Render tool available during inspection | Service existence, deployed SHA, assigned hostname and certificate remain unverified |
+| Latest custom-domain check, 2026-11-02 22:25 UTC | [Receipt](verification/2026-11-02-domain-service-mismatch.json): valid HTTPS, HTTP 200, health service `smplcache-live`, HTML title SmplCache Live | Wrong application attached to the domain; Studio acceptance failed |
+| Render account/service state | User screenshot shows certificate issued and target `smplcache-live.onrender.com`; account inspection still unavailable | Custom domain is attached to the existing SmplCache application; intended Studio service remains unverified |
 
 GitHub Pages completing its own deployment does not establish that the FastAPI
 application is running on Render. The health response's fixed version `0.1.0`
@@ -28,6 +29,14 @@ The user subsequently supplied a Render project screenshot showing
 and a new-web-service URL. These are distinct from the proposed Simplex service.
 The earlier accidental `simplxnf` spelling and its failed HTTP/TLS probes are
 retained in the receipts as history. The canonical target remains `smplxnf`.
+
+**Latest state:** DNS still points to `smplxnf-live.onrender.com`, but Render
+serves SmplCache Live for the custom Host header. The certificate is now valid.
+This is a routing/application mismatch, not a successful Studio deployment.
+Create/verify the separate service from `dbccpage/simplex-normal-forms`, move
+only this custom-domain association from the SmplCache service to it, and
+align the CNAME with its assigned hostname. Preserve the existing SmplCache
+service and its application. No Studio API POSTs were sent to that application.
 
 Local browser checks exercised relational synthesis, streaming, compiler and AI
 workbenches. Switching to the lossy decomposition preset exposed a frontend

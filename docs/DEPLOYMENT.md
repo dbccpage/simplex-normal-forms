@@ -38,6 +38,14 @@ Render hostname, then wait for their confirmation that the record is updated:
 assigned hostname before requesting another DNS change. The service still needs
 `smplxnf.anomalon.com` added in **Settings → Custom Domains**.
 
+**Latest check, 22:25 UTC:** The certificate is valid, but the custom domain
+serves **SmplCache Live** (`service: smplcache-live`, commit `810fc7cf0d99`).
+The user's Render screenshot lists `smplcache-live.onrender.com` as the target.
+Create/verify the separate Simplex service first, then move this custom-domain
+association to it and align DNS with that service's actual hostname. Do not
+replace or rename the existing SmplCache application to perform this migration.
+See the [application-identity receipt](verification/2026-11-02-domain-service-mismatch.json).
+
 | GoDaddy field | Value |
 | --- | --- |
 | Type | `CNAME` |

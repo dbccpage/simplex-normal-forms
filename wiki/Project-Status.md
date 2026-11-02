@@ -11,12 +11,20 @@ deployment is a separate, unfinished gate.
 | Tests | 232 tests passed in premerge Python 3.12/3.14 runs; [merged-main hosted CI](https://github.com/dbccpage/simplex-normal-forms/actions/runs/41529136846) passed |
 | Local HTTP | 15 smoke checks passed on 2026-11-02, including two repetitions of five API cases with two clients |
 | DNS | User corrected CNAME to `smplxnf → smplxnf-live.onrender.com`; observed through resolver `1.1.1.1` at 22:07 UTC, TTL 3600 |
-| Render / HTTPS | Supplied target's `/healthz` returned HTTP 404. The canonical hostname still failed through the local resolver at 22:08 UTC. No successful public workbench or custom-domain TLS check is recorded |
+| Render / HTTPS | At 22:25 UTC HTTPS succeeded and returned HTTP 200, but `/healthz` identified `smplcache-live` and the page title identified SmplCache Live. Certificate issuance is complete; the domain is attached to the wrong application |
 
 The original Gemini/Teamwork notes' 136 pytest items / 89 unittest methods and
 instructions to merge PR #17 are historical. A Render blueprint is configuration,
 not proof that a service was provisioned. The new service must have the custom
 domain registered in Render; the CNAME alone does not establish routing or TLS.
+
+The latest user screenshot lists `smplcache-live.onrender.com` as Render's
+target, while public DNS still points to `smplxnf-live.onrender.com`. The custom
+domain currently serves the existing SmplCache application, commit `810fc7cf0d99`.
+Create/verify the separate service from `dbccpage/simplex-normal-forms`, then
+move this custom-domain association to it and align the CNAME with its assigned
+hostname. Preserve the existing SmplCache service. No Studio API POSTs were
+attempted against that application; HTTP 200 alone does not pass acceptance.
 
 ## Catalog evidence levels
 

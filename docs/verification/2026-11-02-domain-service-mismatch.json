@@ -1,0 +1,20 @@
+{
+  "checked_at_utc": "2026-11-02T22:25:34.3109598Z",
+  "base_url": "https://smplxnf.anomalon.com",
+  "tls_validation": "default HTTPS certificate validation succeeded",
+  "dns_resolver": "1.1.1.1",
+  "cname_target": "smplxnf-live.onrender.com",
+  "health_status": 200,
+  "health": {
+    "status": "ok",
+    "service": "smplcache-live",
+    "api_version": "1.0.0",
+    "app_commit": "810fc7cf0d99",
+    "engine_commit": "810fc7cf0d99"
+  },
+  "html_status": 200,
+  "html_title": "SmplCache Live — Certified SQL Cache Maintenance Demo",
+  "expected_service": "smplxnf-studio",
+  "passed": false,
+  "reason": "Custom domain serves SmplCache Live instead of Simplex-NF Studio; no Studio API POSTs attempted."
+}
