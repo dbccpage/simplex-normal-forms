@@ -292,6 +292,13 @@ class BqnfValidator:
         initial_state: Optional[Dict[str, Any]] = None,
     ) -> BqnfEvaluationResult:
         """Evaluate a CDC event against a boundary, returning typed evaluation result."""
+        if event.relation not in boundary.relations:
+            return _result("Preserve", "[0]", reason="Relation is outside the declared boundary.")
+        if event.op not in {"INSERT", "UPDATE", "DELETE"}:
+            return _result(
+                "Unsupported", "[NonZero - LimitOfSubstrate]", certified=False,
+                reason=f"Unsupported CDC operation: {event.op}",
+            )
         failure = _evidence_failure(boundary, event)
         if failure is not None:
             return failure
