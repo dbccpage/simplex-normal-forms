@@ -178,7 +178,9 @@ def compile_to_sqlite_triggers(
             + spec.protected_law_fields
         )
     )
-    col_defs = ", ".join(f"{_sanitize_ident(c)} TEXT" for c in all_cols)
+    # BLOB affinity leaves bound scalar types unchanged: 1 and "1" remain
+    # distinct, while integer/real numeric equality agrees with Python.
+    col_defs = ", ".join(f"{_sanitize_ident(c)} BLOB" for c in all_cols)
     create_table_sql = f"CREATE TABLE {q_table} ({col_defs});"
 
     cid = spec.contract_id
@@ -335,7 +337,7 @@ def install_and_verify_sqlite_bundle(
             )
         for row in rows:
             vals = [
-                str(row[c]) if (c in row and row[c] is not None) else None
+                row.get(c)
                 for c in bundle.columns
             ]
             cur.execute(insert_sql, vals)

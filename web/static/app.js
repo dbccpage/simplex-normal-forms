@@ -340,7 +340,11 @@ function renderBqnfResults(data) {
   }
 
   // Quantile histogram
-  const reb = data.quantile_rebalance_receipt;
+  const reb = Object.values(data.quantile_rebalance_receipts).reduce((total, receipt) => ({
+    splits_executed: total.splits_executed + receipt.splits_executed,
+    merges_executed: total.merges_executed + receipt.merges_executed,
+    total_mass: total.total_mass + receipt.total_mass,
+  }), {splits_executed: 0, merges_executed: 0, total_mass: 0});
   document.getElementById('bqnf-rebalance-badge').innerText = `Splits: ${reb.splits_executed} | Merges: ${reb.merges_executed} | Mass: ${reb.total_mass}`;
 
   const bucketsContainer = document.getElementById('bqnf-buckets-visual');
@@ -357,6 +361,10 @@ function renderBqnfResults(data) {
         <span class="text-xs px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 font-mono">Count: ${b.count}</span>
       </div>
     `;
+    const regionLabel = document.createElement('span');
+    regionLabel.className = 'text-slate-400 mr-2';
+    regionLabel.textContent = b.region;
+    div.firstElementChild.prepend(regionLabel);
     bucketsContainer.appendChild(div);
   });
 }

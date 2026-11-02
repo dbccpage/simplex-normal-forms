@@ -474,7 +474,7 @@ def evaluate_nf_kernel(
     required_cols = tuple(dict.fromkeys(spec.collapse_fields + spec.protected_law_fields))
     for rid, row in zip(row_ids, carrier_rows):
         for col in required_cols:
-            if col not in row:
+            if col not in row or row[col] is None:
                 cx = ConstructiveWitnessPair(
                     left_id=rid,
                     right_id=rid,
@@ -497,7 +497,7 @@ def evaluate_nf_kernel(
                     canonical_terminal="Reject",
                     admitted=False,
                     certified=False,
-                    reason=f"Row '{rid}' is missing attribute '{col}' required by kernel law.",
+                    reason=f"Row '{rid}' has a missing or null attribute '{col}' required by kernel law.",
                 )
 
     for i in range(n):

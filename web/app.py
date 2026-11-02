@@ -10,11 +10,12 @@ certified_implies_authorized: false.
 
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, replace
 import hashlib
 import json
 import math
 import os
+import re
 from pathlib import Path
 import sqlite3
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
@@ -52,6 +53,7 @@ from normal_forms.domain.bqnf_validator import (
 from normal_forms.bqnf_extrema import (
     RepairTally,
     accumulate_delta,
+    apply_addition,
     apply_removal,
 )
 from normal_forms.sales_cochain import (
@@ -474,24 +476,32 @@ class BqnfSimulateRequest(BaseModel):
 
 @app.post("/api/bqnf/simulate")
 async def simulate_bqnf_stream(payload: BqnfSimulateRequest) -> Dict[str, Any]:
+    conn = None
     try:
         boundary = BqnfBoundary.from_dict(payload.boundary)
+        # This workbench maintains a single sales relation grouped by region.
+        # Its exact extremum state (or base-table fallback) supplies MIN/MAX;
+        # the scalar domain validator handles routing and SUM predicate deltas.
+        if (len(boundary.relations) != 1 or boundary.groups != ("region",)
+                or not {"region", "amount"} <= set(boundary.attributes)
+                or not boundary.aggregates
+                or not set(boundary.aggregates) <= {"SUM(amount)", "MIN(amount)", "MAX(amount)"}):
+            raise ValueError("Simulator requires one relation, region grouping, region/amount attributes, and SUM/MIN/MAX(amount).")
+        if len(boundary.predicates) > 1:
+            raise ValueError("Simulator supports at most one equality predicate.")
+        predicate_parts = None
+        if boundary.predicates:
+            match = re.fullmatch(r"\s*(\w+)\s*=\s*([^=<>!]+)\s*", boundary.predicates[0])
+            if not match or match[1] != "status" or "status" not in boundary.attributes:
+                raise ValueError("Simulator predicate must be status = value with status declared.")
+            predicate_parts = (match[1], match[2].strip().strip("'\""))
+        if (not math.isfinite(payload.bucket_width) or not math.isfinite(payload.min_bucket_width)
+                or not 0 < payload.min_bucket_width <= payload.bucket_width
+                or payload.split_threshold < 2
+                or not 0 <= payload.merge_threshold < payload.split_threshold):
+            raise ValueError("Invalid quantile widths or split/merge thresholds.")
+        routing_boundary = replace(boundary, aggregates=("SUM(amount)",))
         eval_results: List[Dict[str, Any]] = []
-
-        # 1. Pure BQNF boundary route classification
-        for ev_dict in payload.events:
-            ev = BqnfCdcEvent.from_dict(ev_dict)
-            res = BqnfValidator.evaluate(boundary, ev)
-            eval_results.append({
-                "op": ev.op,
-                "relation": ev.relation,
-                "decision": res.decision,
-                "terminal_route": res.terminal_route,
-                "obstruction_class": res.obstruction_class,
-                "repair": res.repair,
-                "evidence_sufficient": res.evidence_sufficient,
-                "reason": res.reason,
-            })
 
         # 2. In-Memory SQLite Cochain & Dyadic-Bucket Quantile Simulation
         conn = sqlite3.connect(":memory:")
@@ -542,7 +552,7 @@ async def simulate_bqnf_stream(payload: BqnfSimulateRequest) -> Dict[str, Any]:
         """)
 
         # Populate initial state
-        initial_sales = payload.initial_sales or [
+        initial_sales = payload.initial_sales if payload.initial_sales is not None else [
             {"region": "North", "amount": 25.0},
             {"region": "North", "amount": 60.0},
             {"region": "North", "amount": 120.0},
@@ -550,118 +560,120 @@ async def simulate_bqnf_stream(payload: BqnfSimulateRequest) -> Dict[str, Any]:
             {"region": "South", "amount": 80.0},
         ]
         current_cache: Dict[str, Dict[str, Any]] = {}
-        for s in initial_sales:
-            r = s.get("region", "North")
-            a = float(s.get("amount", 0.0))
-            cur.execute("INSERT INTO base_sales (region, amount, status) VALUES (?, ?, 'paid');", (r, a))
+        tally = RepairTally()
+
+        def active(image: Dict[str, Any]) -> bool:
+            return predicate_parts is None or str(image.get(predicate_parts[0], "")) == predicate_parts[1]
+
+        def sale(image: Dict[str, Any]) -> Tuple[str, float, str]:
+            region = image["region"]
+            amount = float(image["amount"])
+            if not isinstance(region, str) or not region or not math.isfinite(amount):
+                raise ValueError("Sales require a nonempty region and finite amount.")
+            return region, amount, str(image.get("status", "paid"))
+
+        def add_sale(image: Dict[str, Any]) -> None:
+            r, a, status = sale(image)
+            cur.execute("INSERT INTO base_sales (region, amount, status) VALUES (?, ?, ?);", (r, a, status))
             cochain_add(conn, r, a)
+            quantile_cochain_add(conn, r, a, payload.bucket_width, payload.min_bucket_width)
+            apply_addition(cur, current_cache, r, a, "INSERT", payload.use_cochain, tally)
 
-            # Accumulate in memory cache
-            if r not in current_cache:
-                current_cache[r] = {"total_sales": 0.0, "sale_count": 0, "min_amount": a, "max_amount": a}
-            current_cache[r]["total_sales"] += a
-            current_cache[r]["sale_count"] += 1
-            current_cache[r]["min_amount"] = min(current_cache[r]["min_amount"], a)
-            current_cache[r]["max_amount"] = max(current_cache[r]["max_amount"], a)
+        for s in initial_sales:
+            image = {"status": "paid", **s}
+            sale(image)
+            if active(image):
+                add_sale(image)
 
-            # Populate initial quantile bucket
-            b_width = payload.bucket_width
-            b_id = int(math.floor(a / b_width))
-            l_bound = b_id * b_width
-            u_bound = (b_id + 1) * b_width
-            cur.execute("""
-                INSERT INTO region_quantile_cochain (region, bucket_id, lower_bound, upper_bound, count)
-                VALUES (?, ?, ?, ?, 1)
-                ON CONFLICT(region, bucket_id) DO UPDATE SET count = count + 1;
-            """, (r, b_id, l_bound, u_bound))
-
-        conn.commit()
-
-        # Rebalance initial quantiles
-        rebalance_quantile_cochain(
-            conn,
-            region="North",
-            bucket_width=payload.bucket_width,
-            split_threshold=payload.split_threshold,
-            merge_threshold=payload.merge_threshold,
-            min_bucket_width=payload.min_bucket_width,
-        )
-
+        # Initialization is not a CDC repair.
+        cur.execute("DELETE FROM extrema_repair_log;")
         tally = RepairTally()
         # Execute CDC events
         for ev_dict in payload.events:
-            op = ev_dict.get("op", "UPDATE").upper()
-            old_img = ev_dict.get("old") or {}
-            new_img = ev_dict.get("new") or {}
+            ev = BqnfCdcEvent.from_dict(ev_dict)
+            res = BqnfValidator.evaluate(routing_boundary, ev)
+            # The scalar routing delta is not a grouped mutation receipt.
+            # Populate repair only from the removals/additions actually applied.
+            decision = {**res.to_dict(), "op": ev.op, "relation": ev.relation, "applied": False, "repair": None}
+            eval_results.append(decision)
+            if res.decision != "Repair" or not res.certified or not res.evidence_sufficient:
+                continue
+            old_img, new_img = ev.old or {}, ev.new or {}
+            remove = ev.op in {"UPDATE", "DELETE"} and active(old_img)
+            insert = ev.op in {"UPDATE", "INSERT"} and active(new_img)
+            region_deltas: Dict[str, Dict[str, Any]] = {}
 
-            if op == "INSERT":
-                r = new_img.get("region", "North")
-                a = float(new_img.get("amount", 0.0))
-                cur.execute("INSERT INTO base_sales (region, amount, status) VALUES (?, ?, 'paid');", (r, a))
-                cochain_add(conn, r, a)
-                quantile_cochain_add(conn, r, a, payload.bucket_width, payload.min_bucket_width)
-                if r in current_cache:
-                    current_cache[r]["total_sales"] += a
-                    current_cache[r]["sale_count"] += 1
-                    current_cache[r]["min_amount"] = min(current_cache[r]["min_amount"], a)
-                    current_cache[r]["max_amount"] = max(current_cache[r]["max_amount"], a)
-            elif op == "DELETE":
-                r = old_img.get("region", "North")
-                a = float(old_img.get("amount", 0.0))
-                cur.execute("DELETE FROM base_sales WHERE id = (SELECT id FROM base_sales WHERE region = ? AND amount = ? LIMIT 1);", (r, a))
+            def record_delta(region: str, amount: float, count: int) -> None:
+                delta = region_deltas.setdefault(region, {"delta_revenue": 0.0, "delta_count": 0})
+                delta["delta_revenue"] += amount
+                delta["delta_count"] += count
+
+            # Validate both halves before making any state change.
+            if insert:
+                sale(new_img)
+            if remove:
+                r, a, status = sale(old_img)
+                # A Preserve event need not maintain untracked metadata. Do not
+                # use that metadata as identity for a later active before-image.
+                match_sql = "SELECT id FROM base_sales WHERE region = ? AND amount = ?"
+                match_values: List[Any] = [r, a]
+                if "status" in boundary.attributes:
+                    match_sql += " AND status = ?"
+                    match_values.append(status)
+                old_row = cur.execute(match_sql + " LIMIT 1;", match_values).fetchone()
+                if old_row is None:
+                    decision.update(decision="Invalidate", terminal_route="Invalidate", certified=False,
+                                    evidence_sufficient=False, repair=None,
+                                    obstruction_class="[NonZero - MissingEvidence]",
+                                    reason="Before-image has no matching retained sale; event was not applied.")
+                    continue
+                cur.execute("DELETE FROM base_sales WHERE id = ?;", (old_row["id"],))
                 cochain_remove(conn, r, a)
                 quantile_cochain_remove(conn, r, a, payload.bucket_width)
                 apply_removal(cur, current_cache, r, a, payload.use_cochain, tally)
-            elif op == "UPDATE":
-                r_old = old_img.get("region", "North")
-                a_old = float(old_img.get("amount", 0.0))
-                r_new = new_img.get("region", "North")
-                a_new = float(new_img.get("amount", 0.0))
-                cur.execute("DELETE FROM base_sales WHERE id = (SELECT id FROM base_sales WHERE region = ? AND amount = ? LIMIT 1);", (r_old, a_old))
-                cochain_remove(conn, r_old, a_old)
-                quantile_cochain_remove(conn, r_old, a_old, payload.bucket_width)
-                apply_removal(cur, current_cache, r_old, a_old, payload.use_cochain, tally)
-                cur.execute("INSERT INTO base_sales (region, amount, status) VALUES (?, ?, 'paid');", (r_new, a_new))
-                cochain_add(conn, r_new, a_new)
-                quantile_cochain_add(conn, r_new, a_new, payload.bucket_width, payload.min_bucket_width)
-                if r_new in current_cache:
-                    current_cache[r_new]["total_sales"] += a_new
-                    current_cache[r_new]["sale_count"] += 1
-                    current_cache[r_new]["min_amount"] = min(current_cache[r_new]["min_amount"], a_new)
-                    current_cache[r_new]["max_amount"] = max(current_cache[r_new]["max_amount"], a_new)
+                record_delta(r, -a, -1)
+            if insert:
+                add_sale(new_img)
+                r, a, _ = sale(new_img)
+                record_delta(r, a, 1)
+            decision["applied"] = remove or insert
+            if decision["applied"]:
+                decision["repair"] = {"region_deltas": region_deltas}
 
         conn.commit()
 
         # Rebalance quantiles after event stream
-        reb_stats = rebalance_quantile_cochain(
-            conn,
-            region="North",
-            bucket_width=payload.bucket_width,
-            split_threshold=payload.split_threshold,
-            merge_threshold=payload.merge_threshold,
-            min_bucket_width=payload.min_bucket_width,
-        )
+        reb_receipts = {
+            region: rebalance_quantile_cochain(
+                conn, region=region, bucket_width=payload.bucket_width,
+                split_threshold=payload.split_threshold, merge_threshold=payload.merge_threshold,
+                min_bucket_width=payload.min_bucket_width,
+            ) for region in sorted(set(current_cache) | {"North"})
+        }
 
         # Retrieve repair log entries
         cur.execute("SELECT * FROM extrema_repair_log ORDER BY id ASC;")
         repair_log = [dict(row) for row in cur.fetchall()]
 
         # Retrieve active quantile buckets
-        cur.execute("SELECT bucket_id, lower_bound, upper_bound, count FROM region_quantile_cochain WHERE count > 0 ORDER BY lower_bound ASC;")
+        cur.execute("SELECT region, bucket_id, lower_bound, upper_bound, count FROM region_quantile_cochain WHERE count > 0 ORDER BY region, lower_bound ASC;")
         buckets = [dict(row) for row in cur.fetchall()]
 
         # Active extremum cochain entries
-        cur.execute("SELECT amount, frequency FROM region_extremum_cochain WHERE region = 'North' ORDER BY amount ASC;")
+        cur.execute("SELECT region, amount, frequency FROM region_extremum_cochain ORDER BY region, amount ASC;")
         extremum_entries = [dict(row) for row in cur.fetchall()]
-
-        conn.close()
 
         return {
             "events_evaluated": len(eval_results),
             "event_decisions": eval_results,
             "extrema_repair_log": repair_log,
             "extremum_cochain_entries": extremum_entries,
-            "quantile_rebalance_receipt": reb_stats,
+            "quantile_rebalance_receipt": reb_receipts["North"],
+            "quantile_rebalance_receipts": reb_receipts,
+            "final_cache": {
+                region: {key: state[key] for key in ("total_sales", "sale_count", "min_amount", "max_amount")}
+                for region, state in current_cache.items()
+            },
             "quantile_buckets": buckets,
             "repair_tally": asdict(tally),
             "cochain_speedup": (
@@ -672,6 +684,9 @@ async def simulate_bqnf_stream(payload: BqnfSimulateRequest) -> Dict[str, Any]:
         }
     except Exception as exc:
         raise HTTPException(status_code=400, detail=str(exc))
+    finally:
+        if conn is not None:
+            conn.close()
 
 
 # =============================================================================

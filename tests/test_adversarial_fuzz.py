@@ -179,14 +179,14 @@ class TestAdversarialFuzz(unittest.TestCase):
         self.assertEqual(data["event_decisions"], [])
 
     def test_bqnf_unknown_relations_and_arbitrary_keys(self) -> None:
-        """TC2.2: CDC events with unknown relations fail closed to 'Invalidate'."""
+        """TC2.2: An unrelated relation leaves the declared sales boundary unchanged."""
         payload = {
             "boundary": {
                 "relations": ["sales"],
-                "attributes": ["amount", "status"],
+                "attributes": ["amount", "status", "region"],
                 "predicates": [],
                 "aggregates": ["SUM(amount)"],
-                "groups": [],
+                "groups": ["region"],
             },
             "events": [
                 {
@@ -201,7 +201,8 @@ class TestAdversarialFuzz(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertEqual(data["events_evaluated"], 1)
-        self.assertEqual(data["event_decisions"][0]["decision"], "Invalidate")
+        self.assertEqual(data["event_decisions"][0]["decision"], "Preserve")
+        self.assertFalse(data["event_decisions"][0]["applied"])
 
     def test_bqnf_negative_quantities_and_dyadic_buckets(self) -> None:
         """TC2.3: Negative sales amounts must be processed without arithmetic crashes."""
@@ -262,17 +263,17 @@ class TestAdversarialFuzz(unittest.TestCase):
         payload = {
             "boundary": {
                 "relations": ["sales"],
-                "attributes": ["amount"],
+                "attributes": ["amount", "region"],
                 "predicates": [],
                 "aggregates": ["SUM(amount)"],
-                "groups": [],
+                "groups": ["region"],
             },
             "events": [],
             "bucket_width": 0.0,
         }
         res = self.client.post("/api/bqnf/simulate", json=payload)
         self.assertEqual(res.status_code, 400)
-        self.assertIn("division by zero", res.json()["detail"])
+        self.assertIn("Invalid quantile widths", res.json()["detail"])
 
     def test_bqnf_stream_observes_extremum_cochain_but_reveals_quantile_cochain_gap(self) -> None:
         """TC2.6: Verifies that extremum cochain updates while documenting that quantile cochain does not."""
