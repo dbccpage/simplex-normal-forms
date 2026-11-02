@@ -52,9 +52,32 @@ def cochain_remove(conn: sqlite3.Connection, region: str, amount: float) -> None
     )
 
 
+def _base_cell(amount: float, bucket_width: float) -> Tuple[int, float, float]:
+    """Find a representable base interval containing amount, without tolerances.
+
+    Integer ratios avoid quotient rounding/underflow at cell boundaries (e.g.
+    the float immediately below zero). Membership uses the stored float bounds.
+    """
+    if not math.isfinite(amount) or not math.isfinite(bucket_width) or bucket_width <= 0:
+        raise ValueError("Quantile values and widths must be finite, with positive width.")
+    numerator, denominator = amount.as_integer_ratio()
+    width_numerator, width_denominator = bucket_width.as_integer_ratio()
+    index = (numerator * width_denominator) // (denominator * width_numerator)
+    low, high = index * bucket_width, (index + 1) * bucket_width
+    # Multiplication can round the real cell boundary onto amount itself.
+    if amount < low:
+        index -= 1
+    elif amount >= high:
+        index += 1
+    low, high = index * bucket_width, (index + 1) * bucket_width
+    if not (math.isfinite(low) and math.isfinite(high) and low <= amount < high):
+        raise ValueError("Quantile base interval is not representable for this amount/width.")
+    return index, low, high
+
+
 def _allocate_bucket_id(cursor: sqlite3.Cursor, region: str, lower_bound: float, bucket_width: float) -> int:
     """Allocates a deterministic integer bucket_id for a newly inserted interval."""
-    default_id = int(math.floor((lower_bound + 1e-12) / bucket_width))
+    default_id = _base_cell(lower_bound, bucket_width)[0]
     cursor.execute(
         "SELECT 1 FROM region_quantile_cochain WHERE region = ? AND bucket_id = ?;",
         (region, default_id),
@@ -86,27 +109,27 @@ def _find_disjoint_dyadic_interval(
     """Finds the maximal dyadic sub-interval of [b*W_0, (b+1)*W_0) containing amount
     that is disjoint from all existing active buckets for region.
     """
-    base_idx = int(math.floor(amount / bucket_width))
-    low = base_idx * bucket_width
-    high = (base_idx + 1) * bucket_width
+    _, low, high = _base_cell(amount, bucket_width)
     cursor.execute(
         """
         SELECT lower_bound, upper_bound
         FROM region_quantile_cochain
         WHERE region = ? AND count > 0 AND lower_bound < ? AND upper_bound > ?;
         """,
-        (region, high - 1e-12, low + 1e-12),
+        (region, high, low),
     )
     existing = [(float(r["lower_bound"]), float(r["upper_bound"])) for r in cursor.fetchall()]
-    while existing and (high - low) / 2.0 >= min_bucket_width - 1e-12:
+    while existing:
         overlaps = [
             (b_low, b_high)
             for b_low, b_high in existing
-            if b_low < high - 1e-12 and b_high > low + 1e-12
+            if b_low < high and b_high > low
         ]
         if not overlaps:
             break
-        mid = 0.5 * (low + high)
+        mid = low + 0.5 * (high - low)
+        if (high - low) / 2.0 < min_bucket_width or not low < mid < high:
+            raise ValueError("No disjoint representable quantile interval at the configured minimum width.")
         if amount < mid:
             high = mid
         else:
@@ -130,7 +153,7 @@ def quantile_cochain_add(
         ORDER BY (upper_bound - lower_bound) ASC, bucket_id ASC
         LIMIT 1;
         """,
-        (region, amount + 1e-12, amount),
+        (region, amount, amount),
     )
     row = cursor.fetchone()
     if row is not None:
@@ -166,16 +189,9 @@ def quantile_cochain_remove(
         ORDER BY (upper_bound - lower_bound) ASC, bucket_id ASC
         LIMIT 1;
         """,
-        (region, amount + 1e-12, amount),
+        (region, amount, amount),
     )
     row = cursor.fetchone()
-    if row is None:
-        bucket_id = int(math.floor(amount / bucket_width))
-        cursor.execute(
-            "SELECT bucket_id, count FROM region_quantile_cochain WHERE region = ? AND bucket_id = ?;",
-            (region, bucket_id),
-        )
-        row = cursor.fetchone()
     if row is None:
         return
     b_id = int(row["bucket_id"])
@@ -215,7 +231,7 @@ def _count_points_in_half_open_interval(
     low: float,
     high: float,
 ) -> int:
-    return sum(freq for amt, freq in points if (low - 1e-12) <= amt < (high - 1e-12))
+    return sum(freq for amt, freq in points if low <= amt < high)
 
 
 def rebalance_quantile_cochain(
@@ -230,7 +246,8 @@ def rebalance_quantile_cochain(
     down to min_bucket_width and merges under-populated sibling/cousin sub-buckets
     (combined count <= merge_threshold) bottom-up within each base cell.
     """
-    if bucket_width <= 0.0 or min_bucket_width <= 0.0 or min_bucket_width > bucket_width + 1e-12:
+    if (not math.isfinite(bucket_width) or not math.isfinite(min_bucket_width)
+            or bucket_width <= 0.0 or min_bucket_width <= 0.0 or min_bucket_width > bucket_width):
         raise ValueError(
             f"Invalid bucket_width ({bucket_width}) or min_bucket_width ({min_bucket_width})"
         )
@@ -275,8 +292,8 @@ def rebalance_quantile_cochain(
             if cnt <= 0:
                 continue
             width = high - low
-            if cnt > split_threshold and (width / 2.0) >= (min_bucket_width - 1e-12):
-                mid = 0.5 * (low + high)
+            mid = low + 0.5 * width
+            if cnt > split_threshold and width / 2.0 >= min_bucket_width and low < mid < high:
                 left_cnt = _count_points_in_half_open_interval(points, low, mid)
                 right_cnt = cnt - left_cnt
                 splits_executed += 1
@@ -289,13 +306,13 @@ def rebalance_quantile_cochain(
 
     # Determine max dyadic depth d_max such that bucket_width / 2^d_max >= min_bucket_width
     d_max = 0
-    while (bucket_width / (2 ** (d_max + 1))) >= (min_bucket_width - 1e-12) and d_max < 16:
+    while (bucket_width / (2 ** (d_max + 1))) >= min_bucket_width and d_max < 16:
         d_max += 1
 
     # Phase 2: Bottom-up dyadic sibling/cousin merging within each base cell [b*W_0, (b+1)*W_0)
     by_base_cell: dict[int, List[List[float | int]]] = {}
     for b in split_buckets:
-        b_idx = int(math.floor((float(b[0]) + 1e-12) / bucket_width))
+        b_idx = _base_cell(float(b[0]), bucket_width)[0]
         by_base_cell.setdefault(b_idx, []).append(b)
 
     final_buckets: List[Tuple[float, float, int]] = []
@@ -307,7 +324,7 @@ def rebalance_quantile_cochain(
             parent_width = bucket_width / (2**depth)
             grouped_by_parent: dict[int, List[List[float | int]]] = {}
             for b in cell_buckets:
-                p_k = int(math.floor(((float(b[0]) - cell_low) + 1e-12) / parent_width))
+                p_k = _base_cell(float(b[0]) - cell_low, parent_width)[0]
                 grouped_by_parent.setdefault(p_k, []).append(b)
 
             next_cell_buckets: List[List[float | int]] = []
@@ -315,11 +332,13 @@ def rebalance_quantile_cochain(
                 grp = grouped_by_parent[p_k]
                 grp_sum = sum(int(x[2]) for x in grp)
                 has_narrower_child = any(
-                    (float(x[1]) - float(x[0])) < parent_width - 1e-12 for x in grp
+                    (float(x[1]) - float(x[0])) < parent_width for x in grp
                 )
-                if grp_sum <= merge_threshold and (len(grp) >= 2 or has_narrower_child):
-                    p_low = cell_low + p_k * parent_width
-                    p_high = p_low + parent_width
+                p_low = cell_low + p_k * parent_width
+                p_high = p_low + parent_width
+                contained = all(p_low <= float(x[0]) < float(x[1]) <= p_high for x in grp)
+                disjoint = all(x in grp or float(x[1]) <= p_low or p_high <= float(x[0]) for x in cell_buckets)
+                if grp_sum <= merge_threshold and (len(grp) >= 2 or has_narrower_child) and contained and disjoint:
                     merges_executed += max(1, len(grp) - 1)
                     next_cell_buckets.append([p_low, p_high, grp_sum])
                 else:
@@ -404,17 +423,17 @@ def verify_quantile_cochain_invariants(
             cnt = int(b["count"])
             if cnt <= 0:
                 violations.append(f"Region '{reg}' bucket {b_id} has non-positive count {cnt}")
-            if high <= low + 1e-12:
+            if high <= low:
                 violations.append(
                     f"Region '{reg}' bucket {b_id} has degenerate interval [{low}, {high})"
                 )
-            if prev_high is not None and low < prev_high - 1e-12:
+            if prev_high is not None and low < prev_high:
                 violations.append(
                     f"Region '{reg}' bucket {b_id} [{low}, {high}) overlaps previous upper_bound {prev_high}"
                 )
             prev_high = high
 
-            actual_in_bucket = sum(1 for a in sales_amounts if (low - 1e-12) <= a < (high - 1e-12))
+            actual_in_bucket = sum(1 for a in sales_amounts if low <= a < high)
             if actual_in_bucket != cnt:
                 violations.append(
                     f"Region '{reg}' bucket {b_id} [{low}, {high}) count={cnt} != actual base_sales rows={actual_in_bucket}"

@@ -592,22 +592,35 @@ async def simulate_bqnf_stream(payload: BqnfSimulateRequest) -> Dict[str, Any]:
         for ev_dict in payload.events:
             ev = BqnfCdcEvent.from_dict(ev_dict)
             res = BqnfValidator.evaluate(routing_boundary, ev)
-            decision = {**res.to_dict(), "op": ev.op, "relation": ev.relation, "applied": False}
+            # The scalar routing delta is not a grouped mutation receipt.
+            # Populate repair only from the removals/additions actually applied.
+            decision = {**res.to_dict(), "op": ev.op, "relation": ev.relation, "applied": False, "repair": None}
             eval_results.append(decision)
             if res.decision != "Repair" or not res.certified or not res.evidence_sufficient:
                 continue
             old_img, new_img = ev.old or {}, ev.new or {}
             remove = ev.op in {"UPDATE", "DELETE"} and active(old_img)
             insert = ev.op in {"UPDATE", "INSERT"} and active(new_img)
+            region_deltas: Dict[str, Dict[str, Any]] = {}
+
+            def record_delta(region: str, amount: float, count: int) -> None:
+                delta = region_deltas.setdefault(region, {"delta_revenue": 0.0, "delta_count": 0})
+                delta["delta_revenue"] += amount
+                delta["delta_count"] += count
+
             # Validate both halves before making any state change.
             if insert:
                 sale(new_img)
             if remove:
                 r, a, status = sale(old_img)
-                old_row = cur.execute(
-                    "SELECT id FROM base_sales WHERE region = ? AND amount = ? AND status = ? LIMIT 1;",
-                    (r, a, status),
-                ).fetchone()
+                # A Preserve event need not maintain untracked metadata. Do not
+                # use that metadata as identity for a later active before-image.
+                match_sql = "SELECT id FROM base_sales WHERE region = ? AND amount = ?"
+                match_values: List[Any] = [r, a]
+                if "status" in boundary.attributes:
+                    match_sql += " AND status = ?"
+                    match_values.append(status)
+                old_row = cur.execute(match_sql + " LIMIT 1;", match_values).fetchone()
                 if old_row is None:
                     decision.update(decision="Invalidate", terminal_route="Invalidate", certified=False,
                                     evidence_sufficient=False, repair=None,
@@ -618,9 +631,14 @@ async def simulate_bqnf_stream(payload: BqnfSimulateRequest) -> Dict[str, Any]:
                 cochain_remove(conn, r, a)
                 quantile_cochain_remove(conn, r, a, payload.bucket_width)
                 apply_removal(cur, current_cache, r, a, payload.use_cochain, tally)
+                record_delta(r, -a, -1)
             if insert:
                 add_sale(new_img)
+                r, a, _ = sale(new_img)
+                record_delta(r, a, 1)
             decision["applied"] = remove or insert
+            if decision["applied"]:
+                decision["repair"] = {"region_deltas": region_deltas}
 
         conn.commit()
 

@@ -12,13 +12,20 @@ retain the fixture convention of `paid`.
 Only certified, evidence-sufficient `Repair` decisions mutate state. Unrelated
 relations and inactive predicate rows preserve it; unsupported operations and
 missing evidence do not mutate it. An active before-image must match one
-retained occurrence of `(region, amount, status)` before deletion or update.
+retained occurrence of `(region, amount)` before deletion or update. Status is
+also matched when declared in the boundary attributes; untracked status changes
+do not become identity requirements for later events.
 Duplicate sales are a multiset, not identified entities. This simulator does
 not provide event deduplication, durable offsets, or transaction replay.
 
 The scalar validator routes SUM changes; the simulator supplies its own exact
 extremum cochain or explicit base-table fallback for MIN/MAX. Each event reports
-`applied`; `final_cache`, region-labelled cochain entries, and per-region
+`applied`. An applied event's `repair.region_deltas` maps each affected region
+to `delta_revenue` and `delta_count`, derived from the actual removal/addition.
+A group move includes both the source debit and destination credit. These
+deltas replay grouped totals and counts; they are not an extremum or quantile
+reconstruction certificate. Unapplied events have no repair payload.
+`final_cache`, region-labelled cochain entries, and per-region
 quantile receipts expose the resulting state. The legacy singular quantile
 receipt remains the North receipt. Quantile rebalancing traverses retained
 value frequencies; the extremum lookup complexity is not an end-to-end stream
@@ -28,7 +35,16 @@ complexity bound.
 value frequencies for every prefix of a stream containing ignored/refused
 events, predicate entry/exit, duplicate values, new groups, group moves, and
 deletions. It also checks quantile mass and exact bucket membership, with and
-without extremum lookup.
+without extremum lookup. Additional regressions replay receipt deltas and
+status-only updates followed by deletes under boundaries without predicates.
+
+Quantile membership uses exact half-open comparisons on stored float bounds,
+`lower_bound <= amount < upper_bound`, throughout insertion, removal, splitting,
+and invariant verification. `tests/test_quantile_boundaries.py` checks adjacent
+representable floats in both orders, including zero, split points, and negative
+boundaries, through repeated insertion/removal and dynamic split/merge steps.
+An amount/width combination without a representable nondegenerate base interval
+is refused. No tolerance-based assignment is used to conceal that condition.
 
 ## Python and SQLite lowering
 
