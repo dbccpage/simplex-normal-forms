@@ -27,7 +27,7 @@
 
 1. **[Theory and Cochain Substrate](Theory-and-Cochain-Substrate)** — The Four-Pillar Quadrilateral, Heath/Fagin/Rissanen theorems, BQNF homological sequence $Q^1 = C^1/\operatorname{im}(d^0)$, priority-queue extrema cochains, $\epsilon$-BQNF quantile sketches, and `CODA_MUR` descent compatibility.
 2. **[Observer-Relative Ontology](Observer-Relative-Ontology)** — The Table–Relation–Relvar–Boundary-Relvar triad, observer poset monotonicity, `EQNF`, `ODNF`, and the strict governance wall (`certified_implies_authorized: false`).
-3. **[Concrete Worked Examples](Concrete-Examples)** — Step-by-step SQL, JSON, and Python execution walkthroughs (`NormalFormsEvaluator`, `BqnfValidator`, 0NF$\to$1NF, 3NF Bernstein synthesis, 5NF consulting witness, BQNF CDC repair, and `CODA_MUR` transport).
+3. **[Concrete Worked Examples](Concrete-Examples)** — Step-by-step SQL, JSON, Python, and **Simplex-NF Studio** (`web/app.py` / `smplxnf.anomalon.com`) execution walkthroughs (`NormalFormsEvaluator`, `BqnfValidator`, 0NF$\to$1NF, 3NF Bernstein synthesis, 5NF consulting witness, BQNF CDC repair, `CODA_MUR` transport, 4-layer `NF-IR` compiler, and `IMPORT_GUIDE.md` blueprints).
 4. **[Relational Geometrodynamics and Physics Substrate](Relational-Geometrodynamics-and-Physics-Substrate)** — Discrete Regge calculus, Cayley-Menger metric positivity, Schläfli identity, Lorentzian CDT foliation, Wheeler-DeWitt, Page-Wootters relational time, and Fermion Sign Problem normal forms.
 
 ---

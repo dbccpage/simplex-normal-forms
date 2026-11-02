@@ -7,31 +7,37 @@
 
 ---
 
-## 1. Running the Standalone Python Verifier & Examples
+## 1. Running the Standalone Python Verifier, Examples & Simplex-NF Studio
 
-All examples and contract validators live in the standalone `normal_forms/` Python package and `contracts/` directory:
+All examples, contract validators, and the interactive **Simplex-NF Studio** web workbench live in the `normal_forms/` and `web/` packages and `contracts/` directory:
 
 ```bash
-# 1. Validate all 112 YAML normal form contracts against standard.yaml
+# 1. Install in editable mode (or wheel distribution)
+pip install -e ".[web,dev]"
+
+# 2. Validate all 112 YAML normal form contracts against standard.yaml
 python -m normal_forms.catalog
 
-# 2. Run Demo 01: BQNF Incremental Revenue Repair on CDC Events
+# 3. Run Demo 01: BQNF Incremental Revenue Repair on CDC Events
 python -m normal_forms.paid_revenue_example
 
-# 3. Run Demo 02: Unverified Certificate Refusal Gate
+# 4. Run Demo 02: Unverified Certificate Refusal Gate
 python -m normal_forms.unverified_certificate_example
 
-# 4. Run Demo 03: Observer-Relative Freshness SLA Poset Evaluation
+# 5. Run Demo 03: Observer-Relative Freshness SLA Poset Evaluation
 python -m normal_forms.observer_freshness_example
 
-# 5. Run Cross-Domain Reconciliation & Loss Ledger Example
+# 6. Run Cross-Domain Reconciliation & Loss Ledger Example
 python -m normal_forms.reconciliation_example
 
-# 6. Run Demo 05: 4-Hop Composition (3NF/BCNF -> Extrema & Quantile Cochains -> CODA_MUR -> Observer Poset)
+# 7. Run Demo 05: 4-Hop Composition (3NF/BCNF -> Extrema & Quantile Cochains -> CODA_MUR -> Observer Poset)
 python -m normal_forms.multi_hop_composition
 
-# 7. Run Demo 06: AI RAG / MCP Pipeline with @coda_mur_projection & @observer_freshness_gate
+# 8. Run Demo 06: AI RAG / MCP Pipeline with @coda_mur_projection & @observer_freshness_gate
 python -m normal_forms.ai
+
+# 9. Launch the Simplex-NF Studio Interactive Web Workbench (smplxnf.anomalon.com)
+uvicorn web.app:app --host 0.0.0.0 --port 8000
 ```
 
 ---
@@ -135,13 +141,24 @@ The internal Normal-Form Intermediate Representation (`NF-IR`) stack lowers norm
 
 ---
 
-## 8. Epistemic Claim Hygiene Quadrant
+## 8. Example G: Simplex-NF Studio Interactive Web Workbench (`web/app.py`, `IMPORT_GUIDE.md`)
+
+**Simplex-NF Studio** (`web/app.py`, configured for Render deployment at `smplxnf.anomalon.com` via `render.yaml`) exposes four interactive REST & browser studios backed by the top-level `normal_forms` exports documented in `IMPORT_GUIDE.md`, `docs/MVP_SELECTION.md`, `docs/CORRECTNESS_SCOPE.md`, and `docs/DISTRIBUTION.md`:
+
+- **Studio 1 (`POST /api/relational/normalize`):** Evaluates relational headings and functional dependencies across `1NF`–`3NF` and `BCNF`, synthesizes Bernstein `3NF` and Tsou-Fischer `BCNF` decompositions, runs the Tableau Chase (`chase_lossless_join`) to detect spurious tuple counterexamples, and emits copy-pasteable SQLite DDL + Python import snippets.
+- **Studio 2 (`POST /api/bqnf/simulate`):** Simulates CDC event streams (`INSERT`/`UPDATE`/`DELETE`) with priority-queue extremum cochains and dynamic dyadic quantile sketches, recording per-event terminal routing (`Repair`, `Preserve`, `Recompute`, `Invalidate`) and exact bucket boundary alignments.
+- **Studio 3 (`POST /api/compiler/lower`):** Lowers functional dependency rules into `NFKernelSpec`, applies poset subsumption Dead-Check Elimination (`run_kernel_pipeline_with_dce`), generates SQLite `BEFORE INSERT`/`BEFORE UPDATE` triggers with scalar null-safe semantics, and executes live carrier verification.
+- **Studio 4 (`POST /api/ai/lossledger`):** Executes `@coda_mur_projection` and `@observer_freshness_gate` over RAG context chunks, verifying additive token conservation and SHA-256 Merkle `LossLedger` seals.
+
+---
+
+## 9. Epistemic Claim Hygiene Quadrant
 
 1. **What it supports:**
-   - Demonstrates in this toy setting that the Python evaluators reproduce the declared terminal routes for `0NF`–`5NF`, `BQNF` additive and cochain-backed extrema/quantile repair, `CODA_MUR` representation transport, observer-relative freshness posets, the `normal_forms.ai` RAG/MCP decorator pipeline, and the 4-layer `NF-IR` compiler stack.
+   - Demonstrates in this toy setting that the Python evaluators and the Simplex-NF Studio web workbench reproduce the declared terminal routes for `0NF`–`5NF`, `BQNF` additive and cochain-backed extrema/quantile repair, `CODA_MUR` representation transport, observer-relative freshness posets, the `normal_forms.ai` RAG/MCP decorator pipeline, and the 4-layer `NF-IR` compiler stack.
 2. **What it does not support:**
    - Does not substitute for production database concurrency control or physical distributed consensus.
 3. **The narrowest defensible claim:**
-   - Each worked example and multi-hop property test executes deterministically against the fixtures and randomized schemas in `tests/` with `AuthorityEffect: None`.
+   - Each worked example, multi-hop property test, and FastAPI workbench endpoint executes deterministically against the fixtures and randomized schemas in `tests/` with `AuthorityEffect: None`.
 4. **The next test needed:**
    - Concurrent multi-writer transaction interleaving over persistent disk-backed SQLite WAL journals.
