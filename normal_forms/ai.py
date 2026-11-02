@@ -58,6 +58,11 @@ from normal_forms.sn_forms import evaluate_sn_pdnf
 CODA_MUR_CONTEXT_TRIGGER_ID = "coda_mur.context_truncation_and_field_drop"
 
 
+class LossLedger(dict):
+    """Cryptographically sealed dictionary receipt documenting erased attributes and token loss."""
+    pass
+
+
 def tokenize_whitespace(text: str) -> List[str]:
     """Deterministic whitespace tokenizer for token-bounded normal form (TBNF) accounting."""
     if not text:
@@ -475,10 +480,16 @@ def build_context_loss_ledger(
     ) and "__context_token_truncation__" not in ledger_erased_attrs:
         ledger_erased_attrs.append("__context_token_truncation__")
 
-    canonical_bytes = json.dumps(entries, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    canonical_preimage = {
+        "entries": entries,
+        "erased_attributes": ledger_erased_attrs,
+        "record_count": len(entries),
+        "trigger_id": trigger_id,
+    }
+    canonical_bytes = json.dumps(canonical_preimage, sort_keys=True, separators=(",", ":")).encode("utf-8")
     digest = hashlib.sha256(canonical_bytes).hexdigest()
 
-    return {
+    return LossLedger({
         "trigger_id": trigger_id,
         "erased_attributes": ledger_erased_attrs,
         "record_count": len(entries),
@@ -486,7 +497,7 @@ def build_context_loss_ledger(
         "sealed": True,
         "merkle_digest": digest,
         "authority_effect": "None",
-    }
+    })
 
 
 def coda_mur_projection(

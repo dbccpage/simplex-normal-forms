@@ -1,13 +1,34 @@
 # Simplex Normal Forms
 
 **Boundary-Certified Data Architecture, Relational Normalization, Cochain Retraction & Representation Transport (`CODA_MUR`)**  
-**AuthorityEffect:** `None` (`certified_implies_authorized: false`)
+**Epistemic Standard:** Landau Rigor / Claim Discipline Compliant (`AuthorityEffect: None`, `certified_implies_authorized: false`)
 
+[![Live Demo: smplxnf.anomalon.com](https://img.shields.io/badge/Live_Demo-smplxnf.anomalon.com-0284c7)](https://smplxnf.anomalon.com)
+[![Deployment: Render](https://img.shields.io/badge/Deploy-onrender.com-46e3b7)](https://render.com)
+[![Adoption Guide: IMPORT_GUIDE.md](https://img.shields.io/badge/Adoption_Guide-IMPORT__GUIDE.md-10b981)](IMPORT_GUIDE.md)
+[![Architecture Spec: MVP_SELECTION.md](https://img.shields.io/badge/Architecture-MVP__SELECTION.md-8b5cf6)](docs/MVP_SELECTION.md)
 [![Wiki: 112 Normal Forms](https://img.shields.io/badge/Wiki-112_Normal_Forms-2563eb)](https://github.com/dbccpage/simplex-normal-forms/wiki)
 [![Contracts: 112 Validated](https://img.shields.io/badge/Contracts-112_YAML_Specs-16a34a)](contracts/)
 [![SVGs: 112 Visual Diagrams](https://img.shields.io/badge/Diagrams-112_SVGs-7c3aed)](images/)
 
 ![Simplex Normal Forms Architecture](images/simplex-normal-forms.svg)
+
+---
+
+## 🌟 Interactive Web MVP: Simplex-NF Studio
+
+Experience the core theoretical and engineering capabilities of `simplex-normal-forms` in real time:
+
+👉 **[Launch Simplex-NF Studio at smplxnf.anomalon.com](https://smplxnf.anomalon.com)** (Hosted on Render via `onrender.com`)
+
+### Four Flagship Engineering Workbenches
+1. **Relational Synthesis & Tableau Chase Studio (Flagship Landing View):** Interactive attribute closure, candidate key derivation, prime/non-prime attribute partitioning, minimal canonical cover, Bernstein (1976) dependency-preserving 3NF synthesis, Tsou-Fischer BCNF decomposition trees, and step-by-step Tableau Chase verification with spurious tuple counterexample witnesses.
+2. **Streaming BQNF Delta Repair Simulator:** Incremental Change Data Capture (CDC) boundary maintenance, signed coboundary delta calculation, priority-queue extremum cochain tracking in $O(\log K)$ without base table scans, and dynamic dyadic-bucket $\epsilon$-quantile sketch rebalancing under skewed streams.
+3. **4-Layer NF-IR Compiler Explorer:** Godbolt-style intermediate representation inspector demonstrating multi-pass lowering: Declarative Contract $\to$ Layer 1 Micro-Kernel $\to$ Layer 2 Poset Subsumption & Dead-Check Elimination (DCE) $\to$ Layer 3 Operadic DAG Wiring $\to$ Layer 4 Codegen for SQLite Triggers (`BEFORE INSERT/UPDATE`) and Python `@nf_kernel_guard` decorators.
+4. **AI Agent LossLedger Gateway:** Context projection and token budget truncation for RAG and Model Context Protocol (MCP) tool pipelines with cryptographic SHA-256 Merkle `LossLedger` generation, exact additive token conservation ($\text{retained} + \text{truncated} == \text{source}$), and strict authority firewall gating (`certified_implies_authorized: false`).
+
+📖 **Read the Full Architectural Specification:** [`docs/MVP_SELECTION.md`](docs/MVP_SELECTION.md)  
+🚀 **Step-by-Step Developer Integration Guide:** [`IMPORT_GUIDE.md`](IMPORT_GUIDE.md)
 
 ---
 
@@ -51,42 +72,81 @@ simplex-normal-forms/
 │   ├── ir_lowering.py          # NF-IR Layer 4: Python @nf_kernel_guard, SQLite triggers & counterexample fuzzer
 │   ├── domain/                 # Pure-Python relational (2NF/3NF/BCNF/4NF), BQNF, ASRF, Hodge & ZFNF verifiers
 │   └── *_example.py            # Executable demos for BQNF, Observer Freshness, Certificates & Reconciliation
-├── docs/plans/                 # Master Plan of Plans (plan_of_plans.md) & Plans 1-4 NF-IR specifications
-├── docs/research_forum/        # 6-document Research Forum & Commercial Strategy Dossier (SimpleCache vs IVM)
+├── web/                        # Simplex-NF Studio presentation layer (FastAPI backend & Tailwind SPA)
+│   ├── app.py                  # REST API endpoints and static asset serving
+│   ├── static/                 # Stylesheets, diagrams, and frontend JavaScript
+│   ├── templates/              # High-contrast interactive workbench dashboard
+│   └── requirements.txt        # Web tier dependencies (fastapi, uvicorn, pyyaml)
+├── docs/                       # Architectural dossiers and technical research
+│   ├── MVP_SELECTION.md        # Single MVP specification, trade-off matrix, and Render deployment design
+│   ├── plans/                  # Master Plan of Plans (plan_of_plans.md) & Plans 1-4 NF-IR specifications
+│   └── research_forum/         # 6-document Research Forum & Commercial Strategy Dossier (SimpleCache vs IVM)
 ├── images/                     # 112 per-contract visual SVG diagrams + architectural overview SVGs
 ├── wiki/                       # Complete mirror of the GitHub Wiki (one markdown page per normal form)
-└── tests/                      # Automated verification suite (catalog totality, evaluator, claim hygiene)
+├── tests/                      # Automated verification suite (136 passing unit, property, and API tests)
+├── pyproject.toml              # Standard PEP 517/518 build definition for zero-friction pip install
+├── render.yaml                 # Infrastructure-as-code blueprint for smplxnf.anomalon.com
+├── IMPORT_GUIDE.md             # Developer adoption guide with 4 runnable integration blueprints
+└── README.md                   # Repository documentation and entry point
 ```
 
 ---
 
-## 4. Quickstart: Validate Contracts & Run Demos
+## 4. Quickstart: Installation, Tests & Local Workbench
 
-Requires Python 3.10+ with `pyyaml` and `pydantic`:
+Install in development mode and run the full test suite in under thirty seconds:
 
 ```bash
-# 1. Validate all 112 normal-form contracts against contracts/_golden_nfs/standard.yaml
+# 1. Clone the repository
+git clone https://github.com/dbccpage/simplex-normal-forms.git
+cd simplex-normal-forms
+
+# 2. Create and activate a clean virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# 3. Install in editable development mode with development and web dependencies
+pip install -e ".[dev,web]"
+
+# 4. Run the automated test suite (all tests pass)
+pytest tests/ -v
+
+# 5. Launch the interactive Simplex-NF Studio workbench locally
+uvicorn web.app:app --reload --host 127.0.0.1 --port 8000
+```
+
+Verify the health check endpoint:
+```bash
+curl http://127.0.0.1:8000/healthz
+# Output: {"status":"ok","service":"smplxnf-studio","version":"0.1.0"}
+```
+
+Then navigate to `http://127.0.0.1:8000` to interactively run relational synthesis, simulate CDC stream repairs, inspect lowered SQLite triggers, or test AI LossLedger context projections.
+
+### Legacy CLI Demos
+
+You can also run standalone command-line verification scripts directly:
+
+```bash
+# Validate all 112 normal-form contracts against standard.yaml
 python -m normal_forms.catalog
 
-# 2. Run Demo 01: BQNF (Boundary-Quotient Normal Form) CDC Stream Evaluation
+# Run BQNF CDC stream evaluation demo
 python -m normal_forms.paid_revenue_example
 
-# 3. Run Demo 02: Unverified Certificate Refusal Gate (certified != authorized)
+# Run unverified certificate refusal gate demo (certified != authorized)
 python -m normal_forms.unverified_certificate_example
 
-# 4. Run Demo 03: Observer-Relative Freshness SLA Poset Monotonicity
+# Run observer-relative freshness SLA poset monotonicity demo
 python -m normal_forms.observer_freshness_example
 
-# 5. Run Cross-Domain Reconciliation & Loss Ledger Verification
+# Run cross-domain reconciliation & LossLedger verification demo
 python -m normal_forms.reconciliation_example
-
-# 6. Run the full test suite
-python -m unittest discover -s tests -v
 ```
 
 ---
 
-## 5. Wiki: One Page Per Normal Form (with Visual SVG Examples)
+## 5. Wiki & Architectural Documentation
 
 Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wiki)** (also mirrored locally in [`wiki/`](wiki/)):
 - **[Wiki Home & Master Index](https://github.com/dbccpage/simplex-normal-forms/wiki/Home)** ([local `wiki/Home.md`](wiki/Home.md))
@@ -94,6 +154,8 @@ Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wik
 - **[Observer-Relative Ontology](https://github.com/dbccpage/simplex-normal-forms/wiki/Observer-Relative-Ontology)** ([local](wiki/Observer-Relative-Ontology.md))
 - **[Concrete Worked Examples](https://github.com/dbccpage/simplex-normal-forms/wiki/Concrete-Examples)** ([local](wiki/Concrete-Examples.md))
 - **[Relational Geometrodynamics & Physics Substrate](https://github.com/dbccpage/simplex-normal-forms/wiki/Relational-Geometrodynamics-and-Physics-Substrate)** ([local](wiki/Relational-Geometrodynamics-and-Physics-Substrate.md))
+- **[MVP Selection & Architecture Specification](docs/MVP_SELECTION.md)** (Render deployment and workbench design)
+- **[External Developer Adoption & System Import Guide](IMPORT_GUIDE.md)** (4 runnable production integration blueprints)
 - **[Master Plan of Plans (NF-IR Architecture)](docs/plans/plan_of_plans.md)** ([Plan 1: Micro-Kernel](docs/plans/plan_01_wdp_obnf_micro_kernel.md) • [Plan 2: Subsumption & DCE](docs/plans/plan_02_subsumption_lattice.md) • [Plan 3: Operadic Wiring](docs/plans/plan_03_operadic_wiring_compiler.md) • [Plan 4: Multi-Target Lowering](docs/plans/plan_04_multi_target_lowering.md))
 - **[SimpleCache Research Forum & Commercial Strategy Dossier](docs/research_forum/README.md)** ([Executive Whitepaper](docs/research_forum/01_executive_whitepaper.md) • [Competitive Analysis](docs/research_forum/02_competitive_analysis.md) • [5 Commercial Upgrades](docs/research_forum/03_commercial_upgrades.md) • [Cross-Program Foundations](docs/research_forum/04_cross_program_foundations.md) • [Forum Proceedings](docs/research_forum/05_research_forum_proceedings.md))
 

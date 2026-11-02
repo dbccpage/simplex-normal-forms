@@ -84,7 +84,13 @@ def verify_loss_ledger_integrity(loss_ledger: Dict[str, Any]) -> Tuple[bool, str
                 "Loss ledger is unsealed (mandatory cryptographic digest merkle_digest is missing)",
             )
 
-        canonical_bytes = json.dumps(entries, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        canonical_preimage = {
+            "entries": entries,
+            "erased_attributes": list(erased),
+            "record_count": rec_count,
+            "trigger_id": str(loss_ledger.get("trigger_id", "")),
+        }
+        canonical_bytes = json.dumps(canonical_preimage, sort_keys=True, separators=(",", ":")).encode("utf-8")
         expected_digest = hashlib.sha256(canonical_bytes).hexdigest()
         if merkle_digest != expected_digest:
             return False, f"Digest mismatch: declared {merkle_digest}, computed {expected_digest}"

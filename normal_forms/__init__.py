@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from normal_forms.ai import (
         AsrfEvaluationReceipt,
         CodaMurContextEnvelope,
+        LossLedger,
         McpGateReceipt,
         ObnfCollisionReceipt,
         RagMcpPipelineReceipt,
@@ -51,6 +52,10 @@ if TYPE_CHECKING:
         compile_to_python_decorator,
         compile_to_sqlite_triggers,
         install_and_verify_sqlite_bundle,
+        lower_kernel_to_python_guard,
+        lower_kernel_to_sqlite_trigger,
+        lower_to_python_guard,
+        lower_to_sqlite_trigger,
         synthesize_counterexample_fixtures,
     )
     from normal_forms.ir_subsumption import (
@@ -144,6 +149,7 @@ __all__ = [
     "verify_quantile_cochain_invariants",
     "AsrfEvaluationReceipt",
     "CodaMurContextEnvelope",
+    "LossLedger",
     "McpGateReceipt",
     "ObnfCollisionReceipt",
     "RagMcpPipelineReceipt",
@@ -186,6 +192,10 @@ __all__ = [
     "compile_to_python_decorator",
     "compile_to_sqlite_triggers",
     "install_and_verify_sqlite_bundle",
+    "lower_kernel_to_python_guard",
+    "lower_kernel_to_sqlite_trigger",
+    "lower_to_python_guard",
+    "lower_to_sqlite_trigger",
     "synthesize_counterexample_fixtures",
 ]
 
@@ -235,6 +245,7 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
     ),
     "AsrfEvaluationReceipt": ("normal_forms.ai", "AsrfEvaluationReceipt"),
     "CodaMurContextEnvelope": ("normal_forms.ai", "CodaMurContextEnvelope"),
+    "LossLedger": ("normal_forms.ai", "LossLedger"),
     "McpGateReceipt": ("normal_forms.ai", "McpGateReceipt"),
     "ObnfCollisionReceipt": ("normal_forms.ai", "ObnfCollisionReceipt"),
     "RagMcpPipelineReceipt": ("normal_forms.ai", "RagMcpPipelineReceipt"),
@@ -289,6 +300,10 @@ _LAZY_IMPORTS: dict[str, tuple[str, str]] = {
         "normal_forms.ir_lowering",
         "install_and_verify_sqlite_bundle",
     ),
+    "lower_to_python_guard": ("normal_forms.ir_lowering", "lower_to_python_guard"),
+    "lower_kernel_to_python_guard": ("normal_forms.ir_lowering", "lower_kernel_to_python_guard"),
+    "lower_to_sqlite_trigger": ("normal_forms.ir_lowering", "lower_to_sqlite_trigger"),
+    "lower_kernel_to_sqlite_trigger": ("normal_forms.ir_lowering", "lower_kernel_to_sqlite_trigger"),
     "synthesize_counterexample_fixtures": (
         "normal_forms.ir_lowering",
         "synthesize_counterexample_fixtures",
