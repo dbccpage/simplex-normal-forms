@@ -83,7 +83,7 @@ simplex-normal-forms/
 │   └── research_forum/         # 6-document Research Forum & Commercial Strategy Dossier (SimpleCache vs IVM)
 ├── images/                     # 112 per-contract visual SVG diagrams + architectural overview SVGs
 ├── wiki/                       # Complete mirror of the GitHub Wiki (one markdown page per normal form)
-├── tests/                      # Automated verification suite (136 passing unit, property, and API tests)
+├── tests/                      # Unit, replay, scalar-equivalence, and API verification
 ├── pyproject.toml              # Standard PEP 517/518 build definition for zero-friction pip install
 ├── render.yaml                 # Infrastructure-as-code blueprint for smplxnf.anomalon.com
 ├── IMPORT_GUIDE.md             # Developer adoption guide with 4 runnable integration blueprints
@@ -156,6 +156,8 @@ Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wik
 - **[Relational Geometrodynamics & Physics Substrate](https://github.com/dbccpage/simplex-normal-forms/wiki/Relational-Geometrodynamics-and-Physics-Substrate)** ([local](wiki/Relational-Geometrodynamics-and-Physics-Substrate.md))
 - **[MVP Selection & Architecture Specification](docs/MVP_SELECTION.md)** (Render deployment and workbench design)
 - **[External Developer Adoption & System Import Guide](IMPORT_GUIDE.md)** (4 runnable production integration blueprints)
+- **[Executable Scope & Regression Evidence](docs/CORRECTNESS_SCOPE.md)** (streaming profile and Python/SQLite semantics)
+- **[Distribution Verification](docs/DISTRIBUTION.md)** (bundled resources, isolated installation, and CI)
 - **[Master Plan of Plans (NF-IR Architecture)](docs/plans/plan_of_plans.md)** ([Plan 1: Micro-Kernel](docs/plans/plan_01_wdp_obnf_micro_kernel.md) • [Plan 2: Subsumption & DCE](docs/plans/plan_02_subsumption_lattice.md) • [Plan 3: Operadic Wiring](docs/plans/plan_03_operadic_wiring_compiler.md) • [Plan 4: Multi-Target Lowering](docs/plans/plan_04_multi_target_lowering.md))
 - **[SimpleCache Research Forum & Commercial Strategy Dossier](docs/research_forum/README.md)** ([Executive Whitepaper](docs/research_forum/01_executive_whitepaper.md) • [Competitive Analysis](docs/research_forum/02_competitive_analysis.md) • [5 Commercial Upgrades](docs/research_forum/03_commercial_upgrades.md) • [Cross-Program Foundations](docs/research_forum/04_cross_program_foundations.md) • [Forum Proceedings](docs/research_forum/05_research_forum_proceedings.md))
 
@@ -163,7 +165,12 @@ Explore the **[GitHub Wiki](https://github.com/dbccpage/simplex-normal-forms/wik
 
 ## 6. Complete Normal Form Contract Register (112 Contracts)
 
-112 contract files (`index.yaml` lists 25 active and 86 draft contracts). Every contract includes a dedicated Wiki page and visual SVG diagram:
+112 contract files. The index lists 25 active and 87 draft entries, with
+`nf.cohomology.acnf` also listed as deprecated. These lifecycle labels are
+distinct from executable verification: contract metadata currently labels 35
+executable, 75 verification-absent, and two unspecified. Catalog validation
+checks document structure. Every contract includes a dedicated Wiki page and
+visual SVG diagram.
 
 | Contract YAML | Short Name | Full Name | Family | Status | Theory | Verification | Wiki & SVG Diagram |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |

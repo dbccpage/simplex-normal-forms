@@ -26,7 +26,9 @@ This guide provides external software engineers, database architects, and distri
 
 ### 2.1 Clone and Install in Development Mode
 
-The core evaluation engines depend on the Python Standard Library and `pyyaml`. Optional web dependencies (`fastapi`, `uvicorn`) are provided for the companion workbench interface:
+The core evaluation engines depend on the Python Standard Library, `pyyaml`, and
+Pydantic 2. Optional web dependencies are provided through the `web` extra.
+Wheels include the contract resources and Studio templates/static assets.
 
 ```bash
 # 1. Clone the repository
@@ -57,6 +59,11 @@ pytest tests/ -v
 ---
 
 ## 3. Four Concrete Integration Blueprints
+
+For the bounded streaming profile and Python/SQLite input semantics, read
+[Executable scope and regression evidence](docs/CORRECTNESS_SCOPE.md).
+For source-distribution and isolated wheel checks, read
+[Distribution verification](docs/DISTRIBUTION.md).
 
 Below are four complete, syntax-checked, runnable Python blueprints demonstrating how to integrate `simplex-normal-forms` into production application architectures.
 
@@ -405,6 +412,10 @@ if __name__ == "__main__":
 ### Blueprint 4: AI Agent LossLedger in LangChain / LlamaIndex / MCP Workflows
 
 This blueprint demonstrates wrapping AI retrieval-augmented generation (RAG) context compression and Model Context Protocol (MCP) tool pipelines with `@coda_mur_projection`. It enforces that prompt context truncation and attribute erasure emit a cryptographic SHA-256 Merkle `LossLedger`, verifies exact additive token conservation ($\text{retained\_tokens} + \text{truncated\_tokens} == \text{source\_tokens}$), and asserts the epistemic authority firewall (`certified_implies_authorized: false`).
+
+Here, tokens are deterministic whitespace-separated units from
+`tokenize_whitespace`, not provider/model tokenizer counts. The budget alone
+does not establish that a prompt fits a particular model's context window.
 
 ```python
 """Blueprint 4: AI Agent LossLedger in LangChain / LlamaIndex / MCP Workflows."""
