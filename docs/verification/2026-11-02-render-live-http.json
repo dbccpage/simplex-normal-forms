@@ -1,0 +1,166 @@
+{
+  "checked_at_utc": "2026-11-02T22:39:54.959208+00:00",
+  "base_url": "https://smplxnf-live.onrender.com",
+  "workers": 2,
+  "repeats": 2,
+  "tls_certificate_validation": "enabled",
+  "checks": [
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/healthz",
+      "response_sha256": "c7e0c2a5ccb41ba909833e6a4e943d254bdb4efd296c3b930c7dcdf45eed9a46",
+      "passed": true,
+      "elapsed_ms": 376.18
+    },
+    {
+      "method": "GET",
+      "path": "/",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/",
+      "response_sha256": "a4f86bbc503e80fed790367bb01adb2eb969c42259c44940f17dfb6aa73ce67a",
+      "passed": true,
+      "elapsed_ms": 170.65
+    },
+    {
+      "method": "GET",
+      "path": "/static/app.js",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/static/app.js",
+      "response_sha256": "5cfe4e15f0538b6abcae276ded326d5e4c872c93247bed40aa6b4de446ad2d0a",
+      "passed": true,
+      "elapsed_ms": 941.71
+    },
+    {
+      "method": "GET",
+      "path": "/static/style.css",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/static/style.css",
+      "response_sha256": "7e2f84b6662d0e645ed3541bb10763a0872c93e5cf2f8e584d881b470351de23",
+      "passed": true,
+      "elapsed_ms": 340.36
+    },
+    {
+      "method": "GET",
+      "path": "/api/presets",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/presets",
+      "response_sha256": "09de81e08ac6b20e42bbfcdf0141d87e763f3e037aa30977b37086c89d1d83ab",
+      "passed": true,
+      "elapsed_ms": 297.71
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "8620280aa10745b8d19bd9cbe96dca19ba6b13e63a3577c04a33ffc412b2706b",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/relational/normalize",
+      "response_sha256": "4219493b7b65efbe3029fe703d780614f1e08fa37551b4425cffa1b0fad9e178",
+      "passed": true,
+      "elapsed_ms": 345.47,
+      "preset": "ecommerce"
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "6d60e85b14af5b7fe8b02df1e0621caa55b18f5ca79cb720aa07afcb20429d5d",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/relational/normalize",
+      "response_sha256": "effe7ca618c18e5cabac8ad6106093d98f7fe6153917d8efb56d35b76d33c3db",
+      "passed": true,
+      "elapsed_ms": 364.64,
+      "preset": "lossy_decomposition"
+    },
+    {
+      "method": "POST",
+      "path": "/api/bqnf/simulate",
+      "request_sha256": "b129f3da473c83dd477e03e9154bc521c6fa07d1c0c8f9d7a4bbc5d79561d4dc",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/bqnf/simulate",
+      "response_sha256": "279027ce2a31f451ad1e03fb0e8c0ec63fe3b6e0bdcf1c8e265ca15f07e43c0a",
+      "passed": true,
+      "elapsed_ms": 144.89,
+      "preset": "financial_ledger"
+    },
+    {
+      "method": "POST",
+      "path": "/api/compiler/lower",
+      "request_sha256": "33dac6350d1c2aacfa4744beec696030729e3a6b2521779748dcc441b456bcf5",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/compiler/lower",
+      "response_sha256": "4e37fefc27234f53411540e9e597e3da4df46fe2dff819f539dbf10d373def5b",
+      "passed": true,
+      "elapsed_ms": 144.85,
+      "preset": "employee_bcnf"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/lossledger",
+      "request_sha256": "59baf8400215a7d0fe4c330f1fdbd7ff04de370f3f991c9df6c2c8a1e0908138",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/ai/lossledger",
+      "response_sha256": "02012e08df212dd1f880e894633aea6cbb4b74893cb9820b29a1a2a98682729a",
+      "passed": true,
+      "elapsed_ms": 360.61,
+      "preset": "rag_research_context"
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "8620280aa10745b8d19bd9cbe96dca19ba6b13e63a3577c04a33ffc412b2706b",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/relational/normalize",
+      "response_sha256": "4219493b7b65efbe3029fe703d780614f1e08fa37551b4425cffa1b0fad9e178",
+      "passed": true,
+      "elapsed_ms": 236.08,
+      "preset": "ecommerce"
+    },
+    {
+      "method": "POST",
+      "path": "/api/relational/normalize",
+      "request_sha256": "6d60e85b14af5b7fe8b02df1e0621caa55b18f5ca79cb720aa07afcb20429d5d",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/relational/normalize",
+      "response_sha256": "effe7ca618c18e5cabac8ad6106093d98f7fe6153917d8efb56d35b76d33c3db",
+      "passed": true,
+      "elapsed_ms": 150.75,
+      "preset": "lossy_decomposition"
+    },
+    {
+      "method": "POST",
+      "path": "/api/bqnf/simulate",
+      "request_sha256": "b129f3da473c83dd477e03e9154bc521c6fa07d1c0c8f9d7a4bbc5d79561d4dc",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/bqnf/simulate",
+      "response_sha256": "279027ce2a31f451ad1e03fb0e8c0ec63fe3b6e0bdcf1c8e265ca15f07e43c0a",
+      "passed": true,
+      "elapsed_ms": 130.19,
+      "preset": "financial_ledger"
+    },
+    {
+      "method": "POST",
+      "path": "/api/compiler/lower",
+      "request_sha256": "33dac6350d1c2aacfa4744beec696030729e3a6b2521779748dcc441b456bcf5",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/compiler/lower",
+      "response_sha256": "4e37fefc27234f53411540e9e597e3da4df46fe2dff819f539dbf10d373def5b",
+      "passed": true,
+      "elapsed_ms": 126.64,
+      "preset": "employee_bcnf"
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/lossledger",
+      "request_sha256": "59baf8400215a7d0fe4c330f1fdbd7ff04de370f3f991c9df6c2c8a1e0908138",
+      "status": 200,
+      "final_url": "https://smplxnf-live.onrender.com/api/ai/lossledger",
+      "response_sha256": "02012e08df212dd1f880e894633aea6cbb4b74893cb9820b29a1a2a98682729a",
+      "passed": true,
+      "elapsed_ms": 175.96,
+      "preset": "rag_research_context"
+    }
+  ],
+  "scope": "HTTP and semantic smoke only; deployment commit and browser UX require separate verification.",
+  "passed": true
+}

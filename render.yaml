@@ -1,9 +1,9 @@
 services:
   - type: web
-    name: smplxnf-studio
+    name: smplxnf-live
     env: python
     region: oregon
-    plan: starter
+    plan: free
     buildCommand: "pip install -e . && pip install -r web/requirements.txt"
     startCommand: "uvicorn web.app:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /healthz
