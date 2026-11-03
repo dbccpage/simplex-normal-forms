@@ -47,3 +47,26 @@ jobs:
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/wheel-env/bin/python" -I "$GITHUB_WORKSPACE/scripts/installed_smoke.py"
           "$RUNNER_TEMP/wheel-env/bin/python" -I -m normal_forms.catalog
+
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.14'
+      - run: python -m pip install -e ".[web]"
+      - run: npm install --no-save --package-lock=false playwright@1.58.0
+      - run: npx playwright install --with-deps chromium
+      - name: Headless workflow and responsive layout checks
+        shell: bash
+        run: |
+          python -m uvicorn web.app:app --host 127.0.0.1 --port 8765 > "$RUNNER_TEMP/studio.log" 2>&1 &
+          studio_pid=$!
+          trap 'kill "$studio_pid"' EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8765/healthz; then break; fi
+            sleep 1
+          done
+          node scripts/browser_smoke.cjs http://127.0.0.1:8765 "$RUNNER_TEMP/browser-smoke"
