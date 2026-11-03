@@ -3,8 +3,9 @@
 **AuthorityEffect:** `None` (`certified_implies_authorized: false`)  
 **Total Canonical Normal Form Contracts:** **112** (each with its own dedicated Wiki treatise and visual SVG diagram)
 
-**[Current project status and evidence levels](Project-Status):** PRs #17–19 are
-merged; public Render deployment remains unverified. Contract pages describe
+**[Current project status and evidence levels](Project-Status):** Studio is live at
+[smplxnf.anomalon.com](https://smplxnf.anomalon.com); HTTPS/API checks passed on
+2026-11-02. Full live browser acceptance remains incomplete. Contract pages describe
 declarations and intended behavior. Their diagrams and “Certified Output” labels
 are not execution receipts; see the status guide before interpreting those claims.
 

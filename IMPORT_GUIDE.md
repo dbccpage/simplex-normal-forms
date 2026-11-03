@@ -573,7 +573,7 @@ def check_strict_auditing_nf(schema: RelationalSchema) -> Tuple[bool, Optional[s
 
 ## 5. Deployment Guide: Companion Web Interface
 
-The repository includes a companion web application, **Simplex-NF Studio ("The Normal Form Workbench")**, with a Render blueprint targeting `smplxnf.anomalon.com`. Configuration is not deployment evidence: see [current status](docs/PROJECT_STATUS.md) and the [deployment runbook](docs/DEPLOYMENT.md).
+The repository includes a companion web application, **Simplex-NF Studio ("The Normal Form Workbench")**, deployed at [smplxnf.anomalon.com](https://smplxnf.anomalon.com) on the separate `smplxnf-live` Render service. HTTPS/API smoke checks passed on 2026-11-02; full live browser acceptance remains incomplete. See [current status](docs/PROJECT_STATUS.md), the [deployment record](docs/verification/2026-11-02-deployment.md) and the [deployment runbook](docs/DEPLOYMENT.md). The blueprint below matches the selected Free compute plan; Render separately disclosed a $0.25/month custom-domain charge approved by the user.
 
 ### 5.1 Local Development Server
 
@@ -600,10 +600,10 @@ The repository includes a declarative `render.yaml` blueprint:
 ```yaml
 services:
   - type: web
-    name: smplxnf-studio
+    name: smplxnf-live
     env: python
     region: oregon
-    plan: starter
+    plan: free
     buildCommand: "pip install -e . && pip install -r web/requirements.txt"
     startCommand: "uvicorn web.app:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /healthz
@@ -617,6 +617,10 @@ services:
 ```
 
 #### Step-by-Step Render Deployment:
+For the existing project, use the deployed `smplxnf-live` service described in the
+[runbook](docs/DEPLOYMENT.md); do not create a duplicate. The following steps are
+for a fresh deployment in another environment.
+
 1. Connect your GitHub repository to Render at [dashboard.render.com](https://dashboard.render.com).
 2. Select **New > Blueprint** and link the repository. Render will automatically parse `render.yaml`.
 3. Configure the custom domain in your DNS provider:
@@ -647,7 +651,7 @@ In adherence to project claim discipline, the capabilities and operational bound
 - Does not assert that 3NF or BCNF normalization eliminates application-level semantic errors outside declared functional dependencies.
 
 ### 3. The narrowest defensible claim:
-- In the declared discrete Python implementation, the relational synthesis algorithms, Chase tableau procedures, BQNF delta accumulation, and 4-layer NF-IR pipeline execute deterministically and pass all 136 automated tests in `simplex-normal-forms/tests/`.
+- The original handoff reported 136 pytest items (89 unittest methods). Later correctness and packaging verification passed 232 tests, and all five hosted CI jobs passed for PR #21's tested head. These checks cover the declared implementation; the compiler workbench demonstrates FD lowering and a constructed subsumption comparison, not arbitrary execution of every catalog contract. See [current evidence and scope](docs/PROJECT_STATUS.md).
 
 ### 4. The next test needed:
-- A high-concurrency multi-tenant benchmark measuring end-to-end latency and memory utilization when streaming 100,000 PostgreSQL WAL replication events through the deployed FastAPI service on Render.
+- Complete the remaining live browser checklist when the user makes a browser available. Sustained-load and PostgreSQL WAL integration would require separately scoped implementation and experiments; the saved 15-check HTTP probe does not establish either capability.

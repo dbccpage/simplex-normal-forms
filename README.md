@@ -3,7 +3,7 @@
 **Boundary-Certified Data Architecture, Relational Normalization, Cochain Retraction & Representation Transport (`CODA_MUR`)**  
 **Epistemic Standard:** Landau Rigor / Claim Discipline Compliant (`AuthorityEffect: None`, `certified_implies_authorized: false`)
 
-[![Deployment status](https://img.shields.io/badge/Deployment-verification_pending-amber)](docs/PROJECT_STATUS.md)
+[![Deployment status](https://img.shields.io/badge/Deployment-HTTPS_API_verified-green)](docs/PROJECT_STATUS.md)
 [![Deployment: Render](https://img.shields.io/badge/Deploy-onrender.com-46e3b7)](https://render.com)
 [![Adoption Guide: IMPORT_GUIDE.md](https://img.shields.io/badge/Adoption_Guide-IMPORT__GUIDE.md-10b981)](IMPORT_GUIDE.md)
 [![Architecture Spec: MVP_SELECTION.md](https://img.shields.io/badge/Architecture-MVP__SELECTION.md-8b5cf6)](docs/MVP_SELECTION.md)
@@ -19,9 +19,10 @@
 
 Experience the core theoretical and engineering capabilities of `simplex-normal-forms` in real time:
 
-**Target URL:** [smplxnf.anomalon.com](https://smplxnf.anomalon.com). As of 2026-11-02,
-the application is merged and locally tested; public DNS/HTTPS verification is
-pending. See [project status](docs/PROJECT_STATUS.md) and the
+**Live URL:** [smplxnf.anomalon.com](https://smplxnf.anomalon.com). On 2026-11-02,
+HTTPS and all 15 API smoke checks passed on the separate `smplxnf-live` Render
+service. Full live browser acceptance remains incomplete. See
+[project status](docs/PROJECT_STATUS.md) and the
 [Render deployment and smoke-test runbook](docs/DEPLOYMENT.md).
 
 ### Four Flagship Engineering Workbenches
