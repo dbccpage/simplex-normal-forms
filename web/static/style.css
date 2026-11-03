@@ -30,6 +30,17 @@ pre::-webkit-scrollbar-thumb:hover, div::-webkit-scrollbar-thumb:hover {
   background: #475569;
 }
 
+/* Long result values must remain readable within their cards. */
+.ledger-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.compiler-fixture-json {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 /* Badge styles */
 .badge-pass {
   background-color: rgba(16, 185, 129, 0.15);

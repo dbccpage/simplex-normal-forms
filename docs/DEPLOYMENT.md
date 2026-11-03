@@ -5,6 +5,12 @@ API smoke checks passed on its Render origin and `smplxnf.anomalon.com`.
 Full live browser acceptance remains incomplete. See [the dated status](PROJECT_STATUS.md)
 and [deployment record](verification/2026-11-02-deployment.md).
 
+**November 3 follow-up:** The isolated headless pass completed the functional
+checks and found responsive layout defects. See the
+[findings](verification/2026-11-03-live-browser.md) and
+[layout fixes with local regression evidence](verification/2026-11-03-layout-fixes.md).
+The records distinguish the original live failures from predeployment checks.
+
 ## Render service
 
 The [existing service](https://dashboard.render.com/web/srv-dbkh1v3ncjis73bbg3ug/settings)
@@ -108,3 +114,29 @@ display was inspected; the remaining browser checklist was interrupted at the
 user's request. HTTPS/API verification is complete for the recorded deploy, but
 full browser acceptance remains open. Do not resume desktop automation without
 the user making it available again.
+
+## Isolated headless verification
+
+The repeatable runner launches a new headless Chromium process and a temporary
+context. It never attaches to an existing Chrome window or profile. Copy-button
+checks use an in-page sink and do not touch the OS clipboard.
+
+```sh
+npm install --no-save --package-lock=false playwright@1.58.0
+npx playwright install chromium
+node scripts/browser_smoke.cjs https://smplxnf.anomalon.com OUTPUT_DIRECTORY
+```
+
+An existing Playwright installation can be selected with `PLAYWRIGHT_MODULE`.
+HTTP is accepted only for loopback origins, so the same runner can exercise a
+local Uvicorn server. CI runs it against a local server in the `browser` job.
+It checks all four workbenches, Quickstart, copy handlers, console/network errors,
+and layouts at 1280, 768, 390 and 320 pixels. Checks cover page width and clipped
+header/ledger/fixture content, not just the existence of DOM nodes.
+
+After merging, wait until served HTML/JS/CSS match the reviewed source, then run
+the complete suite against the canonical HTTPS origin. The runner checks those
+asset bytes (normalizing line endings and trailing whitespace) and saves raw
+hashes, API responses and screenshots. Asset correspondence does not establish
+the backend's exact deployed Git SHA. Record dashboard deployment identity
+separately if available; do not infer it from the static `/healthz` version.

@@ -37,20 +37,20 @@
 
   <!-- Top Header Navigation -->
   <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="h-9 w-9 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-black text-lg shadow-lg shadow-cyan-500/20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-3 lg:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      <div class="flex items-center space-x-3 min-w-0">
+        <div class="h-9 w-9 shrink-0 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-black text-lg shadow-lg shadow-cyan-500/20">
           Δ
         </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Simplex-NF Studio</span>
+        <div class="min-w-0">
+          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span class="font-extrabold text-base sm:text-lg whitespace-nowrap tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Simplex-NF Studio</span>
             <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">v0.1.0</span>
           </div>
           <p class="text-xs text-slate-400 hidden sm:block">Relational Synthesis, Streaming BQNF & NF-IR Compiler Workbench</p>
         </div>
       </div>
-      <div class="flex items-center space-x-3">
+      <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3">
         <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700">
           <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           smplxnf.anomalon.com
@@ -114,9 +114,9 @@
               Derive candidate keys under Armstrong's Axioms, inspect minimal covers, synthesize dependency-preserving lossless-join 3NF relations, decompose BCNF trees, and verify join dependency implication via the deterministic Tableau Chase with spurious tuple counterexamples.
             </p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 min-w-0 max-w-full">
             <label for="relational-preset-select" class="text-xs text-slate-400 font-medium">Load Preset:</label>
-            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="min-w-0 flex-1 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
               <option value="ecommerce">E-Commerce Orders (3NF Violation)</option>
               <option value="supply_chain">Supply Chain Logistics Fleet</option>
               <option value="healthcare">Healthcare Attending Staff Wards</option>
@@ -550,17 +550,17 @@
               <span id="ai-merkle-verified-badge" class="text-[11px] font-mono text-emerald-400"></span>
             </h3>
             <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-xs font-mono">
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span class="text-slate-500">Root Merkle Digest:</span>
-                <span id="ai-merkle-digest" class="text-amber-400 select-all">—</span>
+                <span id="ai-merkle-digest" class="ledger-value text-amber-400 select-all sm:text-right">—</span>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span class="text-slate-500">Erased Metadata Fields:</span>
-                <span id="ai-erased-fields" class="text-rose-400">—</span>
+                <span id="ai-erased-fields" class="ledger-value text-rose-400 sm:text-right">—</span>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span class="text-slate-500">Token Conservation Law:</span>
-                <span id="ai-conservation-equation" class="text-cyan-400">—</span>
+                <span id="ai-conservation-equation" class="ledger-value text-cyan-400 sm:text-right">—</span>
               </div>
             </div>
           </div>
@@ -698,7 +698,7 @@ print("SHA-256 Merkle LossLedger:", envelope.loss_ledger["merkle_digest"])</pre>
         <span>•</span>
         <span>Hosted at <code class="text-slate-400">smplxnf.anomalon.com</code> via Render</span>
       </div>
-      <div class="flex items-center space-x-4 font-mono text-[11px]">
+      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-mono text-[11px]">
         <span>AuthorityEffect: None</span>
         <span>•</span>
         <span>certified_implies_authorized: false</span>

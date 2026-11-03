@@ -219,3 +219,6 @@ __marimo__/
 
 # mdBook
 book/html/
+
+# Optional headless browser tooling (separate from the Python package)
+node_modules/

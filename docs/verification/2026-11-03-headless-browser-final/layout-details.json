@@ -1,0 +1,57 @@
+{
+  "checked_at_utc": "2026-11-03T00:51:33.035Z",
+  "origin": "https://smplxnf.anomalon.com/",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "check": "Compiler fixture JSON remains accessible without clipping",
+  "passed": false,
+  "cards": [
+    {
+      "label": "self_difference\nExpected: Reject",
+      "width": 663,
+      "scroll_width": 833,
+      "overflow_x": "visible",
+      "ancestors": [
+        {
+          "id": "",
+          "tag": "DIV",
+          "overflow_x": "hidden",
+          "client_width": 697,
+          "scroll_width": 964
+        }
+      ]
+    },
+    {
+      "label": "obstructed_collision\nExpected: Reject",
+      "width": 663,
+      "scroll_width": 947,
+      "overflow_x": "visible",
+      "ancestors": [
+        {
+          "id": "",
+          "tag": "DIV",
+          "overflow_x": "hidden",
+          "client_width": 697,
+          "scroll_width": 964
+        }
+      ]
+    },
+    {
+      "label": "missing_required_field\nExpected: Reject",
+      "width": 663,
+      "scroll_width": 826,
+      "overflow_x": "visible",
+      "ancestors": [
+        {
+          "id": "",
+          "tag": "DIV",
+          "overflow_x": "hidden",
+          "client_width": 697,
+          "scroll_width": 964
+        }
+      ]
+    }
+  ]
+}
