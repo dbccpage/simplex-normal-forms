@@ -84,7 +84,7 @@ async function layout(name) {
   report.layout ||= {};
   report.layout[name] = geometry;
   await shot(name);
-  assert(geometry.width <= geometry.viewport + 1, `Page width ${geometry.width}px exceeds ${geometry.viewport}px viewport`);
+  assert(geometry.width <= geometry.viewport + 1, `Page width ${geometry.width}px exceeds ${geometry.viewport}px viewport: ${JSON.stringify(geometry.overflow)}`);
   for (const result of geometry.results) {
     assert(result.left >= -1 && result.right <= geometry.viewport + 1, `${result.id} extends outside viewport`);
     assert(result.content_width <= result.width + 1, `${result.id} clips ${result.content_width}px content inside ${result.width}px`);
