@@ -1,57 +1,68 @@
 # Render deployment and Phase 3 verification
 
-The application and blueprint are implemented. Public deployment remains a
-separate gate; see [the dated status](PROJECT_STATUS.md). PRs #17–19 are already
-merged. Use the current reviewed `main`, not the old MVP feature branch.
+The separate `smplxnf-live` service is deployed. On 2026-11-02, HTTPS and all 15
+API smoke checks passed on its Render origin and `smplxnf.anomalon.com`.
+Full live browser acceptance remains incomplete. See [the dated status](PROJECT_STATUS.md)
+and [deployment record](verification/2026-11-02-deployment.md).
+
+**November 3 follow-up:** The isolated headless pass completed the functional
+checks and found responsive layout defects. See the
+[findings](verification/2026-11-03-live-browser.md) and
+[layout fixes with local regression evidence](verification/2026-11-03-layout-fixes.md).
+The records distinguish the original live failures from predeployment checks.
 
 ## Render service
 
-Inspect the existing [Render project](https://dashboard.render.com/project/prj-dbj5ei942hec73c30pu0)
-before creating or syncing `smplxnf-studio` from [render.yaml](../render.yaml).
+The [existing service](https://dashboard.render.com/web/srv-dbkh1v3ncjis73bbg3ug/settings)
+is in the Production environment of the
+[Render project](https://dashboard.render.com/project/prj-dbj5ei942hec73c30pu0).
+[render.yaml](../render.yaml) now matches its name and compute plan. Inspect this
+service before creating or syncing another resource.
 
-| Setting | Blueprint value |
+| Setting | Recorded deployment / blueprint value |
 | --- | --- |
 | Repository / branch | `https://github.com/dbccpage/simplex-normal-forms` / `main` |
-| Runtime / region / plan | Python / Oregon / Starter |
+| Service name | `smplxnf-live` |
+| Runtime / region / plan | Python / Oregon / Free |
 | Build | `pip install -e . && pip install -r web/requirements.txt` |
 | Start | `uvicorn web.app:app --host 0.0.0.0 --port $PORT` |
 | Health check | `/healthz` |
 | Environment | `PYTHONUNBUFFERED=1`, `APP_ENVIRONMENT=production` |
 | Custom domain | `smplxnf.anomalon.com` |
 
-Record the selected Python version and successful deploy's Git SHA. The blueprint
-does not pin a Python version; Render's default depends on service creation date
-([Render Python version documentation](https://render.com/docs/python-version)).
-Record the actual instance plan and associated account commitment before provisioning.
+The initial successful deploy used Python 3.14 and commit
+`f9c289cc33f91c2b653f65e6267fde0073c3cd6f` (PR #21). The blueprint does not pin a
+Python version. Capture the actual runtime and SHA again for future deployments.
+The health response's application identifier remains `smplxnf-studio`; that
+identifier is distinct from the Render resource name and does not identify a SHA.
+
+Compute is Free ($0/month). Render disclosed a separate $0.25/month custom-domain
+charge and the user approved it; no billing invoice was audited. This deployment
+does not establish cold-start performance or an always-on availability commitment.
 
 Run the check below against the **assigned** `https://…onrender.com` origin
 first. A service name alone does not establish its assigned hostname.
 
 ## DNS handoff
 
-The supplied handoff assigns the GoDaddy update to the user. Report the verified
-Render hostname, then wait for their confirmation that the record is updated:
+The user configured the GoDaddy CNAME; resolver `1.1.1.1` returned it with TTL
+3600. Render now associates `smplxnf.anomalon.com` with `smplxnf-live` and showed
+both domain verification and certificate issuance complete. The 22:54 UTC
+[canonical-domain receipt](verification/2026-11-02-public-live-http.json) verifies
+HTTPS and Studio API behavior.
 
-**2026-11-02 update:** The user has already created the canonical CNAME pointing
-`smplxnf` to `smplxnf-live.onrender.com`; resolver `1.1.1.1` returned it with TTL
-3600. This target returned HTTP 404 on `/healthz`. Confirm the new service's
-assigned hostname before requesting another DNS change. The service still needs
-`smplxnf.anomalon.com` added in **Settings → Custom Domains**.
-
-**Latest check, 22:25 UTC:** The certificate is valid, but the custom domain
-serves **SmplCache Live** (`service: smplcache-live`, commit `810fc7cf0d99`).
-The user's Render screenshot lists `smplcache-live.onrender.com` as the target.
-Create/verify the separate Simplex service first, then move this custom-domain
-association to it and align DNS with that service's actual hostname. Do not
-replace or rename the existing SmplCache application to perform this migration.
-See the [application-identity receipt](verification/2026-11-02-domain-service-mismatch.json).
+Earlier checks encountered DNS propagation, an unprovisioned target and then an
+association with the existing SmplCache service. The
+[22:25 UTC mismatch receipt](verification/2026-11-02-domain-service-mismatch.json)
+is historical. The user authorized moving only the Simplex domain; the separate
+SmplCache service and `smplcache.anomalon.com` remained intact and healthy afterward.
 
 | GoDaddy field | Value |
 | --- | --- |
 | Type | `CNAME` |
 | Name / Host | `smplxnf` (within the `anomalon.com` zone) |
-| Value / Target | Actual assigned Render hostname, without `https://` or a path |
-| TTL | 600 seconds if available, otherwise provider default |
+| Value / Target | `smplxnf-live.onrender.com` |
+| TTL | 3600 seconds observed |
 
 Inspect any existing record for this name before replacing it. Leave unrelated
 zone records unchanged. Verify the custom domain in Render and wait for its
@@ -65,7 +76,7 @@ Provider references: [Render custom domains](https://render.com/docs/custom-doma
 Requires only Python 3.10+ standard library; no application imports or credentials.
 
 ```sh
-python scripts/http_smoke.py https://ACTUAL-HOST.onrender.com --output render-http.json
+python scripts/http_smoke.py https://smplxnf-live.onrender.com --output render-http.json
 python scripts/http_smoke.py https://smplxnf.anomalon.com --output public-http.json
 # Small, bounded concurrency probe: 5 GETs then 10 POSTs across two clients.
 python scripts/http_smoke.py https://smplxnf.anomalon.com --workers 2 --repeats 2 --output public-concurrent.json
@@ -98,5 +109,34 @@ Open the quickstart tab, check developer links, inspect browser errors, and
 inspect layout at desktop and narrow viewport sizes. Record the URL, deployed
 SHA, time, screenshots, observed results and any remaining failures.
 
-Localhost results establish local behavior only. The deployment gate remains
-open until these checks pass on the public custom domain.
+Localhost results establish local behavior only. The live default relational
+display was inspected; the remaining browser checklist was interrupted at the
+user's request. HTTPS/API verification is complete for the recorded deploy, but
+full browser acceptance remains open. Do not resume desktop automation without
+the user making it available again.
+
+## Isolated headless verification
+
+The repeatable runner launches a new headless Chromium process and a temporary
+context. It never attaches to an existing Chrome window or profile. Copy-button
+checks use an in-page sink and do not touch the OS clipboard.
+
+```sh
+npm install --no-save --package-lock=false playwright@1.58.0
+npx playwright install chromium
+node scripts/browser_smoke.cjs https://smplxnf.anomalon.com OUTPUT_DIRECTORY
+```
+
+An existing Playwright installation can be selected with `PLAYWRIGHT_MODULE`.
+HTTP is accepted only for loopback origins, so the same runner can exercise a
+local Uvicorn server. CI runs it against a local server in the `browser` job.
+It checks all four workbenches, Quickstart, copy handlers, console/network errors,
+and layouts at 1280, 768, 390 and 320 pixels. Checks cover page width and clipped
+header/ledger/fixture content, not just the existence of DOM nodes.
+
+After merging, wait until served HTML/JS/CSS match the reviewed source, then run
+the complete suite against the canonical HTTPS origin. The runner checks those
+asset bytes (normalizing line endings and trailing whitespace) and saves raw
+hashes, API responses and screenshots. Asset correspondence does not establish
+the backend's exact deployed Git SHA. Record dashboard deployment identity
+separately if available; do not infer it from the static `/healthz` version.

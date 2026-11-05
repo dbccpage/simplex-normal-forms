@@ -18,6 +18,10 @@ pre::-webkit-scrollbar-thumb, div::-webkit-scrollbar-thumb { background: var(--a
 .badge-fail { background: var(--an-bad-soft); color: var(--an-bad); border: 1px solid transparent; }
 .badge-warn { background: var(--an-warn-soft); color: var(--an-warn); border: 1px solid transparent; }
 
+/* Long result values must remain readable within their cards. */
+.ledger-value { min-width: 0; overflow-wrap: anywhere; }
+.compiler-fixture-json { white-space: pre-wrap; overflow-wrap: anywhere; }
+
 /* The shared stylesheet's sticky header sits above the tab row. */
 .an-header { z-index: 50; }
 

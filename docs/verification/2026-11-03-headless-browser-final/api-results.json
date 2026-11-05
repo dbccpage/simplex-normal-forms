@@ -1,0 +1,1538 @@
+{
+  "relational_lossless": {
+    "request": {
+      "attributes": [
+        "order_id",
+        "item_id",
+        "customer_id",
+        "customer_email",
+        "quantity",
+        "unit_price",
+        "zip_code",
+        "city"
+      ],
+      "dependencies": [
+        "order_id -> customer_id, zip_code",
+        "customer_id -> customer_email",
+        "item_id -> unit_price",
+        "order_id, item_id -> quantity",
+        "zip_code -> city"
+      ],
+      "custom_components": null
+    },
+    "response": {
+      "attributes": [
+        "city",
+        "customer_email",
+        "customer_id",
+        "item_id",
+        "order_id",
+        "quantity",
+        "unit_price",
+        "zip_code"
+      ],
+      "candidate_keys": [
+        [
+          "item_id",
+          "order_id"
+        ]
+      ],
+      "prime_attributes": [
+        "item_id",
+        "order_id"
+      ],
+      "non_prime_attributes": [
+        "city",
+        "customer_email",
+        "customer_id",
+        "quantity",
+        "unit_price",
+        "zip_code"
+      ],
+      "normal_forms": {
+        "1NF": {
+          "passed": true,
+          "reason": null
+        },
+        "2NF": {
+          "passed": false,
+          "reason": "2NF Partial Dependency Violation: {'item_id'} -> {'unit_price'}"
+        },
+        "3NF": {
+          "passed": false,
+          "reason": "2NF Partial Dependency Violation: {'item_id'} -> {'unit_price'}"
+        },
+        "EKNF": {
+          "passed": false,
+          "reason": "EKNF Violation: {'item_id'} -> unit_price (determinant is not a superkey and attribute 'unit_price' is not an elementary key attribute)"
+        },
+        "BCNF": {
+          "passed": false,
+          "reason": "BCNF Violation: determinant {'item_id'} is not a candidate superkey"
+        }
+      },
+      "minimal_cover": [
+        "customer_id -> customer_email",
+        "item_id -> unit_price",
+        "item_id,order_id -> quantity",
+        "order_id -> customer_id",
+        "order_id -> zip_code",
+        "zip_code -> city"
+      ],
+      "synthesized_3nf": [
+        {
+          "table_name": "rel_3nf_table_1",
+          "attributes": [
+            "city",
+            "zip_code"
+          ],
+          "candidate_keys": [
+            [
+              "city",
+              "zip_code"
+            ]
+          ]
+        },
+        {
+          "table_name": "rel_3nf_table_2",
+          "attributes": [
+            "customer_email",
+            "customer_id"
+          ],
+          "candidate_keys": [
+            [
+              "customer_email",
+              "customer_id"
+            ]
+          ]
+        },
+        {
+          "table_name": "rel_3nf_table_3",
+          "attributes": [
+            "item_id",
+            "unit_price"
+          ],
+          "candidate_keys": [
+            [
+              "item_id",
+              "unit_price"
+            ]
+          ]
+        },
+        {
+          "table_name": "rel_3nf_table_4",
+          "attributes": [
+            "customer_id",
+            "order_id",
+            "zip_code"
+          ],
+          "candidate_keys": [
+            [
+              "customer_id",
+              "order_id",
+              "zip_code"
+            ]
+          ]
+        },
+        {
+          "table_name": "rel_3nf_table_5",
+          "attributes": [
+            "item_id",
+            "order_id",
+            "quantity"
+          ],
+          "candidate_keys": [
+            [
+              "item_id",
+              "order_id"
+            ]
+          ]
+        }
+      ],
+      "bcnf_tree": [
+        {
+          "table_name": "bcnf_table_1",
+          "attributes": [
+            "customer_email",
+            "customer_id"
+          ],
+          "dependencies": [
+            "customer_id -> customer_email"
+          ],
+          "candidate_keys": [
+            [
+              "customer_id"
+            ]
+          ]
+        },
+        {
+          "table_name": "bcnf_table_2",
+          "attributes": [
+            "item_id",
+            "unit_price"
+          ],
+          "dependencies": [
+            "item_id -> unit_price"
+          ],
+          "candidate_keys": [
+            [
+              "item_id"
+            ]
+          ]
+        },
+        {
+          "table_name": "bcnf_table_3",
+          "attributes": [
+            "city",
+            "zip_code"
+          ],
+          "dependencies": [
+            "zip_code -> city"
+          ],
+          "candidate_keys": [
+            [
+              "zip_code"
+            ]
+          ]
+        },
+        {
+          "table_name": "bcnf_table_4",
+          "attributes": [
+            "customer_id",
+            "order_id",
+            "zip_code"
+          ],
+          "dependencies": [
+            "order_id -> customer_id",
+            "order_id -> zip_code"
+          ],
+          "candidate_keys": [
+            [
+              "order_id"
+            ]
+          ]
+        },
+        {
+          "table_name": "bcnf_table_5",
+          "attributes": [
+            "item_id",
+            "order_id",
+            "quantity"
+          ],
+          "dependencies": [
+            "item_id,order_id -> quantity"
+          ],
+          "candidate_keys": [
+            [
+              "item_id",
+              "order_id"
+            ]
+          ]
+        }
+      ],
+      "chase": {
+        "is_implied": true,
+        "status": "Accept",
+        "heading": [
+          "city",
+          "customer_email",
+          "customer_id",
+          "item_id",
+          "order_id",
+          "quantity",
+          "unit_price",
+          "zip_code"
+        ],
+        "components": [
+          [
+            "city",
+            "zip_code"
+          ],
+          [
+            "customer_email",
+            "customer_id"
+          ],
+          [
+            "item_id",
+            "unit_price"
+          ],
+          [
+            "customer_id",
+            "order_id",
+            "zip_code"
+          ],
+          [
+            "item_id",
+            "order_id",
+            "quantity"
+          ]
+        ],
+        "steps_count": 7,
+        "steps": [
+          {
+            "step_number": 1,
+            "fd": "item_id -> unit_price",
+            "rows_matched": [
+              2,
+              4
+            ],
+            "attribute_equated": "unit_price",
+            "old_symbol": "b_4_unit_price",
+            "new_symbol": "a_unit_price"
+          },
+          {
+            "step_number": 2,
+            "fd": "zip_code -> city",
+            "rows_matched": [
+              0,
+              3
+            ],
+            "attribute_equated": "city",
+            "old_symbol": "b_3_city",
+            "new_symbol": "a_city"
+          },
+          {
+            "step_number": 3,
+            "fd": "order_id -> customer_id,zip_code",
+            "rows_matched": [
+              3,
+              4
+            ],
+            "attribute_equated": "customer_id",
+            "old_symbol": "b_4_customer_id",
+            "new_symbol": "a_customer_id"
+          },
+          {
+            "step_number": 4,
+            "fd": "order_id -> customer_id,zip_code",
+            "rows_matched": [
+              3,
+              4
+            ],
+            "attribute_equated": "zip_code",
+            "old_symbol": "b_4_zip_code",
+            "new_symbol": "a_zip_code"
+          },
+          {
+            "step_number": 5,
+            "fd": "customer_id -> customer_email",
+            "rows_matched": [
+              1,
+              3
+            ],
+            "attribute_equated": "customer_email",
+            "old_symbol": "b_3_customer_email",
+            "new_symbol": "a_customer_email"
+          },
+          {
+            "step_number": 6,
+            "fd": "customer_id -> customer_email",
+            "rows_matched": [
+              1,
+              4
+            ],
+            "attribute_equated": "customer_email",
+            "old_symbol": "b_4_customer_email",
+            "new_symbol": "a_customer_email"
+          },
+          {
+            "step_number": 7,
+            "fd": "zip_code -> city",
+            "rows_matched": [
+              0,
+              4
+            ],
+            "attribute_equated": "city",
+            "old_symbol": "b_4_city",
+            "new_symbol": "a_city"
+          }
+        ],
+        "initial_tableau": [
+          {
+            "city": "a_city",
+            "customer_email": "b_0_customer_email",
+            "customer_id": "b_0_customer_id",
+            "item_id": "b_0_item_id",
+            "order_id": "b_0_order_id",
+            "quantity": "b_0_quantity",
+            "unit_price": "b_0_unit_price",
+            "zip_code": "a_zip_code"
+          },
+          {
+            "city": "b_1_city",
+            "customer_email": "a_customer_email",
+            "customer_id": "a_customer_id",
+            "item_id": "b_1_item_id",
+            "order_id": "b_1_order_id",
+            "quantity": "b_1_quantity",
+            "unit_price": "b_1_unit_price",
+            "zip_code": "b_1_zip_code"
+          },
+          {
+            "city": "b_2_city",
+            "customer_email": "b_2_customer_email",
+            "customer_id": "b_2_customer_id",
+            "item_id": "a_item_id",
+            "order_id": "b_2_order_id",
+            "quantity": "b_2_quantity",
+            "unit_price": "a_unit_price",
+            "zip_code": "b_2_zip_code"
+          },
+          {
+            "city": "b_3_city",
+            "customer_email": "b_3_customer_email",
+            "customer_id": "a_customer_id",
+            "item_id": "b_3_item_id",
+            "order_id": "a_order_id",
+            "quantity": "b_3_quantity",
+            "unit_price": "b_3_unit_price",
+            "zip_code": "a_zip_code"
+          },
+          {
+            "city": "b_4_city",
+            "customer_email": "b_4_customer_email",
+            "customer_id": "b_4_customer_id",
+            "item_id": "a_item_id",
+            "order_id": "a_order_id",
+            "quantity": "a_quantity",
+            "unit_price": "b_4_unit_price",
+            "zip_code": "b_4_zip_code"
+          }
+        ],
+        "final_tableau": [
+          {
+            "city": "a_city",
+            "customer_email": "b_0_customer_email",
+            "customer_id": "b_0_customer_id",
+            "item_id": "b_0_item_id",
+            "order_id": "b_0_order_id",
+            "quantity": "b_0_quantity",
+            "unit_price": "b_0_unit_price",
+            "zip_code": "a_zip_code"
+          },
+          {
+            "city": "b_1_city",
+            "customer_email": "a_customer_email",
+            "customer_id": "a_customer_id",
+            "item_id": "b_1_item_id",
+            "order_id": "b_1_order_id",
+            "quantity": "b_1_quantity",
+            "unit_price": "b_1_unit_price",
+            "zip_code": "b_1_zip_code"
+          },
+          {
+            "city": "b_2_city",
+            "customer_email": "b_2_customer_email",
+            "customer_id": "b_2_customer_id",
+            "item_id": "a_item_id",
+            "order_id": "b_2_order_id",
+            "quantity": "b_2_quantity",
+            "unit_price": "a_unit_price",
+            "zip_code": "b_2_zip_code"
+          },
+          {
+            "city": "a_city",
+            "customer_email": "a_customer_email",
+            "customer_id": "a_customer_id",
+            "item_id": "b_3_item_id",
+            "order_id": "a_order_id",
+            "quantity": "b_3_quantity",
+            "unit_price": "b_3_unit_price",
+            "zip_code": "a_zip_code"
+          },
+          {
+            "city": "a_city",
+            "customer_email": "a_customer_email",
+            "customer_id": "a_customer_id",
+            "item_id": "a_item_id",
+            "order_id": "a_order_id",
+            "quantity": "a_quantity",
+            "unit_price": "a_unit_price",
+            "zip_code": "a_zip_code"
+          }
+        ],
+        "distinguished_row_index": 4,
+        "spurious_tuple_witness": null
+      },
+      "sql_ddl": "CREATE TABLE \"rel_3nf_table_1\" (\"city\" TEXT, \"zip_code\" TEXT, PRIMARY KEY (\"city\", \"zip_code\"));\nCREATE TABLE \"rel_3nf_table_2\" (\"customer_email\" TEXT, \"customer_id\" TEXT, PRIMARY KEY (\"customer_email\", \"customer_id\"));\nCREATE TABLE \"rel_3nf_table_3\" (\"item_id\" TEXT, \"unit_price\" TEXT, PRIMARY KEY (\"item_id\", \"unit_price\"));\nCREATE TABLE \"rel_3nf_table_4\" (\"customer_id\" TEXT, \"order_id\" TEXT, \"zip_code\" TEXT, PRIMARY KEY (\"customer_id\", \"order_id\", \"zip_code\"));\nCREATE TABLE \"rel_3nf_table_5\" (\"item_id\" TEXT, \"order_id\" TEXT, \"quantity\" TEXT, PRIMARY KEY (\"item_id\", \"order_id\"));"
+    }
+  },
+  "relational_lossy": {
+    "request": {
+      "attributes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "dependencies": [
+        "A -> B"
+      ],
+      "custom_components": [
+        [
+          "A",
+          "B"
+        ],
+        [
+          "B",
+          "C"
+        ]
+      ]
+    },
+    "response": {
+      "attributes": [
+        "A",
+        "B",
+        "C"
+      ],
+      "candidate_keys": [
+        [
+          "A",
+          "C"
+        ]
+      ],
+      "prime_attributes": [
+        "A",
+        "C"
+      ],
+      "non_prime_attributes": [
+        "B"
+      ],
+      "normal_forms": {
+        "1NF": {
+          "passed": true,
+          "reason": null
+        },
+        "2NF": {
+          "passed": false,
+          "reason": "2NF Partial Dependency Violation: {'A'} -> {'B'}"
+        },
+        "3NF": {
+          "passed": false,
+          "reason": "2NF Partial Dependency Violation: {'A'} -> {'B'}"
+        },
+        "EKNF": {
+          "passed": false,
+          "reason": "EKNF Violation: {'A'} -> B (determinant is not a superkey and attribute 'B' is not an elementary key attribute)"
+        },
+        "BCNF": {
+          "passed": false,
+          "reason": "BCNF Violation: determinant {'A'} is not a candidate superkey"
+        }
+      },
+      "minimal_cover": [
+        "A -> B"
+      ],
+      "synthesized_3nf": [
+        {
+          "table_name": "rel_3nf_table_1",
+          "attributes": [
+            "A",
+            "B"
+          ],
+          "candidate_keys": [
+            [
+              "A",
+              "B"
+            ]
+          ]
+        },
+        {
+          "table_name": "rel_3nf_table_2",
+          "attributes": [
+            "A",
+            "C"
+          ],
+          "candidate_keys": [
+            [
+              "A",
+              "C"
+            ]
+          ]
+        }
+      ],
+      "bcnf_tree": [
+        {
+          "table_name": "bcnf_table_1",
+          "attributes": [
+            "A",
+            "B"
+          ],
+          "dependencies": [
+            "A -> B"
+          ],
+          "candidate_keys": [
+            [
+              "A"
+            ]
+          ]
+        },
+        {
+          "table_name": "bcnf_table_2",
+          "attributes": [
+            "A",
+            "C"
+          ],
+          "dependencies": [],
+          "candidate_keys": [
+            [
+              "A",
+              "C"
+            ]
+          ]
+        }
+      ],
+      "chase": {
+        "is_implied": false,
+        "status": "Reject",
+        "heading": [
+          "A",
+          "B",
+          "C"
+        ],
+        "components": [
+          [
+            "A",
+            "B"
+          ],
+          [
+            "B",
+            "C"
+          ]
+        ],
+        "steps_count": 0,
+        "steps": [],
+        "initial_tableau": [
+          {
+            "A": "a_A",
+            "B": "a_B",
+            "C": "b_0_C"
+          },
+          {
+            "A": "b_1_A",
+            "B": "a_B",
+            "C": "a_C"
+          }
+        ],
+        "final_tableau": [
+          {
+            "A": "a_A",
+            "B": "a_B",
+            "C": "b_0_C"
+          },
+          {
+            "A": "b_1_A",
+            "B": "a_B",
+            "C": "a_C"
+          }
+        ],
+        "distinguished_row_index": null,
+        "spurious_tuple_witness": {
+          "A": "a_A",
+          "B": "a_B",
+          "C": "a_C"
+        }
+      },
+      "sql_ddl": "CREATE TABLE \"rel_3nf_table_1\" (\"A\" TEXT, \"B\" TEXT, PRIMARY KEY (\"A\", \"B\"));\nCREATE TABLE \"rel_3nf_table_2\" (\"A\" TEXT, \"C\" TEXT, PRIMARY KEY (\"A\", \"C\"));"
+    }
+  },
+  "bqnf_true": {
+    "request": {
+      "boundary": {
+        "relations": [
+          "sales"
+        ],
+        "attributes": [
+          "amount",
+          "status",
+          "region"
+        ],
+        "predicates": [
+          "status = paid"
+        ],
+        "aggregates": [
+          "SUM(amount)",
+          "MAX(amount)"
+        ],
+        "groups": [
+          "region"
+        ]
+      },
+      "events": [
+        {
+          "op": "INSERT",
+          "relation": "sales",
+          "old": null,
+          "new": {
+            "region": "North",
+            "amount": 45,
+            "status": "paid"
+          }
+        },
+        {
+          "op": "UPDATE",
+          "relation": "sales",
+          "old": {
+            "region": "North",
+            "amount": 45,
+            "status": "paid"
+          },
+          "new": {
+            "region": "North",
+            "amount": 75,
+            "status": "paid"
+          }
+        },
+        {
+          "op": "DELETE",
+          "relation": "sales",
+          "old": {
+            "region": "North",
+            "amount": 250,
+            "status": "paid"
+          },
+          "new": null
+        }
+      ],
+      "use_cochain": true,
+      "split_threshold": 4,
+      "merge_threshold": 1
+    },
+    "response": {
+      "events_evaluated": 3,
+      "event_decisions": [
+        {
+          "normal_form": "BQNF",
+          "decision": "Repair",
+          "terminal_route": "Repair",
+          "obstruction_class": "[0]",
+          "repair": {
+            "region_deltas": {
+              "North": {
+                "delta_revenue": 45,
+                "delta_count": 1
+              }
+            }
+          },
+          "evidence_sufficient": true,
+          "certified": true,
+          "authorized": false,
+          "op": "INSERT",
+          "relation": "sales",
+          "applied": true
+        },
+        {
+          "normal_form": "BQNF",
+          "decision": "Repair",
+          "terminal_route": "Repair",
+          "obstruction_class": "[0]",
+          "repair": {
+            "region_deltas": {
+              "North": {
+                "delta_revenue": 30,
+                "delta_count": 0
+              }
+            }
+          },
+          "evidence_sufficient": true,
+          "certified": true,
+          "authorized": false,
+          "op": "UPDATE",
+          "relation": "sales",
+          "applied": true
+        },
+        {
+          "normal_form": "BQNF",
+          "decision": "Repair",
+          "terminal_route": "Repair",
+          "obstruction_class": "[0]",
+          "repair": {
+            "region_deltas": {
+              "North": {
+                "delta_revenue": -250,
+                "delta_count": -1
+              }
+            }
+          },
+          "evidence_sufficient": true,
+          "certified": true,
+          "authorized": false,
+          "op": "DELETE",
+          "relation": "sales",
+          "applied": true
+        }
+      ],
+      "extrema_repair_log": [
+        {
+          "id": 6,
+          "region": "North",
+          "op_type": "INSERT",
+          "affected_amount": 45,
+          "is_destructive": 0,
+          "cochain_available": 1,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 250,
+          "recomputation_fallback_executed": 0
+        },
+        {
+          "id": 7,
+          "region": "North",
+          "op_type": "DELETE",
+          "affected_amount": 45,
+          "is_destructive": 0,
+          "cochain_available": 1,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 250,
+          "recomputation_fallback_executed": 0
+        },
+        {
+          "id": 8,
+          "region": "North",
+          "op_type": "INSERT",
+          "affected_amount": 75,
+          "is_destructive": 0,
+          "cochain_available": 1,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 250,
+          "recomputation_fallback_executed": 0
+        },
+        {
+          "id": 9,
+          "region": "North",
+          "op_type": "DELETE",
+          "affected_amount": 250,
+          "is_destructive": 1,
+          "cochain_available": 1,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 120,
+          "recomputation_fallback_executed": 0
+        }
+      ],
+      "extremum_cochain_entries": [
+        {
+          "region": "North",
+          "amount": 25,
+          "frequency": 1
+        },
+        {
+          "region": "North",
+          "amount": 60,
+          "frequency": 1
+        },
+        {
+          "region": "North",
+          "amount": 75,
+          "frequency": 1
+        },
+        {
+          "region": "North",
+          "amount": 120,
+          "frequency": 1
+        },
+        {
+          "region": "South",
+          "amount": 80,
+          "frequency": 1
+        }
+      ],
+      "quantile_rebalance_receipt": {
+        "region": "North",
+        "splits_executed": 0,
+        "merges_executed": 0,
+        "active_bucket_count": 3,
+        "total_mass": 4
+      },
+      "quantile_rebalance_receipts": {
+        "North": {
+          "region": "North",
+          "splits_executed": 0,
+          "merges_executed": 0,
+          "active_bucket_count": 3,
+          "total_mass": 4
+        },
+        "South": {
+          "region": "South",
+          "splits_executed": 0,
+          "merges_executed": 0,
+          "active_bucket_count": 1,
+          "total_mass": 1
+        }
+      },
+      "final_cache": {
+        "North": {
+          "total_sales": 280,
+          "sale_count": 4,
+          "min_amount": 25,
+          "max_amount": 120
+        },
+        "South": {
+          "total_sales": 80,
+          "sale_count": 1,
+          "min_amount": 80,
+          "max_amount": 80
+        }
+      },
+      "quantile_buckets": [
+        {
+          "region": "North",
+          "bucket_id": 20480,
+          "lower_bound": 20,
+          "upper_bound": 40,
+          "count": 1
+        },
+        {
+          "region": "North",
+          "bucket_id": 61440,
+          "lower_bound": 60,
+          "upper_bound": 80,
+          "count": 2
+        },
+        {
+          "region": "North",
+          "bucket_id": 122880,
+          "lower_bound": 120,
+          "upper_bound": 140,
+          "count": 1
+        },
+        {
+          "region": "South",
+          "bucket_id": 81920,
+          "lower_bound": 80,
+          "upper_bound": 100,
+          "count": 1
+        }
+      ],
+      "repair_tally": {
+        "extrema_repairs": 4,
+        "fallback_recomputations": 0,
+        "quantile_repairs": 0,
+        "quantile_fallback_recomputations": 0,
+        "batch_terminal": "Repair"
+      },
+      "cochain_speedup": "O(log K) priority queue lookup executed without full table scan"
+    }
+  },
+  "bqnf_false": {
+    "request": {
+      "boundary": {
+        "relations": [
+          "sales"
+        ],
+        "attributes": [
+          "amount",
+          "status",
+          "region"
+        ],
+        "predicates": [
+          "status = paid"
+        ],
+        "aggregates": [
+          "SUM(amount)",
+          "MAX(amount)"
+        ],
+        "groups": [
+          "region"
+        ]
+      },
+      "events": [
+        {
+          "op": "INSERT",
+          "relation": "sales",
+          "old": null,
+          "new": {
+            "region": "North",
+            "amount": 45,
+            "status": "paid"
+          }
+        },
+        {
+          "op": "UPDATE",
+          "relation": "sales",
+          "old": {
+            "region": "North",
+            "amount": 45,
+            "status": "paid"
+          },
+          "new": {
+            "region": "North",
+            "amount": 75,
+            "status": "paid"
+          }
+        },
+        {
+          "op": "DELETE",
+          "relation": "sales",
+          "old": {
+            "region": "North",
+            "amount": 250,
+            "status": "paid"
+          },
+          "new": null
+        }
+      ],
+      "use_cochain": false,
+      "split_threshold": 4,
+      "merge_threshold": 1
+    },
+    "response": {
+      "events_evaluated": 3,
+      "event_decisions": [
+        {
+          "normal_form": "BQNF",
+          "decision": "Repair",
+          "terminal_route": "Repair",
+          "obstruction_class": "[0]",
+          "repair": {
+            "region_deltas": {
+              "North": {
+                "delta_revenue": 45,
+                "delta_count": 1
+              }
+            }
+          },
+          "evidence_sufficient": true,
+          "certified": true,
+          "authorized": false,
+          "op": "INSERT",
+          "relation": "sales",
+          "applied": true
+        },
+        {
+          "normal_form": "BQNF",
+          "decision": "Repair",
+          "terminal_route": "Repair",
+          "obstruction_class": "[0]",
+          "repair": {
+            "region_deltas": {
+              "North": {
+                "delta_revenue": 30,
+                "delta_count": 0
+              }
+            }
+          },
+          "evidence_sufficient": true,
+          "certified": true,
+          "authorized": false,
+          "op": "UPDATE",
+          "relation": "sales",
+          "applied": true
+        },
+        {
+          "normal_form": "BQNF",
+          "decision": "Repair",
+          "terminal_route": "Repair",
+          "obstruction_class": "[0]",
+          "repair": {
+            "region_deltas": {
+              "North": {
+                "delta_revenue": -250,
+                "delta_count": -1
+              }
+            }
+          },
+          "evidence_sufficient": true,
+          "certified": true,
+          "authorized": false,
+          "op": "DELETE",
+          "relation": "sales",
+          "applied": true
+        }
+      ],
+      "extrema_repair_log": [
+        {
+          "id": 6,
+          "region": "North",
+          "op_type": "INSERT",
+          "affected_amount": 45,
+          "is_destructive": 0,
+          "cochain_available": 0,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 250,
+          "recomputation_fallback_executed": 0
+        },
+        {
+          "id": 7,
+          "region": "North",
+          "op_type": "DELETE",
+          "affected_amount": 45,
+          "is_destructive": 0,
+          "cochain_available": 0,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 250,
+          "recomputation_fallback_executed": 0
+        },
+        {
+          "id": 8,
+          "region": "North",
+          "op_type": "INSERT",
+          "affected_amount": 75,
+          "is_destructive": 0,
+          "cochain_available": 0,
+          "terminal_route": "Repair",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 250,
+          "recomputation_fallback_executed": 0
+        },
+        {
+          "id": 9,
+          "region": "North",
+          "op_type": "DELETE",
+          "affected_amount": 250,
+          "is_destructive": 1,
+          "cochain_available": 0,
+          "terminal_route": "Recompute",
+          "old_min": 25,
+          "new_min": 25,
+          "old_max": 250,
+          "new_max": 120,
+          "recomputation_fallback_executed": 1
+        }
+      ],
+      "extremum_cochain_entries": [
+        {
+          "region": "North",
+          "amount": 25,
+          "frequency": 1
+        },
+        {
+          "region": "North",
+          "amount": 60,
+          "frequency": 1
+        },
+        {
+          "region": "North",
+          "amount": 75,
+          "frequency": 1
+        },
+        {
+          "region": "North",
+          "amount": 120,
+          "frequency": 1
+        },
+        {
+          "region": "South",
+          "amount": 80,
+          "frequency": 1
+        }
+      ],
+      "quantile_rebalance_receipt": {
+        "region": "North",
+        "splits_executed": 0,
+        "merges_executed": 0,
+        "active_bucket_count": 3,
+        "total_mass": 4
+      },
+      "quantile_rebalance_receipts": {
+        "North": {
+          "region": "North",
+          "splits_executed": 0,
+          "merges_executed": 0,
+          "active_bucket_count": 3,
+          "total_mass": 4
+        },
+        "South": {
+          "region": "South",
+          "splits_executed": 0,
+          "merges_executed": 0,
+          "active_bucket_count": 1,
+          "total_mass": 1
+        }
+      },
+      "final_cache": {
+        "North": {
+          "total_sales": 280,
+          "sale_count": 4,
+          "min_amount": 25,
+          "max_amount": 120
+        },
+        "South": {
+          "total_sales": 80,
+          "sale_count": 1,
+          "min_amount": 80,
+          "max_amount": 80
+        }
+      },
+      "quantile_buckets": [
+        {
+          "region": "North",
+          "bucket_id": 20480,
+          "lower_bound": 20,
+          "upper_bound": 40,
+          "count": 1
+        },
+        {
+          "region": "North",
+          "bucket_id": 61440,
+          "lower_bound": 60,
+          "upper_bound": 80,
+          "count": 2
+        },
+        {
+          "region": "North",
+          "bucket_id": 122880,
+          "lower_bound": 120,
+          "upper_bound": 140,
+          "count": 1
+        },
+        {
+          "region": "South",
+          "bucket_id": 81920,
+          "lower_bound": 80,
+          "upper_bound": 100,
+          "count": 1
+        }
+      ],
+      "repair_tally": {
+        "extrema_repairs": 3,
+        "fallback_recomputations": 1,
+        "quantile_repairs": 0,
+        "quantile_fallback_recomputations": 0,
+        "batch_terminal": "Recompute"
+      },
+      "cochain_speedup": "O(N) full table scan executed via fallback recomputation"
+    }
+  },
+  "compiler": {
+    "request": {
+      "contract_id": "nf.classical.bcnf",
+      "key_field": "employee_id",
+      "table_name": "employees",
+      "heading": [
+        "employee_id",
+        "dept_id",
+        "manager_id",
+        "office_location"
+      ],
+      "determinant": [
+        "dept_id"
+      ],
+      "dependent": [
+        "manager_id"
+      ],
+      "test_carrier": [
+        {
+          "employee_id": "E101",
+          "dept_id": "D1",
+          "manager_id": "M1",
+          "office_location": "Bldg-A"
+        },
+        {
+          "employee_id": "E102",
+          "dept_id": "D1",
+          "manager_id": "M1",
+          "office_location": "Bldg-B"
+        },
+        {
+          "employee_id": "E103",
+          "dept_id": "D2",
+          "manager_id": "M2",
+          "office_location": "Bldg-C"
+        }
+      ]
+    },
+    "response": {
+      "kernel_spec": {
+        "contract_id": "nf.classical.bcnf",
+        "key_field": "employee_id",
+        "distinction_fields": [
+          "employee_id",
+          "dept_id",
+          "manager_id",
+          "office_location"
+        ],
+        "collapse_fields": [
+          "dept_id"
+        ],
+        "protected_law_fields": [
+          "manager_id"
+        ],
+        "law_mode": "functional_dependency"
+      },
+      "subsumption_analysis": {
+        "compared_against": "nf.classical.3nf",
+        "is_subsumed": true,
+        "subsume_reason": "nf.classical.bcnf(['dept_id']->['manager_id']) subsumes nf.classical.3nf(['dept_id']->['manager_id']).",
+        "executed_specs_count": 1,
+        "elided_specs_count": 1,
+        "elided_records": [
+          {
+            "elided_spec": "nf.classical.3nf",
+            "subsuming_spec": "nf.classical.bcnf",
+            "reason": "nf.classical.bcnf(['dept_id']->['manager_id']) subsumes nf.classical.3nf(['dept_id']->['manager_id'])."
+          }
+        ]
+      },
+      "sqlite_ddl": {
+        "table_name": "employees",
+        "create_table_sql": "CREATE TABLE \"employees\" (\"employee_id\" BLOB, \"dept_id\" BLOB, \"manager_id\" BLOB, \"office_location\" BLOB);",
+        "before_insert_trigger_sql": "CREATE TRIGGER \"trg_employees_before_insert\"\nBEFORE INSERT ON \"employees\"\nFOR EACH ROW\nBEGIN\n  SELECT CASE WHEN NEW.\"dept_id\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:dept_id') END;\n  SELECT CASE WHEN NEW.\"manager_id\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:manager_id') END;\n  SELECT CASE WHEN EXISTS (SELECT 1 FROM \"employees\" AS existing WHERE (existing.\"dept_id\" = NEW.\"dept_id\") AND (existing.\"manager_id\" != NEW.\"manager_id\")) THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:PromoteToObstruction:manager_id') END;\nEND;",
+        "before_update_trigger_sql": "CREATE TRIGGER \"trg_employees_before_update\"\nBEFORE UPDATE ON \"employees\"\nFOR EACH ROW\nBEGIN\n  SELECT CASE WHEN NEW.\"dept_id\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:dept_id') END;\n  SELECT CASE WHEN NEW.\"manager_id\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:manager_id') END;\n  SELECT CASE WHEN EXISTS (SELECT 1 FROM \"employees\" AS existing WHERE existing.rowid != OLD.rowid AND (existing.\"dept_id\" = NEW.\"dept_id\") AND (existing.\"manager_id\" != NEW.\"manager_id\")) THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:PromoteToObstruction:manager_id') END;\nEND;"
+      },
+      "sqlite_verification": {
+        "verified": true,
+        "error": null
+      },
+      "python_guard_code": "from normal_forms.ir_lowering import compile_to_python_decorator\nfrom normal_forms.ir_kernel import lower_fd_to_kernel_spec\nfrom normal_forms.domain.relational import FunctionalDependency\n\nspec = lower_fd_to_kernel_spec(\n    fd=FunctionalDependency(frozenset(['dept_id']), frozenset(['manager_id'])),\n    key_field='employee_id',\n    heading=['employee_id', 'dept_id', 'manager_id', 'office_location'],\n    contract_id='nf.classical.bcnf',\n)\n\n@compile_to_python_decorator(spec)\ndef process_batch(rows):\n    \"\"\"Executes with fail-closed security only if rows satisfy nf.classical.bcnf.\"\"\"\n    return f\"Successfully processed {len(rows)} certified rows.\"\n",
+      "synthesized_counterexamples": [
+        {
+          "failure_kind": "self_difference",
+          "expected_terminal": "Reject",
+          "carrier_rows": [
+            {
+              "employee_id": "id_42_0",
+              "dept_id": "dept_id_val_0_91",
+              "manager_id": "manager_id_val_0_24",
+              "office_location": "office_location_val_0_13"
+            },
+            {
+              "employee_id": "id_42_1",
+              "dept_id": "dept_id_val_1_45",
+              "manager_id": "manager_id_val_1_41",
+              "office_location": "office_location_val_1_38"
+            }
+          ]
+        },
+        {
+          "failure_kind": "obstructed_collision",
+          "expected_terminal": "Reject",
+          "carrier_rows": [
+            {
+              "employee_id": "id_42_0",
+              "dept_id": "dept_id_val_0_91",
+              "manager_id": "manager_id_val_0_24",
+              "office_location": "office_location_val_0_13"
+            },
+            {
+              "employee_id": "id_42_1",
+              "dept_id": "dept_id_val_0_91",
+              "manager_id": "manager_id_val_0_24_obstructed_conflict",
+              "office_location": "office_location_val_1_38"
+            }
+          ]
+        },
+        {
+          "failure_kind": "missing_required_field",
+          "expected_terminal": "Reject",
+          "carrier_rows": [
+            {
+              "employee_id": "id_42_0",
+              "dept_id": "dept_id_val_0_91",
+              "office_location": "office_location_val_0_13"
+            },
+            {
+              "employee_id": "id_42_1",
+              "dept_id": "dept_id_val_1_45",
+              "manager_id": "manager_id_val_1_41",
+              "office_location": "office_location_val_1_38"
+            }
+          ]
+        }
+      ],
+      "carrier_evaluation": {
+        "contract_id": "nf.classical.bcnf",
+        "canonical_terminal": "Preserve",
+        "admitted": true,
+        "certified": true,
+        "authorized": false,
+        "witness_pair": null,
+        "reason": "All carrier collisions preserve the declared protected law."
+      }
+    }
+  },
+  "ai": {
+    "request": {
+      "source_chunks": [
+        {
+          "chunk_id": "chunk_1",
+          "doc_title": "Relational Theory",
+          "text": "First normal form requires that all attribute values be atomic scalars with zero repeating groups.",
+          "relevance_score": 0.98,
+          "internal_debug_trace": "embed_0.9812",
+          "vector_norm": 1.002
+        },
+        {
+          "chunk_id": "chunk_2",
+          "doc_title": "Relational Theory",
+          "text": "Boyce Codd normal form guarantees under the declared assumptions that every non trivial determinant is a superkey of the relation.",
+          "relevance_score": 0.94,
+          "internal_debug_trace": "embed_0.9401",
+          "vector_norm": 0.998
+        },
+        {
+          "chunk_id": "chunk_3",
+          "doc_title": "Compiler Optimizations",
+          "text": "Dead check elimination on partial orders elides redundant downstream verifications with zero loss of safety.",
+          "relevance_score": 0.88,
+          "internal_debug_trace": "embed_0.8810",
+          "vector_norm": 1.011
+        },
+        {
+          "chunk_id": "chunk_4",
+          "doc_title": "Incremental Computing",
+          "text": "Boundary quotients maintain streaming aggregates without expensive full recomputations on base relations.",
+          "relevance_score": 0.72,
+          "internal_debug_trace": "embed_0.7230",
+          "vector_norm": 0.995
+        }
+      ],
+      "target_fields": [
+        "chunk_id",
+        "doc_title",
+        "text",
+        "relevance_score"
+      ],
+      "max_token_budget": 35
+    },
+    "response": {
+      "admitted": true,
+      "certified": true,
+      "authorized": false,
+      "authorization_status": "certified_not_authorized",
+      "canonical_terminal": "Quarantine",
+      "local_route": "DegradedTransportWithLoss",
+      "reason": "Lossy context transport certified with sealed SHA-256 LossLedger (erased=['internal_debug_trace', 'vector_norm'], truncated_tokens=27, dropped_chunks=2).",
+      "token_accounting": {
+        "source_token_count": 62,
+        "retained_token_count": 35,
+        "truncated_token_count": 27,
+        "max_token_budget": 35,
+        "token_conservation_commutes": true,
+        "conservation_equation": "62 == 35 (retained) + 27 (truncated)"
+      },
+      "chunk_accounting": {
+        "source_chunk_count": 4,
+        "retained_chunk_count": 2,
+        "dropped_chunk_count": 2
+      },
+      "erased_attributes": [
+        "internal_debug_trace",
+        "vector_norm",
+        "__context_token_truncation__"
+      ],
+      "loss_ledger": {
+        "trigger_id": "coda_mur.context_truncation_and_field_drop",
+        "erased_attributes": [
+          "internal_debug_trace",
+          "vector_norm",
+          "__context_token_truncation__"
+        ],
+        "record_count": 4,
+        "entries": [
+          {
+            "row_key": "chunk_1",
+            "trigger_id": "coda_mur.context_truncation_and_field_drop",
+            "erased_fields": {
+              "internal_debug_trace": "embed_0.9812",
+              "vector_norm": 1.002
+            }
+          },
+          {
+            "row_key": "chunk_2",
+            "trigger_id": "coda_mur.context_truncation_and_field_drop",
+            "erased_fields": {
+              "internal_debug_trace": "embed_0.9401",
+              "vector_norm": 0.998
+            }
+          },
+          {
+            "row_key": "chunk_3",
+            "trigger_id": "coda_mur.context_truncation_and_field_drop",
+            "erased_fields": {
+              "internal_debug_trace": "embed_0.8810",
+              "vector_norm": 1.011,
+              "__dropped_chunk__": true,
+              "__truncated_token_count__": 15,
+              "__truncated_text_sha256__": "04f0178a2ec648f6fd215895abee0c5b3d0c869deb96a153c6394e7bed107bee",
+              "__truncated_tokens__": [
+                "Dead",
+                "check",
+                "elimination",
+                "on",
+                "partial",
+                "orders",
+                "elides",
+                "redundant",
+                "downstream",
+                "verifications",
+                "with",
+                "zero",
+                "loss",
+                "of",
+                "safety."
+              ]
+            }
+          },
+          {
+            "row_key": "chunk_4",
+            "trigger_id": "coda_mur.context_truncation_and_field_drop",
+            "erased_fields": {
+              "internal_debug_trace": "embed_0.7230",
+              "vector_norm": 0.995,
+              "__dropped_chunk__": true,
+              "__truncated_token_count__": 12,
+              "__truncated_text_sha256__": "7ea3f14b551c98e48e9172ae24eca9062516c3f00d36ebf2b412d671c10d6d6c",
+              "__truncated_tokens__": [
+                "Boundary",
+                "quotients",
+                "maintain",
+                "streaming",
+                "aggregates",
+                "without",
+                "expensive",
+                "full",
+                "recomputations",
+                "on",
+                "base",
+                "relations."
+              ]
+            }
+          }
+        ],
+        "sealed": true,
+        "merkle_digest": "b73579fa81030b31c4ae3c828261736b8611bc10a0b2fdc75da5365b68b28573",
+        "authority_effect": "None"
+      },
+      "loss_ledger_integrity_verified": true,
+      "loss_ledger_error": null,
+      "merkle_digest": "b73579fa81030b31c4ae3c828261736b8611bc10a0b2fdc75da5365b68b28573",
+      "projected_chunks": [
+        {
+          "chunk_id": "chunk_1",
+          "doc_title": "Relational Theory",
+          "text": "First normal form requires that all attribute values be atomic scalars with zero repeating groups.",
+          "relevance_score": 0.98
+        },
+        {
+          "chunk_id": "chunk_2",
+          "doc_title": "Relational Theory",
+          "text": "Boyce Codd normal form guarantees under the declared assumptions that every non trivial determinant is a superkey of the relation.",
+          "relevance_score": 0.94
+        }
+      ],
+      "epistemic_firewall": {
+        "authority_effect": "None",
+        "certified_implies_authorized": false,
+        "note": "A mathematically certified context envelope remains unauthorized until evaluated by an independent policy verifier."
+      }
+    }
+  }
+}

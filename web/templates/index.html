@@ -102,9 +102,9 @@
               Derive candidate keys under Armstrong's Axioms, inspect minimal covers, synthesize dependency-preserving lossless-join 3NF relations, decompose BCNF trees, and verify join dependency implication via the deterministic Tableau Chase with spurious tuple counterexamples.
             </p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 min-w-0 max-w-full">
             <label for="relational-preset-select" class="text-xs text-slate-400 font-medium">Load Preset:</label>
-            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="min-w-0 flex-1 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
               <option value="ecommerce">E-Commerce Orders (3NF Violation)</option>
               <option value="supply_chain">Supply Chain Logistics Fleet</option>
               <option value="healthcare">Healthcare Attending Staff Wards</option>
@@ -538,17 +538,17 @@
               <span id="ai-merkle-verified-badge" class="text-[11px] font-mono text-emerald-400"></span>
             </h3>
             <div class="p-3 bg-slate-950 rounded-lg border border-slate-800 space-y-2 text-xs font-mono">
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span class="text-slate-500">Root Merkle Digest:</span>
-                <span id="ai-merkle-digest" class="text-amber-400 select-all">—</span>
+                <span id="ai-merkle-digest" class="ledger-value text-amber-400 select-all sm:text-right">—</span>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span class="text-slate-500">Erased Metadata Fields:</span>
-                <span id="ai-erased-fields" class="text-rose-400">—</span>
+                <span id="ai-erased-fields" class="ledger-value text-rose-400 sm:text-right">—</span>
               </div>
-              <div class="flex items-center justify-between">
+              <div class="flex flex-col gap-1 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
                 <span class="text-slate-500">Token Conservation Law:</span>
-                <span id="ai-conservation-equation" class="text-cyan-400">—</span>
+                <span id="ai-conservation-equation" class="ledger-value text-cyan-400 sm:text-right">—</span>
               </div>
             </div>
           </div>

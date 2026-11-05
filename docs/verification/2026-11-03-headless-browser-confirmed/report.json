@@ -1,0 +1,390 @@
+{
+  "started_at_utc": "2026-11-03T00:49:19.719Z",
+  "origin": "https://smplxnf.anomalon.com",
+  "mode": "isolated headless Chromium; no existing browser/profile/CDP connection",
+  "clipboard_scope": "Copy handlers use an in-page clipboard sink; OS clipboard is untouched and not tested.",
+  "checks": [
+    {
+      "name": "HTTPS application and initial rendering",
+      "passed": true,
+      "details": {
+        "title": "Simplex Normal Forms Studio | smplxnf.anomalon.com",
+        "tls_validation": "enabled",
+        "assets_match": true
+      }
+    },
+    {
+      "name": "Relational lossless keys, decomposition, chase and SQL",
+      "passed": false,
+      "error": "relational-sql-ddl: expected \"CREATE TABLE \\\"rel_3nf_table_1\\\" (\\\"city\\\" TEXT, \\\"zip_code\\\" TEXT, PRIMARY KEY (\\\"city\\\", \\\"zip_code\\\"));\\nCREATE TABLE \\\"rel_3nf_table_2\\\" (\\\"customer_email\\\" TEXT, \\\"customer_id\\\" TEXT, PRIMARY KEY (\\\"customer_email\\\", \\\"customer_id\\\"));\\nCREATE TABLE \\\"rel_3nf_table_3\\\" (\\\"item_id\\\" TEXT, \\\"unit_price\\\" TEXT, PRIMARY KEY (\\\"item_id\\\", \\\"unit_price\\\"));\\nCREATE TABLE \\\"rel_3nf_table_4\\\" (\\\"customer_id\\\" TEXT, \\\"order_id\\\" TEXT, \\\"zip_code\\\" TEXT, PRIMARY KEY (\\\"customer_id\\\", \\\"order_id\\\", \\\"zip_code\\\"));\\nCREATE TABLE \\\"rel_3nf_table_5\\\" (\\\"item_id\\\" TEXT, \\\"order_id\\\" TEXT, \\\"quantity\\\" TEXT, PRIMARY KEY (\\\"item_id\\\", \\\"order_id\\\"));\", actual \"CREATE TABLE \\\"rel_3nf_table_1\\\" (\\\"city\\\" TEXT, \\\"zip_code\\\" TEXT, PRIMARY KEY (\\\"city\\\", \\\"zip_code\\\"));CREATE TABLE \\\"rel_3nf_table_2\\\" (\\\"customer_email\\\" TEXT, \\\"customer_id\\\" TEXT, PRIMARY KEY (\\\"customer_email\\\", \\\"customer_id\\\"));CREATE TABLE \\\"rel_3nf_table_3\\\" (\\\"item_id\\\" TEXT, \\\"unit_price\\\" TEXT, PRIMARY KEY (\\\"item_id\\\", \\\"unit_price\\\"));CREATE TABLE \\\"rel_3nf_table_4\\\" (\\\"customer_id\\\" TEXT, \\\"order_id\\\" TEXT, \\\"zip_code\\\" TEXT, PRIMARY KEY (\\\"customer_id\\\", \\\"order_id\\\", \\\"zip_code\\\"));CREATE TABLE \\\"rel_3nf_table_5\\\" (\\\"item_id\\\" TEXT, \\\"order_id\\\" TEXT, \\\"quantity\\\" TEXT, PRIMARY KEY (\\\"item_id\\\", \\\"order_id\\\"));\"; page.waitForFunction: Timeout 20000ms exceeded."
+    },
+    {
+      "name": "Relational lossy preset and spurious witness",
+      "passed": true,
+      "details": {
+        "witness": {
+          "A": "a_A",
+          "B": "a_B",
+          "C": "a_C"
+        }
+      }
+    },
+    {
+      "name": "Streaming cochain on",
+      "passed": true,
+      "details": {
+        "final_cache": {
+          "North": {
+            "total_sales": 280,
+            "sale_count": 4,
+            "min_amount": 25,
+            "max_amount": 120
+          },
+          "South": {
+            "total_sales": 80,
+            "sale_count": 1,
+            "min_amount": 80,
+            "max_amount": 80
+          }
+        },
+        "tally": {
+          "extrema_repairs": 4,
+          "fallback_recomputations": 0,
+          "quantile_repairs": 0,
+          "quantile_fallback_recomputations": 0,
+          "batch_terminal": "Repair"
+        },
+        "mass": 5
+      }
+    },
+    {
+      "name": "Streaming cochain off",
+      "passed": true,
+      "details": {
+        "final_cache": {
+          "North": {
+            "total_sales": 280,
+            "sale_count": 4,
+            "min_amount": 25,
+            "max_amount": 120
+          },
+          "South": {
+            "total_sales": 80,
+            "sale_count": 1,
+            "min_amount": 80,
+            "max_amount": 80
+          }
+        },
+        "tally": {
+          "extrema_repairs": 3,
+          "fallback_recomputations": 1,
+          "quantile_repairs": 0,
+          "quantile_fallback_recomputations": 0,
+          "batch_terminal": "Recompute"
+        },
+        "mass": 5
+      }
+    },
+    {
+      "name": "Compiler SQLite, Python and fuzzing output tabs",
+      "passed": false,
+      "error": "compiler-sqlite-code: expected \"CREATE TABLE \\\"employees\\\" (\\\"employee_id\\\" BLOB, \\\"dept_id\\\" BLOB, \\\"manager_id\\\" BLOB, \\\"office_location\\\" BLOB);\\n\\nCREATE TRIGGER \\\"trg_employees_before_insert\\\"\\nBEFORE INSERT ON \\\"employees\\\"\\nFOR EACH ROW\\nBEGIN\\n  SELECT CASE WHEN NEW.\\\"dept_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:dept_id') END;\\n  SELECT CASE WHEN NEW.\\\"manager_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:manager_id') END;\\n  SELECT CASE WHEN EXISTS (SELECT 1 FROM \\\"employees\\\" AS existing WHERE (existing.\\\"dept_id\\\" = NEW.\\\"dept_id\\\") AND (existing.\\\"manager_id\\\" != NEW.\\\"manager_id\\\")) THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:PromoteToObstruction:manager_id') END;\\nEND;\\n\\nCREATE TRIGGER \\\"trg_employees_before_update\\\"\\nBEFORE UPDATE ON \\\"employees\\\"\\nFOR EACH ROW\\nBEGIN\\n  SELECT CASE WHEN NEW.\\\"dept_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:dept_id') END;\\n  SELECT CASE WHEN NEW.\\\"manager_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:manager_id') END;\\n  SELECT CASE WHEN EXISTS (SELECT 1 FROM \\\"employees\\\" AS existing WHERE existing.rowid != OLD.rowid AND (existing.\\\"dept_id\\\" = NEW.\\\"dept_id\\\") AND (existing.\\\"manager_id\\\" != NEW.\\\"manager_id\\\")) THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:PromoteToObstruction:manager_id') END;\\nEND;\", actual \"CREATE TABLE \\\"employees\\\" (\\\"employee_id\\\" BLOB, \\\"dept_id\\\" BLOB, \\\"manager_id\\\" BLOB, \\\"office_location\\\" BLOB);CREATE TRIGGER \\\"trg_employees_before_insert\\\"BEFORE INSERT ON \\\"employees\\\"FOR EACH ROWBEGIN  SELECT CASE WHEN NEW.\\\"dept_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:dept_id') END;  SELECT CASE WHEN NEW.\\\"manager_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:manager_id') END;  SELECT CASE WHEN EXISTS (SELECT 1 FROM \\\"employees\\\" AS existing WHERE (existing.\\\"dept_id\\\" = NEW.\\\"dept_id\\\") AND (existing.\\\"manager_id\\\" != NEW.\\\"manager_id\\\")) THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:PromoteToObstruction:manager_id') END;END;CREATE TRIGGER \\\"trg_employees_before_update\\\"BEFORE UPDATE ON \\\"employees\\\"FOR EACH ROWBEGIN  SELECT CASE WHEN NEW.\\\"dept_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:dept_id') END;  SELECT CASE WHEN NEW.\\\"manager_id\\\" IS NULL THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:MissingAttribute:manager_id') END;  SELECT CASE WHEN EXISTS (SELECT 1 FROM \\\"employees\\\" AS existing WHERE existing.rowid != OLD.rowid AND (existing.\\\"dept_id\\\" = NEW.\\\"dept_id\\\") AND (existing.\\\"manager_id\\\" != NEW.\\\"manager_id\\\")) THEN RAISE(ABORT, 'NF_VIOLATION:nf.classical.bcnf:PromoteToObstruction:manager_id') END;END;\"; page.waitForFunction: Timeout 20000ms exceeded."
+    },
+    {
+      "name": "AI conservation and loss-ledger rendering",
+      "passed": true,
+      "details": {
+        "source_token_count": 62,
+        "retained_token_count": 35,
+        "truncated_token_count": 27,
+        "max_token_budget": 35,
+        "token_conservation_commutes": true,
+        "conservation_equation": "62 == 35 (retained) + 27 (truncated)"
+      }
+    },
+    {
+      "name": "Quickstart navigation, developer targets and copy handlers",
+      "passed": true,
+      "details": {
+        "links": [
+          {
+            "text": "Clone & Import",
+            "href": "#quickstart"
+          }
+        ],
+        "developer_repository_status": 200,
+        "copy_handlers": "7 checked with isolated sink; native clipboard not accessed"
+      }
+    },
+    {
+      "name": "1280px layout: relational",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: bqnf",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: compiler",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: ai",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: quickstart",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "overflow": []
+      }
+    },
+    {
+      "name": "390px layout: relational",
+      "passed": false,
+      "error": "Page width 446px exceeds 390px viewport"
+    },
+    {
+      "name": "390px layout: bqnf",
+      "passed": false,
+      "error": "Page width 446px exceeds 390px viewport"
+    },
+    {
+      "name": "390px layout: compiler",
+      "passed": false,
+      "error": "Page width 446px exceeds 390px viewport"
+    },
+    {
+      "name": "390px layout: ai",
+      "passed": false,
+      "error": "Page width 514px exceeds 390px viewport"
+    },
+    {
+      "name": "390px layout: quickstart",
+      "passed": false,
+      "error": "Page width 446px exceeds 390px viewport"
+    },
+    {
+      "name": "Browser console, runtime and network errors",
+      "passed": true,
+      "details": {
+        "warnings": [
+          {
+            "type": "warning",
+            "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+          }
+        ]
+      }
+    }
+  ],
+  "screenshots": [
+    "desktop-relational-lossy.png",
+    "desktop-streaming-on.png",
+    "desktop-streaming-off.png",
+    "desktop-ai.png",
+    "desktop-quickstart.png",
+    "desktop-relational-layout.png",
+    "desktop-bqnf-layout.png",
+    "desktop-compiler-layout.png",
+    "desktop-ai-layout.png",
+    "desktop-quickstart-layout.png",
+    "mobile-relational-layout.png",
+    "mobile-bqnf-layout.png",
+    "mobile-compiler-layout.png",
+    "mobile-ai-layout.png",
+    "mobile-quickstart-layout.png"
+  ],
+  "console": [
+    {
+      "type": "warning",
+      "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+    }
+  ],
+  "page_errors": [],
+  "failed_requests": [],
+  "http_errors": [],
+  "assets": [
+    {
+      "path": "/",
+      "sha256": "a4f86bbc503e80fed790367bb01adb2eb969c42259c44940f17dfb6aa73ce67a",
+      "normalized_matches_checkout": true
+    },
+    {
+      "path": "/static/app.js",
+      "sha256": "5cfe4e15f0538b6abcae276ded326d5e4c872c93247bed40aa6b4de446ad2d0a",
+      "normalized_matches_checkout": true
+    },
+    {
+      "path": "/static/style.css",
+      "sha256": "7e2f84b6662d0e645ed3541bb10763a0872c93e5cf2f8e584d881b470351de23",
+      "normalized_matches_checkout": true
+    }
+  ],
+  "browser_version": "145.0.7632.6",
+  "health": {
+    "status": "ok",
+    "service": "smplxnf-studio",
+    "version": "0.1.0"
+  },
+  "layout": {
+    "desktop-relational-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "overflow": []
+    },
+    "desktop-bqnf-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "overflow": []
+    },
+    "desktop-compiler-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "overflow": []
+    },
+    "desktop-ai-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "overflow": []
+    },
+    "desktop-quickstart-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "overflow": []
+    },
+    "mobile-relational-layout": {
+      "viewport": 390,
+      "width": 446,
+      "overflow": [
+        {
+          "tag": "DIV",
+          "id": "",
+          "text": "smplxnf.anomalon.com\nClone & Import"
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Clone & Import"
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "text": "Clone & Import"
+        }
+      ]
+    },
+    "mobile-bqnf-layout": {
+      "viewport": 390,
+      "width": 446,
+      "overflow": [
+        {
+          "tag": "DIV",
+          "id": "",
+          "text": "smplxnf.anomalon.com\nClone & Import"
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Clone & Import"
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "text": "Clone & Import"
+        }
+      ]
+    },
+    "mobile-compiler-layout": {
+      "viewport": 390,
+      "width": 446,
+      "overflow": [
+        {
+          "tag": "DIV",
+          "id": "",
+          "text": "smplxnf.anomalon.com\nClone & Import"
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Clone & Import"
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "text": "Clone & Import"
+        }
+      ]
+    },
+    "mobile-ai-layout": {
+      "viewport": 390,
+      "width": 514,
+      "overflow": [
+        {
+          "tag": "DIV",
+          "id": "",
+          "text": "smplxnf.anomalon.com\nClone & Import"
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Clone & Import"
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "text": "Clone & Import"
+        },
+        {
+          "tag": "SPAN",
+          "id": "ai-merkle-digest",
+          "text": "b73579fa81030b31c4ae3c828261736b8611bc10a0b2fdc75da5365b68b28573"
+        }
+      ]
+    },
+    "mobile-quickstart-layout": {
+      "viewport": 390,
+      "width": 446,
+      "overflow": [
+        {
+          "tag": "DIV",
+          "id": "",
+          "text": "smplxnf.anomalon.com\nClone & Import"
+        },
+        {
+          "tag": "A",
+          "id": "",
+          "text": "Clone & Import"
+        },
+        {
+          "tag": "SPAN",
+          "id": "",
+          "text": "Clone & Import"
+        }
+      ]
+    }
+  },
+  "completed_at_utc": "2026-11-03T00:50:07.405Z",
+  "passed": false
+}

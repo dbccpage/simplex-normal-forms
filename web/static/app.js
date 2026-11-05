@@ -449,8 +449,9 @@ function renderCompilerResults(data) {
         <span class="text-purple-400 font-bold font-mono">${f.failure_kind}</span>
         <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">Expected: ${f.expected_terminal}</span>
       </div>
-      <div class="text-slate-400 text-[11px]">${JSON.stringify(f.carrier_rows)}</div>
+      <pre class="compiler-fixture-json text-slate-400 text-[11px]"></pre>
     `;
+    card.querySelector('.compiler-fixture-json').textContent = JSON.stringify(f.carrier_rows, null, 2);
     fuzzersCont.appendChild(card);
   });
 }

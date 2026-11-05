@@ -75,6 +75,10 @@ body.an { margin: 0; background: var(--an-bg); color: var(--an-ink); font: 400 v
 .an-brand { display: flex; align-items: center; gap: 9px; font-weight: 600; font-size: 15px; letter-spacing: -.01em; color: var(--an-ink) !important; text-decoration: none; white-space: nowrap; }
 .an-brand svg { width: 22px; height: 22px; flex: none; }
 .an-brand__tool { color: var(--an-ink-3); font-weight: 400; }
+/* very narrow phones: the tool name truncates instead of pushing the menu off-screen */
+.an-brand { min-width: 0; }
+.an-brand__tool { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.an-header .an-nav__toggle { flex: none; }
 .an-nav { margin-left: auto; display: flex; gap: var(--an-s5); font-size: 13.5px; }
 .an-nav a { color: var(--an-ink-2); text-decoration: none; padding: 17px 0; }
 .an-nav a:hover { color: var(--an-ink); }

@@ -6,6 +6,13 @@
 **Classification:** Systems Architecture & Technical Product Specification  
 **Epistemic Standard:** Landau Rigor / Claim Discipline Compliant (No Hype Terminology)  
 
+**Status reconciliation, 2026-11-02:** This specification includes original design
+targets, not measured guarantees. The separate `smplxnf-live` service now serves
+the canonical domain on Free compute; HTTPS/API smoke checks passed. Full live
+browser acceptance remains incomplete. Availability, latency and broad compiler
+claims below remain design targets where they exceed the
+[current evidence and executable scope](PROJECT_STATUS.md).
+
 ---
 
 ## 1. Executive Summary: The smplxnf.anomalon.com Vision
@@ -18,7 +25,7 @@ The objective of this specification is to define, evaluate, and architect the si
 2. Enable an external developer to clone the repository, install the package via standard tooling, and import the core normal-form logic into their own database, compiler, or AI workflows in under fifteen minutes to support the author's technical resume.
 
 ### 1.2 The Production Vision on Render
-The application is designed for a lightweight Web Service on Render bound to the custom hostname `smplxnf.anomalon.com`. Public provisioning and HTTPS verification remain separate gates; see [current status](PROJECT_STATUS.md). Operating under a stateless ASGI process model powered by FastAPI and Uvicorn, the service serves:
+The application is deployed as a lightweight Web Service on Render bound to the custom hostname `smplxnf.anomalon.com`. Public provisioning and HTTPS/API verification passed on 2026-11-02; see [current status](PROJECT_STATUS.md) for the remaining browser checks. The original production design below targets a stateless ASGI process model powered by FastAPI and Uvicorn:
 - A responsive, high-contrast single-page application (SPA) dashboard styled with modern systems-grade typography and Tailwind CSS.
 - Strongly typed REST endpoints exposing relational synthesis, Tableau Chase verification, streaming CDC delta repair, 4-layer NF-IR compilation to SQLite triggers and Python guards, and AI context compression with Merkle LossLedger generation.
 - Sub-50 millisecond algorithmic execution latencies for typical schemas and streams, executing purely in-process with zero external database dependencies.
@@ -584,10 +591,10 @@ The application deploys as a standard Python Web Service on Render:
 ```yaml
 services:
   - type: web
-    name: smplxnf-studio
+    name: smplxnf-live
     env: python
     region: oregon
-    plan: starter
+    plan: free
     buildCommand: "pip install -e . && pip install -r web/requirements.txt"
     startCommand: "uvicorn web.app:app --host 0.0.0.0 --port $PORT"
     healthCheckPath: /healthz
@@ -601,10 +608,10 @@ services:
 ```
 
 #### 5.3.2 Subdomain Routing via CNAME
-1. **Render Hostname:** Record the actual assigned public `onrender.com` endpoint from the service dashboard. `smplxnf-studio.onrender.com` below is an example, not a verified assignment.
+1. **Render Hostname:** The separate `smplxnf-live` service was assigned `smplxnf-live.onrender.com` on 2026-11-02. See the [deployment record](verification/2026-11-02-deployment.md); the blueprint above matches the selected Free compute plan.
 2. **DNS Configuration:** In the DNS control panel for `anomalon.com`, a canonical name record is created:
    ```text
-   smplxnf.anomalon.com.  CNAME  smplxnf-studio.onrender.com.
+   smplxnf.anomalon.com.  CNAME  smplxnf-live.onrender.com.
    ```
 3. **Automated TLS Termination:** Render automatically provisions and renews a Let's Encrypt SSL/TLS certificate for `smplxnf.anomalon.com`.
 
@@ -847,17 +854,17 @@ In compliance with the project Claim Hygiene standard, all architectural evaluat
 4. Does not assert that 3NF or BCNF normalization eliminates application-level anomalies outside declared functional dependencies.
 
 ### 7.3 Narrowest Defensible Claim
-The original MVP handoff reported 136 pytest items (89 unittest methods). Subsequent correctness and packaging work was merged in PRs #18–19, with 232 tests passing in premerge verification and hosted CI passing on merged `da498e5`. These are bounded implementation checks, not certification of every contract or a live deployment. See [current evidence and scope](PROJECT_STATUS.md).
+The original MVP handoff reported 136 pytest items (89 unittest methods). Subsequent correctness and packaging work was merged in PRs #18–19, with 232 tests passing in premerge verification. PR #21's lossy preset browser fix passed all five hosted CI jobs and was deployed at merge commit `f9c289c`. Separate HTTPS/API smoke checks passed on both public origins on 2026-11-02. These are bounded implementation and deployment checks, not certification of every contract or full live browser acceptance. See [current evidence and scope](PROJECT_STATUS.md).
 
 ### 7.4 Next Test Needed
-The FastAPI presentation prototype is implemented and PRs #17–19 are merged. Inspect/provision the Render service, verify its assigned hostname, hand off the exact CNAME target to the user, then verify custom-domain TLS and all four workbenches. Use [DEPLOYMENT.md](DEPLOYMENT.md) and `scripts/http_smoke.py`; record measured latency rather than treating the original sub-200 ms target as an established result.
+The separate Render service is live and both origins passed HTTPS/API checks. Finish the public browser checklist when the user makes a browser available; it was interrupted after the default relational result was inspected. Use [DEPLOYMENT.md](DEPLOYMENT.md) for the remaining checks and `scripts/http_smoke.py` for future deployment regression checks. Recorded request durations do not establish the original sub-200 ms target or sustained-load capacity.
 
 ---
 
 ## 8. Conclusion & Actionable Execution Sequence
 
 1. **Approved Architecture:** Option E (Simplex-NF Studio) is established as the single canonical MVP for `smplxnf.anomalon.com`.
-2. **Original implementation milestones (now implemented; live deployment pending):**
+2. **Original implementation milestones (implemented; HTTPS/API verified, full live browser acceptance incomplete):**
    - **M2 (Web Prototype & Deployment):** Author `pyproject.toml`, implement `web/app.py`, author `render.yaml`, and build the responsive single-page studio dashboard.
    - **M3 (Documentation & Import Guide):** Author comprehensive `docs/IMPORT_GUIDE.md` and update `README.md` with complete installation and code usage instructions.
    - **M4 (Automated Tests & Verification):** Add test suites covering API endpoints, UI rendering, and external package import workflows.

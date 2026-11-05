@@ -1,0 +1,1083 @@
+{
+  "started_at_utc": "2026-11-03T00:58:07.811Z",
+  "origin": "http://127.0.0.1:8765",
+  "checkout_commit": "300f6d03fba0dd08a5746186c2291066bbab025b",
+  "identity_scope": "Rendered HTML/JS/CSS comparison only; backend deployment SHA is not exposed by health.",
+  "mode": "isolated headless Chromium; no existing browser/profile/CDP connection",
+  "clipboard_scope": "Copy handlers use an in-page clipboard sink; OS clipboard is untouched and not tested.",
+  "checks": [
+    {
+      "name": "Application identity, assets and initial rendering",
+      "passed": true,
+      "details": {
+        "title": "Simplex Normal Forms Studio | smplxnf.anomalon.com",
+        "tls_validation": "loopback HTTP",
+        "assets_match": true
+      }
+    },
+    {
+      "name": "Relational lossless keys, decomposition, chase and SQL",
+      "passed": true,
+      "details": {
+        "keys": [
+          [
+            "item_id",
+            "order_id"
+          ]
+        ],
+        "chase_steps": 7,
+        "tables": 5
+      }
+    },
+    {
+      "name": "Relational lossy preset and spurious witness",
+      "passed": true,
+      "details": {
+        "witness": {
+          "A": "a_A",
+          "B": "a_B",
+          "C": "a_C"
+        }
+      }
+    },
+    {
+      "name": "Streaming cochain on",
+      "passed": true,
+      "details": {
+        "final_cache": {
+          "North": {
+            "total_sales": 280,
+            "sale_count": 4,
+            "min_amount": 25,
+            "max_amount": 120
+          },
+          "South": {
+            "total_sales": 80,
+            "sale_count": 1,
+            "min_amount": 80,
+            "max_amount": 80
+          }
+        },
+        "tally": {
+          "extrema_repairs": 4,
+          "fallback_recomputations": 0,
+          "quantile_repairs": 0,
+          "quantile_fallback_recomputations": 0,
+          "batch_terminal": "Repair"
+        },
+        "mass": 5
+      }
+    },
+    {
+      "name": "Streaming cochain off",
+      "passed": true,
+      "details": {
+        "final_cache": {
+          "North": {
+            "total_sales": 280,
+            "sale_count": 4,
+            "min_amount": 25,
+            "max_amount": 120
+          },
+          "South": {
+            "total_sales": 80,
+            "sale_count": 1,
+            "min_amount": 80,
+            "max_amount": 80
+          }
+        },
+        "tally": {
+          "extrema_repairs": 3,
+          "fallback_recomputations": 1,
+          "quantile_repairs": 0,
+          "quantile_fallback_recomputations": 0,
+          "batch_terminal": "Recompute"
+        },
+        "mass": 5
+      }
+    },
+    {
+      "name": "Compiler SQLite, Python and fuzzing output tabs",
+      "passed": true,
+      "details": {
+        "subsumption": {
+          "compared_against": "nf.classical.3nf",
+          "is_subsumed": true,
+          "subsume_reason": "nf.classical.bcnf(['dept_id']->['manager_id']) subsumes nf.classical.3nf(['dept_id']->['manager_id']).",
+          "executed_specs_count": 1,
+          "elided_specs_count": 1,
+          "elided_records": [
+            {
+              "elided_spec": "nf.classical.3nf",
+              "subsuming_spec": "nf.classical.bcnf",
+              "reason": "nf.classical.bcnf(['dept_id']->['manager_id']) subsumes nf.classical.3nf(['dept_id']->['manager_id'])."
+            }
+          ]
+        },
+        "counterexamples": 3
+      }
+    },
+    {
+      "name": "AI conservation and loss-ledger rendering",
+      "passed": true,
+      "details": {
+        "source_token_count": 62,
+        "retained_token_count": 35,
+        "truncated_token_count": 27,
+        "max_token_budget": 35,
+        "token_conservation_commutes": true,
+        "conservation_equation": "62 == 35 (retained) + 27 (truncated)"
+      }
+    },
+    {
+      "name": "Quickstart navigation, developer targets and copy handlers",
+      "passed": true,
+      "details": {
+        "links": [
+          {
+            "text": "Clone & Import",
+            "href": "#quickstart"
+          }
+        ],
+        "developer_repository_status": 200,
+        "copy_handlers": "7 checked with isolated sink; native clipboard not accessed"
+      }
+    },
+    {
+      "name": "1280px layout: relational",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 1140.03125,
+            "right": 1248
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: bqnf",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 1140.03125,
+            "right": 1248
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: compiler",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 1140.03125,
+            "right": 1248
+          },
+          {
+            "id": "DIV",
+            "width": 663,
+            "content_width": 663,
+            "left": 565.65625,
+            "right": 1231
+          },
+          {
+            "id": "DIV",
+            "width": 663,
+            "content_width": 663,
+            "left": 565.65625,
+            "right": 1231
+          },
+          {
+            "id": "DIV",
+            "width": 663,
+            "content_width": 663,
+            "left": 565.65625,
+            "right": 1231
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: ai",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 1140.03125,
+            "right": 1248
+          },
+          {
+            "id": "ai-merkle-digest",
+            "width": 422,
+            "content_width": 422,
+            "left": 795.75,
+            "right": 1218
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "1280px layout: quickstart",
+      "passed": true,
+      "details": {
+        "viewport": 1280,
+        "width": 1280,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 1140.03125,
+            "right": 1248
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "768px layout: relational",
+      "passed": true,
+      "details": {
+        "viewport": 768,
+        "width": 768,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 203.953125,
+            "right": 311.921875
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "768px layout: bqnf",
+      "passed": true,
+      "details": {
+        "viewport": 768,
+        "width": 768,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 203.953125,
+            "right": 311.921875
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "768px layout: compiler",
+      "passed": true,
+      "details": {
+        "viewport": 768,
+        "width": 768,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 203.953125,
+            "right": 311.921875
+          },
+          {
+            "id": "DIV",
+            "width": 684,
+            "content_width": 684,
+            "left": 41,
+            "right": 727
+          },
+          {
+            "id": "DIV",
+            "width": 684,
+            "content_width": 684,
+            "left": 41,
+            "right": 727
+          },
+          {
+            "id": "DIV",
+            "width": 684,
+            "content_width": 684,
+            "left": 41,
+            "right": 727
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "768px layout: ai",
+      "passed": true,
+      "details": {
+        "viewport": 768,
+        "width": 768,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 203.953125,
+            "right": 311.921875
+          },
+          {
+            "id": "ai-merkle-digest",
+            "width": 422,
+            "content_width": 422,
+            "left": 291.75,
+            "right": 714
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "768px layout: quickstart",
+      "passed": true,
+      "details": {
+        "viewport": 768,
+        "width": 768,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 203.953125,
+            "right": 311.921875
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "390px layout: relational",
+      "passed": true,
+      "details": {
+        "viewport": 390,
+        "width": 390,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 266.03125,
+            "right": 374
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "390px layout: bqnf",
+      "passed": true,
+      "details": {
+        "viewport": 390,
+        "width": 390,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 266.03125,
+            "right": 374
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "390px layout: compiler",
+      "passed": true,
+      "details": {
+        "viewport": 390,
+        "width": 390,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 266.03125,
+            "right": 374
+          },
+          {
+            "id": "DIV",
+            "width": 322,
+            "content_width": 322,
+            "left": 33,
+            "right": 357
+          },
+          {
+            "id": "DIV",
+            "width": 322,
+            "content_width": 322,
+            "left": 33,
+            "right": 357
+          },
+          {
+            "id": "DIV",
+            "width": 322,
+            "content_width": 322,
+            "left": 33,
+            "right": 357
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "390px layout: ai",
+      "passed": true,
+      "details": {
+        "viewport": 390,
+        "width": 390,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 266.03125,
+            "right": 374
+          },
+          {
+            "id": "ai-merkle-digest",
+            "width": 298,
+            "content_width": 298,
+            "left": 46,
+            "right": 344
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "390px layout: quickstart",
+      "passed": true,
+      "details": {
+        "viewport": 390,
+        "width": 390,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 266.03125,
+            "right": 374
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "320px layout: relational",
+      "passed": false,
+      "error": "Page width 388px exceeds 320px viewport"
+    },
+    {
+      "name": "320px layout: bqnf",
+      "passed": true,
+      "details": {
+        "viewport": 320,
+        "width": 320,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 196.03125,
+            "right": 304
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "320px layout: compiler",
+      "passed": true,
+      "details": {
+        "viewport": 320,
+        "width": 320,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 196.03125,
+            "right": 304
+          },
+          {
+            "id": "DIV",
+            "width": 252,
+            "content_width": 252,
+            "left": 33,
+            "right": 287
+          },
+          {
+            "id": "DIV",
+            "width": 252,
+            "content_width": 252,
+            "left": 33,
+            "right": 287
+          },
+          {
+            "id": "DIV",
+            "width": 252,
+            "content_width": 252,
+            "left": 33,
+            "right": 287
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "320px layout: ai",
+      "passed": true,
+      "details": {
+        "viewport": 320,
+        "width": 320,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 196.03125,
+            "right": 304
+          },
+          {
+            "id": "ai-merkle-digest",
+            "width": 228,
+            "content_width": 228,
+            "left": 46,
+            "right": 274
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "320px layout: quickstart",
+      "passed": true,
+      "details": {
+        "viewport": 320,
+        "width": 320,
+        "results": [
+          {
+            "id": "A",
+            "width": 108,
+            "content_width": 108,
+            "left": 196.03125,
+            "right": 304
+          }
+        ],
+        "overflow": []
+      }
+    },
+    {
+      "name": "Browser console, runtime and network errors",
+      "passed": true,
+      "details": {
+        "warnings": [
+          {
+            "type": "warning",
+            "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+          }
+        ]
+      }
+    }
+  ],
+  "screenshots": [
+    "desktop-relational-lossless.png",
+    "desktop-relational-lossy.png",
+    "desktop-streaming-on.png",
+    "desktop-streaming-off.png",
+    "desktop-compiler-sqlite.png",
+    "desktop-compiler-python.png",
+    "desktop-compiler-fuzzers.png",
+    "desktop-ai.png",
+    "desktop-quickstart.png",
+    "1280px-relational-layout.png",
+    "1280px-bqnf-layout.png",
+    "1280px-compiler-layout.png",
+    "1280px-ai-layout.png",
+    "1280px-quickstart-layout.png",
+    "768px-relational-layout.png",
+    "768px-bqnf-layout.png",
+    "768px-compiler-layout.png",
+    "768px-ai-layout.png",
+    "768px-quickstart-layout.png",
+    "390px-relational-layout.png",
+    "390px-bqnf-layout.png",
+    "390px-compiler-layout.png",
+    "390px-ai-layout.png",
+    "390px-quickstart-layout.png",
+    "320px-relational-layout.png",
+    "320px-bqnf-layout.png",
+    "320px-compiler-layout.png",
+    "320px-ai-layout.png",
+    "320px-quickstart-layout.png"
+  ],
+  "console": [
+    {
+      "type": "warning",
+      "text": "cdn.tailwindcss.com should not be used in production. To use Tailwind CSS in production, install it as a PostCSS plugin or use the Tailwind CLI: https://tailwindcss.com/docs/installation"
+    }
+  ],
+  "page_errors": [],
+  "failed_requests": [],
+  "http_errors": [],
+  "assets": [
+    {
+      "path": "/",
+      "sha256": "6af33f7b58c4665ef2340f619837e142b1e2cfb5a34812e64523032fcf11ca00",
+      "normalized_matches_checkout": true
+    },
+    {
+      "path": "/static/app.js",
+      "sha256": "62a1c84475fb11e6524f8d732c4d41e5e1fcc7be963d53d97f71426e7e2634f0",
+      "normalized_matches_checkout": true
+    },
+    {
+      "path": "/static/style.css",
+      "sha256": "47d4b075304e91ab0211743d0ce98f34db009b703d82c93d6dca5201369435b7",
+      "normalized_matches_checkout": true
+    }
+  ],
+  "browser_version": "145.0.7632.6",
+  "health": {
+    "status": "ok",
+    "service": "smplxnf-studio",
+    "version": "0.1.0"
+  },
+  "layout": {
+    "1280px-relational-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 1140.03125,
+          "right": 1248
+        }
+      ],
+      "overflow": []
+    },
+    "1280px-bqnf-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 1140.03125,
+          "right": 1248
+        }
+      ],
+      "overflow": []
+    },
+    "1280px-compiler-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 1140.03125,
+          "right": 1248
+        },
+        {
+          "id": "DIV",
+          "width": 663,
+          "content_width": 663,
+          "left": 565.65625,
+          "right": 1231
+        },
+        {
+          "id": "DIV",
+          "width": 663,
+          "content_width": 663,
+          "left": 565.65625,
+          "right": 1231
+        },
+        {
+          "id": "DIV",
+          "width": 663,
+          "content_width": 663,
+          "left": 565.65625,
+          "right": 1231
+        }
+      ],
+      "overflow": []
+    },
+    "1280px-ai-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 1140.03125,
+          "right": 1248
+        },
+        {
+          "id": "ai-merkle-digest",
+          "width": 422,
+          "content_width": 422,
+          "left": 795.75,
+          "right": 1218
+        }
+      ],
+      "overflow": []
+    },
+    "1280px-quickstart-layout": {
+      "viewport": 1280,
+      "width": 1280,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 1140.03125,
+          "right": 1248
+        }
+      ],
+      "overflow": []
+    },
+    "768px-relational-layout": {
+      "viewport": 768,
+      "width": 768,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 203.953125,
+          "right": 311.921875
+        }
+      ],
+      "overflow": []
+    },
+    "768px-bqnf-layout": {
+      "viewport": 768,
+      "width": 768,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 203.953125,
+          "right": 311.921875
+        }
+      ],
+      "overflow": []
+    },
+    "768px-compiler-layout": {
+      "viewport": 768,
+      "width": 768,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 203.953125,
+          "right": 311.921875
+        },
+        {
+          "id": "DIV",
+          "width": 684,
+          "content_width": 684,
+          "left": 41,
+          "right": 727
+        },
+        {
+          "id": "DIV",
+          "width": 684,
+          "content_width": 684,
+          "left": 41,
+          "right": 727
+        },
+        {
+          "id": "DIV",
+          "width": 684,
+          "content_width": 684,
+          "left": 41,
+          "right": 727
+        }
+      ],
+      "overflow": []
+    },
+    "768px-ai-layout": {
+      "viewport": 768,
+      "width": 768,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 203.953125,
+          "right": 311.921875
+        },
+        {
+          "id": "ai-merkle-digest",
+          "width": 422,
+          "content_width": 422,
+          "left": 291.75,
+          "right": 714
+        }
+      ],
+      "overflow": []
+    },
+    "768px-quickstart-layout": {
+      "viewport": 768,
+      "width": 768,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 203.953125,
+          "right": 311.921875
+        }
+      ],
+      "overflow": []
+    },
+    "390px-relational-layout": {
+      "viewport": 390,
+      "width": 390,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 266.03125,
+          "right": 374
+        }
+      ],
+      "overflow": []
+    },
+    "390px-bqnf-layout": {
+      "viewport": 390,
+      "width": 390,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 266.03125,
+          "right": 374
+        }
+      ],
+      "overflow": []
+    },
+    "390px-compiler-layout": {
+      "viewport": 390,
+      "width": 390,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 266.03125,
+          "right": 374
+        },
+        {
+          "id": "DIV",
+          "width": 322,
+          "content_width": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "id": "DIV",
+          "width": 322,
+          "content_width": 322,
+          "left": 33,
+          "right": 357
+        },
+        {
+          "id": "DIV",
+          "width": 322,
+          "content_width": 322,
+          "left": 33,
+          "right": 357
+        }
+      ],
+      "overflow": []
+    },
+    "390px-ai-layout": {
+      "viewport": 390,
+      "width": 390,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 266.03125,
+          "right": 374
+        },
+        {
+          "id": "ai-merkle-digest",
+          "width": 298,
+          "content_width": 298,
+          "left": 46,
+          "right": 344
+        }
+      ],
+      "overflow": []
+    },
+    "390px-quickstart-layout": {
+      "viewport": 390,
+      "width": 390,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 266.03125,
+          "right": 374
+        }
+      ],
+      "overflow": []
+    },
+    "320px-relational-layout": {
+      "viewport": 320,
+      "width": 388,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 196.03125,
+          "right": 304
+        }
+      ],
+      "overflow": [
+        {
+          "tag": "SELECT",
+          "id": "relational-preset-select",
+          "text": "E-Commerce Orders (3NF Violation)\nSupply Chain Logistics Fleet\nHealthcare Attending Staff "
+        }
+      ]
+    },
+    "320px-bqnf-layout": {
+      "viewport": 320,
+      "width": 320,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 196.03125,
+          "right": 304
+        }
+      ],
+      "overflow": []
+    },
+    "320px-compiler-layout": {
+      "viewport": 320,
+      "width": 320,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 196.03125,
+          "right": 304
+        },
+        {
+          "id": "DIV",
+          "width": 252,
+          "content_width": 252,
+          "left": 33,
+          "right": 287
+        },
+        {
+          "id": "DIV",
+          "width": 252,
+          "content_width": 252,
+          "left": 33,
+          "right": 287
+        },
+        {
+          "id": "DIV",
+          "width": 252,
+          "content_width": 252,
+          "left": 33,
+          "right": 287
+        }
+      ],
+      "overflow": []
+    },
+    "320px-ai-layout": {
+      "viewport": 320,
+      "width": 320,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 196.03125,
+          "right": 304
+        },
+        {
+          "id": "ai-merkle-digest",
+          "width": 228,
+          "content_width": 228,
+          "left": 46,
+          "right": 274
+        }
+      ],
+      "overflow": []
+    },
+    "320px-quickstart-layout": {
+      "viewport": 320,
+      "width": 320,
+      "results": [
+        {
+          "id": "A",
+          "width": 108,
+          "content_width": 108,
+          "left": 196.03125,
+          "right": 304
+        }
+      ],
+      "overflow": []
+    }
+  },
+  "completed_at_utc": "2026-11-03T00:58:26.246Z",
+  "passed": false
+}
