@@ -1,6 +1,6 @@
 /*
  * Anomalon design system v1 — behaviour.
- * Load:  <script src="https://www.anomalon.com/ds/v1/anomalon.js" defer></script>
+ * Load:  <script src="https://anomalon.com/ds/v1/anomalon.js" defer></script>
  *
  *  - <div data-an-header data-tool="Simplex-NF" data-nav="Synthesis=/,Quickstart=/#quickstart"></div>
  *      renders the shared header. data-tool and data-nav are optional;
@@ -13,7 +13,7 @@
 (function () {
   "use strict";
   if (window.Anomalon) return;
-  var HOME = "https://www.anomalon.com";
+  var HOME = "https://anomalon.com";
   var MARK =
     '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
     '<path d="M6 15.5 11 6l5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
@@ -64,7 +64,7 @@
       '<footer class="an-footer"><div class="an-footer__in">' +
       "<span>" + (tool ? "Anomalon · " + esc(tool) : "© " + year + " Anomalon") + "</span>" +
       (src ? '<a href="' + esc(src) + '">Source</a>' : "") +
-      '<a href="' + HOME + '/about">About</a><a href="' + HOME + '/contact">Contact</a>' +
+      '<a href="' + HOME + '/about/">About</a><a href="' + HOME + '/contact/">Contact</a>' +
       "</div></footer>";
   }
 
@@ -102,7 +102,34 @@
     }
   });
 
-  window.Anomalon = { init: init, version: "1.0.0" };
+  /* Left-hand nav: mark the section currently in view (aria-current="true"). */
+  function lhnav() {
+    /* phones: start with the Contents panel closed */
+    var panel = document.querySelector("details.an-lhnav");
+    if (panel && window.matchMedia && window.matchMedia("(max-width: 860px)").matches) panel.open = false;
+    var links = Array.prototype.slice.call(document.querySelectorAll(".an-lhnav a[href^='#']"));
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    var byId = {};
+    links.forEach(function (a) { byId[decodeURIComponent(a.getAttribute("href").slice(1))] = a; });
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting ? e.boundingClientRect.top : undefined; });
+      var best = null, top = Infinity;
+      Object.keys(visible).forEach(function (id) { if (visible[id] !== undefined && visible[id] < top) { top = visible[id]; best = id; } });
+      if (!best) return;
+      links.forEach(function (a) { a.removeAttribute("aria-current"); });
+      if (byId[best]) {
+        byId[best].setAttribute("aria-current", "true");
+        /* reveal the current item inside collapsed nested contents */
+        for (var d = byId[best].parentElement; d && !d.classList.contains("an-lhnav"); d = d.parentElement)
+          if (d.tagName === "DETAILS") d.open = true;
+      }
+    }, { rootMargin: "-64px 0px -60% 0px" });
+    Object.keys(byId).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+  }
+
+  window.Anomalon = { init: init, version: "1.3.0" };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", lhnav); else lhnav();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { init(); });
   else init();
 })();
