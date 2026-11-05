@@ -1,69 +1,57 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simplex Normal Forms Studio | smplxnf.anomalon.com</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="icon" type="image/svg+xml" href="/static/anomalon-favicon.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/static/anomalon.css">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
   <script>
+    // Anomalon design system v1 (palette A, paper and teal).
+    // The original dark Tailwind classes are kept; this config remaps their colors onto
+    // the shared light tokens so every panel, and every class app.js generates, follows one palette.
+    const teal = {50:'#e2f0ee',100:'#e2f0ee',200:'#0d5b58',300:'#0d5b58',400:'#12706c',500:'#12706c',600:'#0d5b58',700:'#3f9792',800:'#9fcbc6',900:'#cfe6e3',950:'#e2f0ee'};
     tailwind.config = {
-      darkMode: 'class',
       theme: {
         extend: {
           colors: {
-            brand: {
-              50: '#ecfeff',
-              400: '#22d3ee',
-              500: '#06b6d4',
-              600: '#0891b2',
-              900: '#164e63',
-            },
-            slate: {
-              850: '#111827',
-              900: '#0f172a',
-              950: '#020617',
-            }
+            white: '#15202c',
+            black: '#ffffff',
+            slate: {50:'#15202c',100:'#15202c',200:'#15202c',300:'#3a4450',400:'#4b5664',500:'#6f7884',600:'#9aa1aa',700:'#c9cdc8',800:'#e2e4e1',850:'#ffffff',900:'#ffffff',950:'#fbfbf9'},
+            cyan: teal, sky: teal, blue: teal, indigo: teal, brand: teal,
+            emerald: {300:'#1a6a40',400:'#1f7a4a',500:'#1f7a4a',800:'#a9d4b9',900:'#cfe8d8',950:'#e1f1e7'},
+            rose:    {300:'#9c2019',400:'#b3261e',500:'#b3261e',800:'#e7b3ad',900:'#f0cbc6',950:'#f8e1de'},
+            red:     {300:'#9c2019',400:'#b3261e',500:'#b3261e',800:'#e7b3ad',900:'#f0cbc6',950:'#f8e1de'},
+            amber:   {300:'#7a4f00',400:'#8a5a00',500:'#8a5a00',800:'#e3c98f',900:'#efdcae',950:'#f7ecd2'},
+            purple:  {300:'#3a4450',400:'#4b5664',500:'#4b5664',800:'#c9cdc8',900:'#e2e4e1',950:'#eceeed'}
           },
           fontFamily: {
-            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
-          }
+            sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'Consolas', 'monospace']
+          },
+          borderRadius: { md: '6px', lg: '6px', xl: '6px', '2xl': '6px' },
+          boxShadow: { sm: 'none', DEFAULT: 'none', md: 'none', lg: 'none', xl: 'none', '2xl': 'none' }
         }
       }
     }
   </script>
   <link rel="stylesheet" href="/static/style.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-cyan-500 selection:text-black">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-cyan-950">
 
-  <!-- Top Header Navigation -->
-  <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-16 py-3 lg:py-0 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
-      <div class="flex items-center space-x-3 min-w-0">
-        <div class="h-9 w-9 shrink-0 rounded-lg bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center font-bold text-black text-lg shadow-lg shadow-cyan-500/20">
-          Δ
-        </div>
-        <div class="min-w-0">
-          <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span class="font-extrabold text-base sm:text-lg whitespace-nowrap tracking-tight bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-300 bg-clip-text text-transparent">Simplex-NF Studio</span>
-            <span class="text-xs px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-800 font-mono">v0.1.0</span>
-          </div>
-          <p class="text-xs text-slate-400 hidden sm:block">Relational Synthesis, Streaming BQNF & NF-IR Compiler Workbench</p>
-        </div>
-      </div>
-      <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3">
-        <span class="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-mono bg-slate-800 text-slate-300 border border-slate-700">
-          <span class="w-2 h-2 mr-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
-          smplxnf.anomalon.com
-        </span>
-        <a href="#quickstart" onclick="switchTab('quickstart')" class="text-xs bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-3 py-1.5 rounded-md transition shadow shadow-cyan-500/20 flex items-center space-x-1">
-          <span>Clone & Import</span>
-        </a>
-      </div>
+  <!-- Shared Anomalon header -->
+  <header class="an-header">
+    <div class="an-header__in">
+      <a class="an-brand" href="https://www.anomalon.com/"><svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 15.5 11 6l5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="11" cy="12.6" r="1.7" fill="var(--an-accent)"/></svg>Anomalon <span class="an-brand__tool">/ Simplex-NF Studio</span></a>
+      <button class="an-btn an-btn--ghost an-nav__toggle" aria-expanded="false" aria-controls="an-nav">Menu</button>
+      <nav class="an-nav" id="an-nav" aria-label="Site"><a href="#quickstart" onclick="switchTab('quickstart')">Quickstart</a><a href="https://github.com/dbccpage/simplex-normal-forms">Source</a><a href="https://www.anomalon.com/">All tools</a></nav>
     </div>
   </header>
 
   <!-- Navigation Tabs -->
-  <div class="bg-slate-900 border-b border-slate-800">
+  <div class="bg-slate-950 border-b border-slate-800">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <nav class="flex space-x-2 sm:space-x-4 overflow-x-auto py-2.5 no-scrollbar" aria-label="Tabs">
         <button onclick="switchTab('relational')" id="tab-btn-relational" class="tab-btn active-tab flex items-center space-x-2 px-3.5 py-2 text-sm font-medium rounded-lg transition whitespace-nowrap">
@@ -153,7 +141,7 @@
               <p class="text-[11px] text-slate-500 mt-1">Leave blank to chase Bernstein's 3NF synthesis, or enter subschemas to test for lossiness.</p>
             </div>
 
-            <button onclick="executeRelationalNormalize()" id="btn-run-relational" class="w-full py-2.5 px-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-cyan-500/20 transition flex items-center justify-center space-x-2">
+            <button onclick="executeRelationalNormalize()" id="btn-run-relational" class="w-full py-2.5 px-4 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold text-sm rounded-lg shadow-lg shadow-cyan-500/20 transition flex items-center justify-center space-x-2">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               <span>Execute Synthesis & Chase Audit</span>
             </button>
@@ -256,7 +244,7 @@
               Simulate high-throughput Change Data Capture (CDC) events across query boundaries. Observe how Boundary-Quotient Normal Form commutes incremental signed coboundary updates, services destructive extremum deletions via $O(\log K)$ priority-queue cochains, and bisects dynamic dyadic quantile sketches under power-law skew without full table recomputations.
             </p>
           </div>
-          <button onclick="executeBqnfSimulation()" class="py-2.5 px-4 bg-emerald-500 hover:bg-emerald-400 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-emerald-500/20 transition flex items-center space-x-2">
+          <button onclick="executeBqnfSimulation()" class="py-2.5 px-4 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold text-sm rounded-lg shadow-lg shadow-emerald-500/20 transition flex items-center space-x-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
             <span>Simulate CDC Stream</span>
           </button>
@@ -379,7 +367,7 @@
               Inspect the 4-layer compiler intermediate representation. Transform declarative normal form contracts into micro-kernel witness triples $K = (X, F, L)$, optimize via monotone poset subsumption lattices with dead-check elimination (DCE), and lower to executable SQLite triggers, Python guards, and automated counterexample test fixtures.
             </p>
           </div>
-          <button onclick="executeCompilerLowering()" class="py-2.5 px-4 bg-purple-500 hover:bg-purple-400 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-purple-500/20 transition flex items-center space-x-2">
+          <button onclick="executeCompilerLowering()" class="py-2.5 px-4 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold text-sm rounded-lg shadow-lg shadow-purple-500/20 transition flex items-center space-x-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
             <span>Compile & Lower NF-IR</span>
           </button>
@@ -493,7 +481,7 @@
               Auditable RAG context compression and token truncation. Enforces exact token conservation (<code class="text-amber-400">source_tokens == retained_tokens + truncated_tokens</code>), emits SHA-256 Merkle-sealed LossLedgers documenting erased attributes, and enforces the epistemic firewall (<code class="text-slate-300">certified_implies_authorized: false</code>).
             </p>
           </div>
-          <button onclick="executeAiLossLedger()" class="py-2.5 px-4 bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs uppercase tracking-wider rounded-lg shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
+          <button onclick="executeAiLossLedger()" class="py-2.5 px-4 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold text-sm rounded-lg shadow-lg shadow-amber-500/20 transition flex items-center space-x-2">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
             <span>Evaluate Context Transport</span>
           </button>
@@ -690,22 +678,18 @@ print("SHA-256 Merkle LossLedger:", envelope.loss_ledger["merkle_digest"])</pre>
 
   </main>
 
-  <!-- Footer -->
-  <footer class="border-t border-slate-800/80 bg-slate-950 py-6 mt-12 text-xs text-slate-500">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center space-x-2">
-        <span class="font-mono text-cyan-400 font-semibold">Simplex-NF Studio</span>
-        <span>•</span>
-        <span>Hosted at <code class="text-slate-400">smplxnf.anomalon.com</code> via Render</span>
-      </div>
-      <div class="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 font-mono text-[11px]">
-        <span>AuthorityEffect: None</span>
-        <span>•</span>
-        <span>certified_implies_authorized: false</span>
-      </div>
+  <!-- Shared Anomalon footer -->
+  <footer class="an-footer">
+    <div class="an-footer__in">
+      <span>Anomalon · Simplex-NF Studio v0.1.0</span>
+      <span class="font-mono text-[11px]">AuthorityEffect: None · certified_implies_authorized: false</span>
+      <a href="https://github.com/dbccpage/simplex-normal-forms">Source</a>
+      <a href="https://www.anomalon.com/">About</a>
+      <a href="mailto:ooutwire@pm.me">Contact</a>
     </div>
   </footer>
 
   <script src="/static/app.js"></script>
+  <script src="/static/anomalon.js" defer></script>
 </body>
 </html>

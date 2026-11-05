@@ -1,61 +1,29 @@
-/* Custom styles for Simplex Normal Forms Studio */
+/* Simplex Normal Forms Studio: local additions on top of /static/anomalon.css (Anomalon design system v1). */
 
-.active-tab {
-  background-color: #1e293b;
-  color: #22d3ee;
-  border-bottom: 2px solid #06b6d4;
-}
+/* Section tabs: underline style, matching the shared header. */
+.tab-btn { border-radius: 0 !important; color: var(--an-ink-2); box-shadow: inset 0 -2px 0 transparent; }
+.tab-btn:hover { color: var(--an-ink); }
+.active-tab { color: var(--an-ink) !important; background: transparent; box-shadow: inset 0 -2px 0 var(--an-accent); }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Custom scrollbars for code blocks and tables */
-pre::-webkit-scrollbar, div::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-pre::-webkit-scrollbar-track, div::-webkit-scrollbar-track {
-  background: #020617;
-}
-pre::-webkit-scrollbar-thumb, div::-webkit-scrollbar-thumb {
-  background: #334155;
-  border-radius: 3px;
-}
-pre::-webkit-scrollbar-thumb:hover, div::-webkit-scrollbar-thumb:hover {
-  background: #475569;
-}
+/* Quiet scrollbars for code blocks and tables. */
+pre::-webkit-scrollbar, div::-webkit-scrollbar { width: 6px; height: 6px; }
+pre::-webkit-scrollbar-track, div::-webkit-scrollbar-track { background: var(--an-bg); }
+pre::-webkit-scrollbar-thumb, div::-webkit-scrollbar-thumb { background: var(--an-line-strong); border-radius: 3px; }
+
+/* Status badges, aliased to the shared chip colors. */
+.badge-pass { background: var(--an-ok-soft); color: var(--an-ok); border: 1px solid transparent; }
+.badge-fail { background: var(--an-bad-soft); color: var(--an-bad); border: 1px solid transparent; }
+.badge-warn { background: var(--an-warn-soft); color: var(--an-warn); border: 1px solid transparent; }
 
 /* Long result values must remain readable within their cards. */
-.ledger-value {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
+.ledger-value { min-width: 0; overflow-wrap: anywhere; }
+.compiler-fixture-json { white-space: pre-wrap; overflow-wrap: anywhere; }
 
-.compiler-fixture-json {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
+/* The shared stylesheet's sticky header sits above the tab row. */
+.an-header { z-index: 50; }
 
-/* Badge styles */
-.badge-pass {
-  background-color: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.4);
-}
-
-.badge-fail {
-  background-color: rgba(244, 63, 94, 0.15);
-  color: #fb7185;
-  border: 1px solid rgba(244, 63, 94, 0.4);
-}
-
-.badge-warn {
-  background-color: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.4);
-}
+/* Keep the preset picker inside the viewport on phones. */
+select { max-width: 100%; }
