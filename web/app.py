@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -942,6 +942,17 @@ async def evaluate_ai_lossledger(payload: AiLossLedgerRequest) -> Dict[str, Any]
 # Frontend SPA Route
 # =============================================================================
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", include_in_schema=False)
+async def serve_overview() -> FileResponse:
+    """One-screen BQNF overview. Plain HTML, not rendered through Jinja."""
+    return FileResponse(templates_dir / "overview.html", media_type="text/html")
+
+
+@app.get("/studio", include_in_schema=False)
+async def redirect_studio() -> RedirectResponse:
+    return RedirectResponse("/studio/", status_code=308)
+
+
+@app.get("/studio/", response_class=HTMLResponse)
 async def serve_index(request: Request):
     return templates.TemplateResponse(request=request, name="index.html")

@@ -45,8 +45,8 @@ class TestWebApi(unittest.TestCase):
         self.assertEqual(payload.get("version"), "0.1.0")
 
     def test_index_html_renders_all_tabs(self) -> None:
-        """Verifies GET / renders the landing SPA with all five workbench tabs."""
-        response = self.client.get("/")
+        """Verifies GET /studio/ renders the studio SPA with all five workbench tabs."""
+        response = self.client.get("/studio/")
         self.assertEqual(response.status_code, 200)
         self.assertIn("text/html", response.headers.get("content-type", ""))
         html = response.text
