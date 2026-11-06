@@ -1,6 +1,13 @@
 /*
  * Anomalon design system v1 — behaviour.
  * Load:  <script src="https://anomalon.com/ds/v1/anomalon.js" defer></script>
+ *
+ *  - <div data-an-header data-tool="Simplex-NF" data-nav="Synthesis=/,Quickstart=/#quickstart"></div>
+ *      renders the shared header. data-tool and data-nav are optional;
+ *      "All tools" is always appended unless data-no-all is present.
+ *  - <div data-an-footer data-tool="Simplex-NF Studio" data-source="https://github.com/..."></div>
+ *      renders the shared footer.
+ *  - <button data-an-copy="#id-of-pre">Copy</button> copies the target's text.
  * No dependencies. Safe to load twice.
  */
 (function () {
@@ -95,7 +102,34 @@
     }
   });
 
+  /* Left-hand nav: mark the section currently in view (aria-current="true"). */
+  function lhnav() {
+    /* phones: start with the Contents panel closed */
+    var panel = document.querySelector("details.an-lhnav");
+    if (panel && window.matchMedia && window.matchMedia("(max-width: 860px)").matches) panel.open = false;
+    var links = Array.prototype.slice.call(document.querySelectorAll(".an-lhnav a[href^='#']"));
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    var byId = {};
+    links.forEach(function (a) { byId[decodeURIComponent(a.getAttribute("href").slice(1))] = a; });
+    var visible = {};
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) { visible[e.target.id] = e.isIntersecting ? e.boundingClientRect.top : undefined; });
+      var best = null, top = Infinity;
+      Object.keys(visible).forEach(function (id) { if (visible[id] !== undefined && visible[id] < top) { top = visible[id]; best = id; } });
+      if (!best) return;
+      links.forEach(function (a) { a.removeAttribute("aria-current"); });
+      if (byId[best]) {
+        byId[best].setAttribute("aria-current", "true");
+        /* reveal the current item inside collapsed nested contents */
+        for (var d = byId[best].parentElement; d && !d.classList.contains("an-lhnav"); d = d.parentElement)
+          if (d.tagName === "DETAILS") d.open = true;
+      }
+    }, { rootMargin: "-64px 0px -60% 0px" });
+    Object.keys(byId).forEach(function (id) { var el = document.getElementById(id); if (el) io.observe(el); });
+  }
+
   window.Anomalon = { init: init, version: "1.3.0" };
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", lhnav); else lhnav();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { init(); });
   else init();
 })();

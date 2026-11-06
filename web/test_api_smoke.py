@@ -28,8 +28,12 @@ def test_healthz():
 def test_frontend_serving():
     r = client.get("/")
     assert r.status_code == 200
+    assert "BQNF" in r.text
+    assert 'href="/studio/"' in r.text
     assert "Simplex-NF Studio" in r.text
     assert r.headers.get("cache-control") == "no-cache"
+
+    assert client.get("/studio", follow_redirects=False).status_code == 308
 
     studio = client.get("/studio/")
     assert studio.status_code == 200

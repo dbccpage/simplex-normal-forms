@@ -22,7 +22,7 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from fastapi import Body, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel, Field
@@ -1064,12 +1064,15 @@ async def serve_front(request: Request):
     )
 
 
+@app.get("/studio", include_in_schema=False)
+async def redirect_studio() -> RedirectResponse:
+    return RedirectResponse("/studio/", status_code=308)
+
+
 @app.get("/studio/", response_class=HTMLResponse)
-@app.get("/studio", response_class=HTMLResponse)
 async def serve_studio(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="index.html",
         headers={"Cache-Control": "no-cache"},
     )
-

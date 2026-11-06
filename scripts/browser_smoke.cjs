@@ -129,7 +129,7 @@ async function copy(id) {
       assert.equal(health.status(), 200);
       report.health = await health.json();
       assert.equal(report.health.service, 'smplxnf-studio');
-      for (const [urlPath, local] of [['/', 'web/templates/front.html'], ['/studio/', 'web/templates/index.html'], ['/static/app.js', 'web/static/app.js'], ['/static/style.css', 'web/static/style.css']]) {
+      for (const [urlPath, local] of [['/', 'web/templates/front.html'], ['/', 'web/templates/overview.html'], ['/studio/', 'web/templates/index.html'], ['/static/app.js', 'web/static/app.js'], ['/static/style.css', 'web/static/style.css']]) {
         const response = await context.request.get(base + urlPath);
         assert.equal(response.status(), 200);
         const bytes = await response.body();
