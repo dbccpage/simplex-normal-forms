@@ -29,6 +29,13 @@ def test_frontend_serving():
     r = client.get("/")
     assert r.status_code == 200
     assert "Simplex-NF Studio" in r.text
+    assert r.headers.get("cache-control") == "no-cache"
+
+    studio = client.get("/studio/")
+    assert studio.status_code == 200
+    assert "Simplex-NF Studio" in studio.text
+    assert studio.headers.get("cache-control") == "no-cache"
+    assert "Experimental" in studio.text
 
     css = client.get("/static/style.css")
     assert css.status_code == 200
@@ -50,11 +57,25 @@ def test_relational_presets():
         assert "candidate_keys" in data
         assert "synthesized_3nf" in data
         assert "chase" in data
+        assert "sql_ddl_postgres" in data
+        assert "sql_ddl_sqlserver" in data
+        assert "PRIMARY KEY" in data["sql_ddl_postgres"]
+        assert "PRIMARY KEY" in data["sql_ddl_sqlserver"]
+        for step in data["chase"]["steps"]:
+            assert "changed_cells" in step
+            assert len(step["changed_cells"]) >= 1
         if name == "lossy_decomposition":
             assert data["chase"]["is_implied"] is False
             assert data["chase"]["spurious_tuple_witness"] is not None
+            assert (
+                "this row is in the join of the pieces but not in the original"
+                in data["chase"]["spurious_tuple_explanation"]
+            )
         else:
             assert data["chase"]["is_implied"] is True
+            assert "FOREIGN KEY" in data["sql_ddl_postgres"]
+            assert "FOREIGN KEY" in data["sql_ddl_sqlserver"]
+
 
 
 def test_bqnf_simulation():
@@ -112,6 +133,30 @@ def test_ai_lossledger():
         assert data["token_accounting"]["token_conservation_commutes"] is True
         assert data["loss_ledger_integrity_verified"] is True
         assert data["merkle_digest"] is not None
+
+
+def test_ddl_live_postgresql_validation():
+    import shutil
+    import pytest
+
+    if shutil.which("psql") is None:
+        pytest.skip("PostgreSQL instance / psql not available in local sandbox; DDL live execution not run")
+
+
+def test_ddl_live_sqlserver_validation():
+    import shutil
+    import subprocess
+    import pytest
+
+    if shutil.which("sqlcmd") is None:
+        pytest.skip("sqlcmd not available; SQL Server DDL live execution not run")
+    probe = subprocess.run(
+        ["sqlcmd", "-S", "(localdb)\\MSSQLLocalDB", "-l", "2", "-Q", "SELECT 1"],
+        capture_output=True,
+        text=True,
+    )
+    if probe.returncode != 0:
+        pytest.skip("SQL Server LocalDB instance unreachable in sandbox; DDL live execution not run")
 
 
 if __name__ == "__main__":

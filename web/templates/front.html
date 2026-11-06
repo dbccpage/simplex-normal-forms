@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simplex Normal Forms Studio | smplxnf.anomalon.com</title>
+  <link rel="icon" type="image/svg+xml" href="/static/anomalon-favicon.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="/static/anomalon.css">
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    const teal = {50:'#e2f0ee',100:'#e2f0ee',200:'#0d5b58',300:'#0d5b58',400:'#12706c',500:'#12706c',600:'#0d5b58',700:'#3f9792',800:'#9fcbc6',900:'#cfe6e3',950:'#e2f0ee'};
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            white: '#15202c',
+            black: '#ffffff',
+            slate: {50:'#15202c',100:'#15202c',200:'#15202c',300:'#3a4450',400:'#4b5664',500:'#6f7884',600:'#9aa1aa',700:'#c9cdc8',800:'#e2e4e1',850:'#ffffff',900:'#ffffff',950:'#fbfbf9'},
+            cyan: teal, sky: teal, blue: teal, indigo: teal, brand: teal,
+            emerald: {300:'#1a6a40',400:'#1f7a4a',500:'#1f7a4a',800:'#a9d4b9',900:'#cfe8d8',950:'#e1f1e7'},
+            rose:    {300:'#9c2019',400:'#b3261e',500:'#b3261e',800:'#e7b3ad',900:'#f0cbc6',950:'#f8e1de'},
+            amber:   {300:'#7a4f00',400:'#8a5a00',500:'#8a5a00',800:'#e3c98f',900:'#efdcae',950:'#f7ecd2'}
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'Consolas', 'monospace']
+          },
+          borderRadius: { md: '6px', lg: '6px', xl: '6px', '2xl': '6px' },
+          boxShadow: { sm: 'none', DEFAULT: 'none', md: 'none', lg: 'none', xl: 'none', '2xl': 'none' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
+  <header class="an-header">
+    <div class="an-header__in" style="padding-top: 7px; padding-bottom: 7px;">
+      <a class="an-brand" href="https://www.anomalon.com/">
+        <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 15.5 11 6l5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="11" cy="12.6" r="1.7" fill="var(--an-accent)"/></svg>
+        Anomalon <span class="an-brand__tool">/ Simplex-NF Studio</span>
+      </a>
+      <button class="an-btn an-btn--ghost an-nav__toggle" aria-expanded="false" aria-controls="an-nav">Menu</button>
+      <nav class="an-nav" id="an-nav" aria-label="Site">
+        <a href="/studio/">Full Studio</a>
+        <a href="https://github.com/dbccpage/simplex-normal-forms">Source</a>
+        <a href="https://www.anomalon.com/">All tools</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-2.5 space-y-2.5">
+    <!-- Top bar: one-line summary + preset buttons -->
+    <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div>
+        <h1 class="text-sm font-semibold text-white">
+          Relational 3NF / BCNF Normalization, Tableau Chase &amp; Incremental <code class="font-mono text-cyan-400">MAX</code> Maintenance
+        </h1>
+        <p class="text-xs text-slate-400">
+          Synthesize lossless 3NF tables, inspect every chase step and spurious row on lossy splits, and compare PostgreSQL / SQL Server DDL.
+        </p>
+      </div>
+      <div class="flex flex-wrap items-center gap-1.5">
+        <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded px-2.5 py-1.5 font-mono">
+          <option value="ecommerce">Preset: E-Commerce (3NF Synthesis)</option>
+          <option value="lossy_decomposition">Preset: Lossy Split (Spurious Row)</option>
+          <option value="supply_chain">Preset: Supply Chain (BCNF Split)</option>
+          <option value="healthcare">Preset: Healthcare (Two Keys)</option>
+        </select>
+        <button type="button" onclick="document.getElementById('relational-preset-select').value='lossy_decomposition'; loadRelationalPreset('lossy_decomposition')" class="px-2.5 py-1.5 text-xs font-medium rounded border border-rose-800 bg-rose-950 text-rose-400">
+          Show Lossy Split
+        </button>
+        <a href="/studio/" class="px-2.5 py-1.5 text-xs font-medium rounded border border-slate-700 bg-slate-950 text-cyan-400">
+          Open /studio/
+        </a>
+      </div>
+    </div>
+
+    <!-- Single-pane 12-column grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+      <!-- Left column (4 cols): Schema Input + MAX Indexed View Case -->
+      <div class="lg:col-span-4 space-y-2.5">
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">1. Schema &amp; Functional Dependencies</h2>
+            <span id="relational-mincover-badge" class="text-[11px] font-mono text-cyan-400"></span>
+          </div>
+          <div>
+            <label for="relational-attributes-input" class="block text-[11px] font-medium text-slate-300 mb-0.5">Columns (comma-separated)</label>
+            <input type="text" id="relational-attributes-input" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-cyan-300" placeholder="order_id, customer_id, zip_code, city">
+          </div>
+          <div>
+            <label for="relational-dependencies-input" class="block text-[11px] font-medium text-slate-300 mb-0.5">Functional Dependencies (<code class="font-mono">X -&gt; Y</code> per line)</label>
+            <textarea id="relational-dependencies-input" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-slate-200"></textarea>
+          </div>
+          <div>
+            <label for="relational-components-input" class="block text-[11px] font-medium text-slate-300 mb-0.5">Custom Table Split to Chase (blank = 3NF synthesis)</label>
+            <input type="text" id="relational-components-input" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-slate-300" placeholder="(A, B), (B, C)">
+          </div>
+          <button onclick="executeRelationalNormalize()" id="btn-run-relational" class="w-full py-1.5 px-3 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold text-xs rounded transition">
+            Normalize
+          </button>
+        </div>
+
+        <!-- MAX aggregate sorted-list-per-group panel -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5 space-y-1">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">2. Why Indexed Views Cannot Hold <code class="font-mono">MAX</code></h2>
+            <span class="text-[10px] font-mono text-emerald-400">Sorted List per Group</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-snug">
+            A SQL Server indexed view (<code class="font-mono">WITH SCHEMABINDING</code>) forbids <code class="font-mono">MAX()</code> and <code class="font-mono">MIN()</code> because deleting a group's current maximum cannot be repaired from the single stored scalar without rescanning the group.
+          </p>
+          <div class="p-1.5 bg-slate-950 border border-slate-800 rounded text-[11px] font-mono space-y-0.5">
+            <div><span class="text-slate-500">Query:</span> SELECT region, SUM(amount), MAX(amount) FROM sales WHERE status = 'paid' GROUP BY region</div>
+            <div><span class="text-slate-500">Sorted list (North):</span> [25, 60, 75, 120, 250] &rarr; <span class="text-rose-400">DELETE 250</span> &rarr; next <span class="text-emerald-400 font-semibold">MAX = 120</span> (0 table scans)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column (8 cols): Keys, Scorecard, 3NF Tables, Chase Steps & Spurious Row, PostgreSQL & SQL Server DDL -->
+      <div class="lg:col-span-8 space-y-2">
+        <div class="grid grid-cols-3 gap-1.5">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Candidate Keys</div>
+            <div id="relational-cand-keys" class="text-[11px] font-mono text-cyan-400 font-bold mt-0.5">—</div>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Key Columns</div>
+            <div id="relational-prime-attrs" class="text-[11px] font-mono text-emerald-400 font-bold mt-0.5">—</div>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Chase Status</div>
+            <div id="relational-chase-status" class="text-[11px] font-mono text-amber-400 font-bold mt-0.5">—</div>
+          </div>
+        </div>
+
+        <!-- Normal Forms + 3NF Tables side by side -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+          <div class="md:col-span-5 bg-slate-900 border border-slate-800 rounded-lg p-2">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Normal Form Checks</h3>
+            <div id="relational-nf-scorecard" class="grid grid-cols-5 gap-1"></div>
+          </div>
+          <div class="md:col-span-7 bg-slate-900 border border-slate-800 rounded-lg p-2">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Synthesized 3NF Tables (Primary Keys)</h3>
+            <div id="relational-3nf-tables" class="space-y-1 max-h-24 overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <!-- Chase Steps & Spurious Witness -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 space-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tableau Chase Steps (FD Applied &amp; Cells Changed)</h3>
+            <span id="chase-result-pill" class="text-[11px] px-2 py-0.5 rounded font-mono hidden"></span>
+          </div>
+          <div id="chase-witness-box" class="hidden p-2 rounded border text-xs font-mono"></div>
+          <div id="chase-steps-container" class="overflow-x-auto max-h-28 border border-slate-800 rounded text-xs font-mono">
+            <table class="w-full text-left border-collapse">
+              <thead class="bg-slate-950 text-slate-400 text-[10px] border-b border-slate-800 sticky top-0">
+                <tr>
+                  <th class="p-1.5">Step</th>
+                  <th class="p-1.5">FD Applied</th>
+                  <th class="p-1.5">Rows Equated</th>
+                  <th class="p-1.5">Column</th>
+                  <th class="p-1.5">Cells Changed</th>
+                </tr>
+              </thead>
+              <tbody id="chase-steps-tbody" class="divide-y divide-slate-850 text-slate-300">
+                <tr><td colspan="5" class="p-2 text-center text-slate-500">Loading preset...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Two-Target DDL: PostgreSQL & SQL Server -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 space-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Generated DDL: PostgreSQL &amp; SQL Server (PK, UNIQUE, FK)</h3>
+            <button onclick="copyToClipboard('relational-sql-ddl')" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono">Copy SQL</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <div class="text-[10px] font-mono text-slate-400 mb-0.5">PostgreSQL</div>
+              <pre id="relational-sql-ddl-postgres" class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-emerald-400 overflow-x-auto max-h-24">-- PostgreSQL DDL</pre>
+            </div>
+            <div>
+              <div class="text-[10px] font-mono text-slate-400 mb-0.5">SQL Server</div>
+              <pre id="relational-sql-ddl-sqlserver" class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-emerald-400 overflow-x-auto max-h-24">-- SQL Server DDL</pre>
+            </div>
+          </div>
+          <pre id="relational-sql-ddl" class="hidden"></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="an-footer" style="margin-top: auto;">
+    <div class="an-footer__in" style="padding-top: 8px; padding-bottom: 8px;">
+      <span>Anomalon · Simplex-NF Studio</span>
+      <span>Experimental tools (Streaming Delta Repair, Trigger Compiler, Token Budget Audit) live at <a href="/studio/">/studio/</a></span>
+      <a href="https://github.com/dbccpage/simplex-normal-forms">Source</a>
+    </div>
+  </footer>
+
+  <template id="studio-tabs-catalog">
+    <span>Relational Synthesis & Chase</span>
+    <span>Streaming BQNF Delta Repair</span>
+    <span>NF-IR Compiler Explorer</span>
+    <span>AI Context LossLedger Gateway</span>
+    <span>Quickstart & Import Guide</span>
+  </template>
+
+  <script src="/static/app.js"></script>
+  <script src="/static/anomalon.js" defer></script>
+</body>
+</html>

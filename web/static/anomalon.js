@@ -1,19 +1,12 @@
 /*
  * Anomalon design system v1 — behaviour.
- * Load:  <script src="https://www.anomalon.com/ds/v1/anomalon.js" defer></script>
- *
- *  - <div data-an-header data-tool="Simplex-NF" data-nav="Synthesis=/,Quickstart=/#quickstart"></div>
- *      renders the shared header. data-tool and data-nav are optional;
- *      "All tools" is always appended unless data-no-all is present.
- *  - <div data-an-footer data-tool="Simplex-NF Studio" data-source="https://github.com/..."></div>
- *      renders the shared footer.
- *  - <button data-an-copy="#id-of-pre">Copy</button> copies the target's text.
+ * Load:  <script src="https://anomalon.com/ds/v1/anomalon.js" defer></script>
  * No dependencies. Safe to load twice.
  */
 (function () {
   "use strict";
   if (window.Anomalon) return;
-  var HOME = "https://www.anomalon.com";
+  var HOME = "https://anomalon.com";
   var MARK =
     '<svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/>' +
     '<path d="M6 15.5 11 6l5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>' +
@@ -64,7 +57,7 @@
       '<footer class="an-footer"><div class="an-footer__in">' +
       "<span>" + (tool ? "Anomalon · " + esc(tool) : "© " + year + " Anomalon") + "</span>" +
       (src ? '<a href="' + esc(src) + '">Source</a>' : "") +
-      '<a href="' + HOME + '/about">About</a><a href="' + HOME + '/contact">Contact</a>' +
+      '<a href="' + HOME + '/about/">About</a><a href="' + HOME + '/contact/">Contact</a>' +
       "</div></footer>";
   }
 
@@ -102,7 +95,7 @@
     }
   });
 
-  window.Anomalon = { init: init, version: "1.0.0" };
+  window.Anomalon = { init: init, version: "1.3.0" };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { init(); });
   else init();
 })();
