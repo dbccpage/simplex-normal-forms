@@ -180,10 +180,10 @@ function renderRelationalResults(data) {
   tablesContainer.innerHTML = '';
   data.synthesized_3nf.forEach(t => {
     const card = document.createElement('div');
-    card.className = 'p-3 bg-slate-950 rounded-lg border border-slate-800 flex items-center justify-between text-xs font-mono';
+    card.className = 'p-3 bg-slate-950 rounded-lg border border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs font-mono';
     const pk = t.candidate_keys[0] ? `{${t.candidate_keys[0].join(', ')}}` : 'None';
     card.innerHTML = `
-      <div>
+      <div class="min-w-0 break-words">
         <span class="text-cyan-400 font-bold">${t.table_name}</span>
         <span class="text-slate-400 ml-2">(${t.attributes.join(', ')})</span>
       </div>
@@ -209,7 +209,7 @@ function renderRelationalResults(data) {
   const witnessBox = document.getElementById('chase-witness-box');
   if (!data.chase.is_implied && data.chase.spurious_tuple_witness) {
     witnessBox.classList.remove('hidden');
-    witnessBox.className = 'p-3 rounded-lg border border-rose-800/80 bg-rose-950/40 text-xs font-mono text-rose-300 space-y-1';
+    witnessBox.className = 'p-3 rounded-lg border border-rose-800/80 bg-rose-950/40 text-xs font-mono text-rose-300 space-y-1 break-words';
     witnessBox.innerHTML = `
       <div class="font-bold text-rose-400 flex items-center gap-1.5">
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
@@ -272,11 +272,11 @@ function renderRelationalResults(data) {
 
   // SQL DDL Output
   const ddlEl = document.getElementById('relational-sql-ddl');
-  if (ddlEl) ddlEl.innerText = data.sql_ddl;
+  if (ddlEl) ddlEl.textContent = data.sql_ddl;
   const pgDdlEl = document.getElementById('relational-sql-ddl-postgres');
-  if (pgDdlEl && data.sql_ddl_postgres) pgDdlEl.innerText = data.sql_ddl_postgres;
+  if (pgDdlEl && data.sql_ddl_postgres) pgDdlEl.textContent = data.sql_ddl_postgres;
   const msDdlEl = document.getElementById('relational-sql-ddl-sqlserver');
-  if (msDdlEl && data.sql_ddl_sqlserver) msDdlEl.innerText = data.sql_ddl_sqlserver;
+  if (msDdlEl && data.sql_ddl_sqlserver) msDdlEl.textContent = data.sql_ddl_sqlserver;
 }
 
 

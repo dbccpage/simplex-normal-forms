@@ -2,7 +2,7 @@ name: tests-and-distribution
 
 on:
   push:
-    branches: [main]
+    branches: [main, "overnight/**"]
   pull_request:
 
 permissions:
@@ -11,7 +11,7 @@ permissions:
 jobs:
   tests:
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 10
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -22,9 +22,87 @@ jobs:
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: ${{ matrix.python }}
+      - name: Start PostgreSQL, SQL Server, and MongoDB containers
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y freetds-bin
+          docker run -d --name pg-test \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=postgres_password \
+            -e POSTGRES_DB=testdb \
+            -p 5432:5432 postgres:16-alpine
+          docker run -d --name mssql-test \
+            -e ACCEPT_EULA=Y \
+            -e MSSQL_SA_PASSWORD='YourStrong!Passw0rd' \
+            -e MSSQL_PID=Express \
+            -p 1433:1433 mcr.microsoft.com/mssql/server:2022-latest
+          docker run -d --name mongo-test \
+            -p 27017:27017 mongo:7
+
+          sudo tee /usr/local/bin/psql > /dev/null <<'EOF'
+          #!/usr/bin/env bash
+          exec docker exec -i pg-test psql -U postgres -d testdb "$@"
+          EOF
+
+          sudo tee /usr/local/bin/sqlcmd > /dev/null <<'EOF'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          if docker exec mssql-test test -x /opt/mssql-tools18/bin/sqlcmd 2>/dev/null; then
+            exec docker exec -i mssql-test /opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P 'YourStrong!Passw0rd' "$@"
+          elif docker exec mssql-test test -x /opt/mssql-tools/bin/sqlcmd 2>/dev/null; then
+            exec docker exec -i mssql-test /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P 'YourStrong!Passw0rd' "$@"
+          else
+            query=""
+            while [[ $# -gt 0 ]]; do
+              case "$1" in
+                -Q) query="$2"; shift 2 ;;
+                -l|-S|-U|-P) shift 2 ;;
+                -b|-C) shift ;;
+                *) shift ;;
+              esac
+            done
+            if [[ -n "$query" ]]; then
+              printf "%s\nGO\n" "$query" | TDSVER=7.4 bsqldb -S 127.0.0.1:1433 -U sa -P 'YourStrong!Passw0rd' -e /dev/stderr
+            else
+              TDSVER=7.4 bsqldb -S 127.0.0.1:1433 -U sa -P 'YourStrong!Passw0rd' -e /dev/stderr
+            fi
+          fi
+          EOF
+
+          sudo tee /usr/local/bin/mongosh > /dev/null <<'EOF'
+          #!/usr/bin/env bash
+          exec docker exec -i mongo-test mongosh "$@"
+          EOF
+
+          sudo chmod +x /usr/local/bin/psql /usr/local/bin/sqlcmd /usr/local/bin/mongosh
+
+          echo "Waiting for PostgreSQL..."
+          for i in {1..30}; do
+            if /usr/local/bin/psql -c "SELECT 1;" >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          /usr/local/bin/psql -c "SELECT 1;"
+
+          echo "Waiting for MongoDB..."
+          for i in {1..30}; do
+            if /usr/local/bin/mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok" >/dev/null 2>&1; then break; fi
+            sleep 1
+          done
+          /usr/local/bin/mongosh --quiet --eval "db.runCommand({ ping: 1 }).ok"
+
+          echo "Waiting for SQL Server..."
+          for i in {1..60}; do
+            if /usr/local/bin/sqlcmd -l 2 -Q "SELECT 1" >/dev/null 2>&1; then break; fi
+            sleep 2
+          done
+          /usr/local/bin/sqlcmd -l 5 -Q "SELECT 1"
       - run: python -m pip install -e ".[dev,web]"
       - run: python -m normal_forms.catalog
-      - run: python -m pytest tests web/test_api_smoke.py -q
+      - run: python -m pytest tests web/test_api_smoke.py -v
+        env:
+          REQUIRE_LIVE_DB_TESTS: ${{ runner.os == 'Linux' && '1' || '0' }}
       - run: node tests/test_frontend.cjs
 
   distribution:

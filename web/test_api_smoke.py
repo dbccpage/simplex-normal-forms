@@ -196,11 +196,15 @@ def test_ddl_topological_order_and_sqlite_fk_execution():
 
 
 def test_ddl_live_postgresql_validation():
+    import os
     import shutil
     import subprocess
     import pytest
 
+    require_live = os.environ.get("REQUIRE_LIVE_DB_TESTS") == "1"
     if shutil.which("psql") is None:
+        if require_live:
+            pytest.fail("REQUIRE_LIVE_DB_TESTS=1 but psql is not available")
         pytest.skip("PostgreSQL instance / psql not available in local sandbox; DDL live execution not run")
     probe = subprocess.run(
         ["psql", "-c", "SELECT 1;"],
@@ -208,47 +212,219 @@ def test_ddl_live_postgresql_validation():
         text=True,
     )
     if probe.returncode != 0:
+        if require_live:
+            pytest.fail(f"REQUIRE_LIVE_DB_TESTS=1 but PostgreSQL server unreachable: {probe.stderr or probe.stdout}")
         pytest.skip("PostgreSQL server unreachable in local sandbox; DDL live execution not run")
 
     for name, p in PRESETS.items():
         r = client.post(
             "/api/relational/normalize",
-            json={"attributes": p["attributes"], "dependencies": p["dependencies"]},
+            json={
+                "attributes": p["attributes"],
+                "dependencies": p["dependencies"],
+                "custom_components": p.get("custom_components"),
+            },
         )
         assert r.status_code == 200
         sql = "BEGIN;\n" + r.json()["sql_ddl_postgres"] + "\nROLLBACK;\n"
-        res = subprocess.run(["psql", "-v", "ON_ERROR_STOP=1", "-c", sql], capture_output=True, text=True)
+        res = subprocess.run(
+            ["psql", "-v", "ON_ERROR_STOP=1"],
+            input=sql,
+            capture_output=True,
+            text=True,
+        )
         assert res.returncode == 0, f"PostgreSQL DDL execution failed for {name}: {res.stderr}"
+
+    fk_req = {
+        "attributes": ["x", "y", "u1", "u2", "u3"],
+        "dependencies": ["x -> y", "y -> u1, u2, u3"],
+    }
+    r_fk = client.post("/api/relational/normalize", json=fk_req)
+    assert r_fk.status_code == 200
+    pg_fk_ddl = r_fk.json()["sql_ddl_postgres"]
+    valid_sql = (
+        "BEGIN;\n"
+        + pg_fk_ddl
+        + '\nINSERT INTO "rel_3nf_table_2" ("u1", "u2", "u3", "y") VALUES (\'a\', \'b\', \'c\', \'p1\');'
+        + '\nINSERT INTO "rel_3nf_table_1" ("x", "y") VALUES (\'c1\', \'p1\');'
+        + "\nROLLBACK;\n"
+    )
+    res_valid = subprocess.run(
+        ["psql", "-v", "ON_ERROR_STOP=1"],
+        input=valid_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_valid.returncode == 0, f"PostgreSQL valid FK insert failed: {res_valid.stderr}"
+
+    orphan_sql = (
+        "BEGIN;\n"
+        + pg_fk_ddl
+        + '\nINSERT INTO "rel_3nf_table_1" ("x", "y") VALUES (\'c2\', \'missing_parent\');'
+        + "\nROLLBACK;\n"
+    )
+    res_orphan = subprocess.run(
+        ["psql", "-v", "ON_ERROR_STOP=1"],
+        input=orphan_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_orphan.returncode != 0, "Expected PostgreSQL FOREIGN KEY violation on orphan row"
 
 
 def test_ddl_live_sqlserver_validation():
+    import os
     import shutil
     import subprocess
     import pytest
 
+    require_live = os.environ.get("REQUIRE_LIVE_DB_TESTS") == "1"
     if shutil.which("sqlcmd") is None:
+        if require_live:
+            pytest.fail("REQUIRE_LIVE_DB_TESTS=1 but sqlcmd is not available")
         pytest.skip("sqlcmd not available; SQL Server DDL live execution not run")
+
+    server = os.environ.get("MSSQL_SERVER")
+    if not server and os.name == "nt":
+        server = r"(localdb)\MSSQLLocalDB"
+    base_cmd = ["sqlcmd"]
+    if server:
+        base_cmd.extend(["-S", server])
+    if os.environ.get("MSSQL_USER") and os.environ.get("MSSQL_PASSWORD"):
+        base_cmd.extend(["-U", os.environ["MSSQL_USER"], "-P", os.environ["MSSQL_PASSWORD"]])
+
     probe = subprocess.run(
-        ["sqlcmd", "-S", "(localdb)\\MSSQLLocalDB", "-l", "2", "-Q", "SELECT 1"],
+        base_cmd + ["-l", "5", "-Q", "SELECT 1"],
         capture_output=True,
         text=True,
     )
     if probe.returncode != 0:
+        if require_live:
+            pytest.fail(f"REQUIRE_LIVE_DB_TESTS=1 but SQL Server unreachable: {probe.stderr or probe.stdout}")
         pytest.skip("SQL Server LocalDB instance unreachable in sandbox; DDL live execution not run")
 
     for name, p in PRESETS.items():
         r = client.post(
             "/api/relational/normalize",
-            json={"attributes": p["attributes"], "dependencies": p["dependencies"]},
+            json={
+                "attributes": p["attributes"],
+                "dependencies": p["dependencies"],
+                "custom_components": p.get("custom_components"),
+            },
         )
         assert r.status_code == 200
-        sql = "BEGIN TRANSACTION;\n" + r.json()["sql_ddl_sqlserver"] + "\nROLLBACK TRANSACTION;\n"
+        sql = "BEGIN TRANSACTION;\n" + r.json()["sql_ddl_sqlserver"] + "\nROLLBACK TRANSACTION;\nGO\n"
         res = subprocess.run(
-            ["sqlcmd", "-S", "(localdb)\\MSSQLLocalDB", "-b", "-Q", sql],
+            base_cmd + ["-b"],
+            input=sql,
             capture_output=True,
             text=True,
         )
         assert res.returncode == 0, f"SQL Server DDL execution failed for {name}: {res.stderr or res.stdout}"
+
+    fk_req = {
+        "attributes": ["x", "y", "u1", "u2", "u3"],
+        "dependencies": ["x -> y", "y -> u1, u2, u3"],
+    }
+    r_fk = client.post("/api/relational/normalize", json=fk_req)
+    assert r_fk.status_code == 200
+    ms_fk_ddl = r_fk.json()["sql_ddl_sqlserver"]
+    valid_sql = (
+        "BEGIN TRANSACTION;\n"
+        + ms_fk_ddl
+        + "\nINSERT INTO [rel_3nf_table_2] ([u1], [u2], [u3], [y]) VALUES ('a', 'b', 'c', 'p1');"
+        + "\nINSERT INTO [rel_3nf_table_1] ([x], [y]) VALUES ('c1', 'p1');"
+        + "\nROLLBACK TRANSACTION;\nGO\n"
+    )
+    res_valid = subprocess.run(
+        base_cmd + ["-b"],
+        input=valid_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_valid.returncode == 0, f"SQL Server valid FK insert failed: {res_valid.stderr or res_valid.stdout}"
+
+    orphan_sql = (
+        "BEGIN TRANSACTION;\n"
+        + ms_fk_ddl
+        + "\nINSERT INTO [rel_3nf_table_1] ([x], [y]) VALUES ('c2', 'missing_parent');"
+        + "\nROLLBACK TRANSACTION;\nGO\n"
+    )
+    res_orphan = subprocess.run(
+        base_cmd + ["-b"],
+        input=orphan_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_orphan.returncode != 0, "Expected SQL Server FOREIGN KEY violation on orphan row"
+
+
+def test_live_mongodb_validation():
+    import json
+    import os
+    import shutil
+    import subprocess
+    import pytest
+
+    require_live = os.environ.get("REQUIRE_LIVE_DB_TESTS") == "1"
+    if shutil.which("mongosh") is None:
+        if require_live:
+            pytest.fail("REQUIRE_LIVE_DB_TESTS=1 but mongosh is not available")
+        pytest.skip("mongosh not available; MongoDB live validation not run")
+
+    probe = subprocess.run(
+        ["mongosh", "--quiet", "--eval", "db.runCommand({ ping: 1 }).ok"],
+        capture_output=True,
+        text=True,
+    )
+    if probe.returncode != 0:
+        if require_live:
+            pytest.fail(f"REQUIRE_LIVE_DB_TESTS=1 but MongoDB server unreachable: {probe.stderr or probe.stdout}")
+        pytest.skip("MongoDB server unreachable in sandbox; MongoDB live validation not run")
+
+    hc = PRESETS["healthcare"]
+    r = client.post(
+        "/api/relational/normalize",
+        json={"attributes": hc["attributes"], "dependencies": hc["dependencies"]},
+    )
+    assert r.status_code == 200
+    tables = r.json()["synthesized_3nf"]
+    patient_table = next(t for t in tables if "patient_id" in t["attributes"] and "ssn" in t["attributes"])
+    required_cols = sorted({col for key in patient_table["candidate_keys"] for col in key})
+    assert "patient_id" in required_cols and "ssn" in required_cols
+
+    mongo_script = f"""
+    const collName = "smplxnf_patient_3nf_check";
+    db.getCollection(collName).drop();
+    db.createCollection(collName, {{
+      validator: {{
+        $jsonSchema: {{
+          bsonType: "object",
+          required: {json.dumps(required_cols)}
+        }}
+      }}
+    }});
+    const okRes = db.getCollection(collName).insertOne({{ patient_id: "P1", ssn: "123-45-6789", patient_name: "Ada", ward_id: "W1" }});
+    if (!okRes.acknowledged) {{ throw new Error("Expected valid 3NF document insert to succeed"); }}
+    let rejected = false;
+    try {{
+      db.getCollection(collName).insertOne({{ patient_id: "P2", patient_name: "MissingSecondaryKey" }});
+    }} catch (e) {{
+      rejected = true;
+    }}
+    db.getCollection(collName).drop();
+    if (!rejected) {{ throw new Error("Expected missing candidate key attribute ssn to be rejected by validator"); }}
+    print("MONGODB_3NF_VALIDATOR_OK");
+    """
+    res = subprocess.run(
+        ["mongosh", "--quiet"],
+        input=mongo_script,
+        capture_output=True,
+        text=True,
+    )
+    assert res.returncode == 0 and "MONGODB_3NF_VALIDATOR_OK" in res.stdout, (
+        f"MongoDB live validation failed: {res.stderr or res.stdout}"
+    )
 
 
 if __name__ == "__main__":

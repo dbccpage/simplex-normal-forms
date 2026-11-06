@@ -115,7 +115,11 @@ async function copy(id) {
     page.on('response', r => { if (r.status() >= 400) report.http_errors.push({ url: r.url(), status: r.status() }); });
     page.on('dialog', async dialog => { report.page_errors.push(`Dialog: ${dialog.message()}`); await dialog.dismiss(); });
     await step('Application identity, assets and initial rendering', async () => {
-      const r = await page.goto(base, { waitUntil: 'networkidle', timeout: 120000 });
+      const front = await page.goto(base + '/', { waitUntil: 'networkidle', timeout: 120000 });
+      assert.equal(front.status(), 200);
+      assert.match(await page.title(), /Simplex Normal Forms Studio/);
+      await page.waitForFunction(() => document.querySelector('#relational-chase-status').innerText.includes('Lossless'));
+      const r = await page.goto(base + '/studio/', { waitUntil: 'networkidle', timeout: 120000 });
       assert.equal(r.status(), 200);
       assert.match(await page.title(), /Simplex Normal Forms Studio/);
       await rendered('ai-source-tokens', '62');
@@ -125,7 +129,7 @@ async function copy(id) {
       assert.equal(health.status(), 200);
       report.health = await health.json();
       assert.equal(report.health.service, 'smplxnf-studio');
-      for (const [urlPath, local] of [['/', 'web/templates/index.html'], ['/static/app.js', 'web/static/app.js'], ['/static/style.css', 'web/static/style.css']]) {
+      for (const [urlPath, local] of [['/', 'web/templates/front.html'], ['/studio/', 'web/templates/index.html'], ['/static/app.js', 'web/static/app.js'], ['/static/style.css', 'web/static/style.css']]) {
         const response = await context.request.get(base + urlPath);
         assert.equal(response.status(), 200);
         const bytes = await response.body();
