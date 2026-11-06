@@ -445,39 +445,71 @@ async def normalize_relational_schema(payload: RelationalNormalizeRequest) -> Di
             "-- Note (MAX aggregate): A SQL Server indexed view (WITH SCHEMABINDING) cannot include MAX() or MIN() because deleting the current maximum row cannot be repaired from the stored scalar alone without rescanning the group; maintain a sorted list of values per group instead.",
         ]
 
-        # Order parent tables before child tables when possible
-        ordered_tables = sorted(
-            synthesized_3nf,
-            key=lambda t: (len(t["candidate_keys"][0]) if t["candidate_keys"] else 99, len(t["attributes"]), t["table_name"]),
-        )
+        # Topologically order parent tables before child tables that reference them via foreign keys
+        table_by_name = {t["table_name"]: t for t in synthesized_3nf}
+        fk_targets_by_table: Dict[str, List[Dict[str, Any]]] = {t["table_name"]: [] for t in synthesized_3nf}
+        for table in synthesized_3nf:
+            tname = table["table_name"]
+            tattrs_set = set(table["attributes"])
+            pk_set = set(table["candidate_keys"][0] if table["candidate_keys"] else table["attributes"])
+            for other in synthesized_3nf:
+                oname = other["table_name"]
+                if oname == tname or not other["candidate_keys"]:
+                    continue
+                other_pk_set = set(other["candidate_keys"][0])
+                if other_pk_set.issubset(tattrs_set) and (other_pk_set != pk_set or oname < tname):
+                    fk_targets_by_table[tname].append(other)
+
+        def _table_sort_key(t: Dict[str, Any]) -> Tuple[int, int, str]:
+            return (
+                len(t["candidate_keys"][0]) if t["candidate_keys"] else 99,
+                len(t["attributes"]),
+                t["table_name"],
+            )
+
+        ordered_tables: List[Dict[str, Any]] = []
+        placed_names: set[str] = set()
+        remaining = sorted(synthesized_3nf, key=_table_sort_key)
+        while remaining:
+            ready = [
+                t for t in remaining
+                if all(dep["table_name"] in placed_names for dep in fk_targets_by_table[t["table_name"]])
+            ]
+            pick = ready[0] if ready else remaining[0]
+            ordered_tables.append(pick)
+            placed_names.add(pick["table_name"])
+            remaining = [t for t in remaining if t["table_name"] != pick["table_name"]]
+
+        created_tables: set[str] = set()
         for table in ordered_tables:
             tname = table["table_name"]
             tattrs = table["attributes"]
-            tattrs_set = set(tattrs)
             pk = table["candidate_keys"][0] if table["candidate_keys"] else tattrs
-            pk_set = set(pk)
             secondary_keys = table["candidate_keys"][1:] if len(table["candidate_keys"]) > 1 else []
+            not_null_cols = (
+                {col for key in table["candidate_keys"] for col in key}
+                if table["candidate_keys"]
+                else set(tattrs)
+            )
 
-            # Foreign keys to other 3NF tables whose PK is a subset of this table's attributes
+            # Foreign keys to already-created 3NF parent tables whose PK is a subset of this table's attributes
             fk_clauses_pg: List[str] = []
             fk_clauses_ms: List[str] = []
-            for other in ordered_tables:
-                if other["table_name"] == tname or not other["candidate_keys"]:
+            for other in fk_targets_by_table[tname]:
+                if other["table_name"] not in created_tables:
                     continue
                 other_pk = other["candidate_keys"][0]
-                other_pk_set = set(other_pk)
-                if other_pk_set.issubset(tattrs_set) and (other_pk_set != pk_set or other["table_name"] < tname):
-                    pg_cols = ", ".join(f'"{c}"' for c in other_pk)
-                    ms_cols = ", ".join(f"[{c}]" for c in other_pk)
-                    fk_clauses_pg.append(f'FOREIGN KEY ({pg_cols}) REFERENCES "{other["table_name"]}" ({pg_cols})')
-                    fk_clauses_ms.append(f"FOREIGN KEY ({ms_cols}) REFERENCES [{other['table_name']}] ({ms_cols})")
+                pg_cols = ", ".join(f'"{c}"' for c in other_pk)
+                ms_cols = ", ".join(f"[{c}]" for c in other_pk)
+                fk_clauses_pg.append(f'FOREIGN KEY ({pg_cols}) REFERENCES "{other["table_name"]}" ({pg_cols})')
+                fk_clauses_ms.append(f"FOREIGN KEY ({ms_cols}) REFERENCES [{other['table_name']}] ({ms_cols})")
 
             pg_col_defs = [
-                f'"{col}" TEXT{" NOT NULL" if col in pk_set else ""}'
+                f'"{col}" TEXT{" NOT NULL" if col in not_null_cols else ""}'
                 for col in tattrs
             ]
             ms_col_defs = [
-                f'[{col}] NVARCHAR(128){" NOT NULL" if col in pk_set else ""}'
+                f'[{col}] NVARCHAR(128){" NOT NULL" if col in not_null_cols else ""}'
                 for col in tattrs
             ]
 
@@ -497,6 +529,7 @@ async def normalize_relational_schema(payload: RelationalNormalizeRequest) -> Di
             ms_all = ms_col_defs + [ms_pk] + ms_uniques + fk_clauses_ms
             pg_statements.append(f'CREATE TABLE "{tname}" (\n  ' + ",\n  ".join(pg_all) + "\n);")
             mssql_statements.append(f"CREATE TABLE [{tname}] (\n  " + ",\n  ".join(ms_all) + "\n);")
+            created_tables.add(tname)
 
         sql_ddl_postgres = "\n".join(pg_statements)
         sql_ddl_sqlserver = "\n".join(mssql_statements)

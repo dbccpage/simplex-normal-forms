@@ -135,12 +135,90 @@ def test_ai_lossledger():
         assert data["merkle_digest"] is not None
 
 
+def test_ddl_topological_order_and_sqlite_fk_execution():
+    import sqlite3
+
+    # Parent table (y -> u1, u2, u3) has 4 attributes while child table (x -> y) has 2 attributes.
+    # Parent table must still be created before child table in both PostgreSQL and SQL Server DDL.
+    req = {
+        "attributes": ["x", "y", "u1", "u2", "u3"],
+        "dependencies": ["x -> y", "y -> u1, u2, u3"],
+    }
+    r = client.post("/api/relational/normalize", json=req)
+    assert r.status_code == 200, r.text
+    data = r.json()
+    pg_ddl = data["sql_ddl_postgres"]
+    ms_ddl = data["sql_ddl_sqlserver"]
+
+    assert pg_ddl.index('CREATE TABLE "rel_3nf_table_2"') < pg_ddl.index('CREATE TABLE "rel_3nf_table_1"')
+    assert ms_ddl.index("CREATE TABLE [rel_3nf_table_2]") < ms_ddl.index("CREATE TABLE [rel_3nf_table_1]")
+
+    for ddl in (pg_ddl, ms_ddl):
+        conn = sqlite3.connect(":memory:")
+        conn.execute("PRAGMA foreign_keys = ON;")
+        conn.executescript(ddl)
+        conn.execute('INSERT INTO "rel_3nf_table_2" ("u1", "u2", "u3", "y") VALUES (\'a\', \'b\', \'c\', \'p1\');')
+        conn.execute('INSERT INTO "rel_3nf_table_1" ("x", "y") VALUES (\'c1\', \'p1\');')
+        try:
+            conn.execute('INSERT INTO "rel_3nf_table_1" ("x", "y") VALUES (\'c2\', \'missing_parent\');')
+            raise AssertionError("Expected FOREIGN KEY constraint failure for orphan child row")
+        except sqlite3.IntegrityError:
+            pass
+        conn.close()
+
+    # Secondary candidate key columns (such as ssn in healthcare) must also be marked NOT NULL
+    hc = PRESETS["healthcare"]
+    r_hc = client.post(
+        "/api/relational/normalize",
+        json={"attributes": hc["attributes"], "dependencies": hc["dependencies"]},
+    )
+    assert r_hc.status_code == 200
+    hc_data = r_hc.json()
+    assert '"ssn" TEXT NOT NULL' in hc_data["sql_ddl_postgres"]
+    assert "[ssn] NVARCHAR(128) NOT NULL" in hc_data["sql_ddl_sqlserver"]
+
+    for name, p in PRESETS.items():
+        r_p = client.post(
+            "/api/relational/normalize",
+            json={
+                "attributes": p["attributes"],
+                "dependencies": p["dependencies"],
+                "custom_components": p.get("custom_components"),
+            },
+        )
+        assert r_p.status_code == 200
+        p_data = r_p.json()
+        for ddl in (p_data["sql_ddl_postgres"], p_data["sql_ddl_sqlserver"]):
+            conn = sqlite3.connect(":memory:")
+            conn.execute("PRAGMA foreign_keys = ON;")
+            conn.executescript(ddl)
+            conn.close()
+
+
 def test_ddl_live_postgresql_validation():
     import shutil
+    import subprocess
     import pytest
 
     if shutil.which("psql") is None:
         pytest.skip("PostgreSQL instance / psql not available in local sandbox; DDL live execution not run")
+    probe = subprocess.run(
+        ["psql", "-c", "SELECT 1;"],
+        capture_output=True,
+        text=True,
+    )
+    if probe.returncode != 0:
+        pytest.skip("PostgreSQL server unreachable in local sandbox; DDL live execution not run")
+
+    for name, p in PRESETS.items():
+        r = client.post(
+            "/api/relational/normalize",
+            json={"attributes": p["attributes"], "dependencies": p["dependencies"]},
+        )
+        assert r.status_code == 200
+        sql = "BEGIN;\n" + r.json()["sql_ddl_postgres"] + "\nROLLBACK;\n"
+        res = subprocess.run(["psql", "-v", "ON_ERROR_STOP=1", "-c", sql], capture_output=True, text=True)
+        assert res.returncode == 0, f"PostgreSQL DDL execution failed for {name}: {res.stderr}"
 
 
 def test_ddl_live_sqlserver_validation():
@@ -158,6 +236,20 @@ def test_ddl_live_sqlserver_validation():
     if probe.returncode != 0:
         pytest.skip("SQL Server LocalDB instance unreachable in sandbox; DDL live execution not run")
 
+    for name, p in PRESETS.items():
+        r = client.post(
+            "/api/relational/normalize",
+            json={"attributes": p["attributes"], "dependencies": p["dependencies"]},
+        )
+        assert r.status_code == 200
+        sql = "BEGIN TRANSACTION;\n" + r.json()["sql_ddl_sqlserver"] + "\nROLLBACK TRANSACTION;\n"
+        res = subprocess.run(
+            ["sqlcmd", "-S", "(localdb)\\MSSQLLocalDB", "-b", "-Q", sql],
+            capture_output=True,
+            text=True,
+        )
+        assert res.returncode == 0, f"SQL Server DDL execution failed for {name}: {res.stderr or res.stdout}"
+
 
 if __name__ == "__main__":
     print("Running web smoke tests...")
@@ -167,6 +259,8 @@ if __name__ == "__main__":
     print("  [PASS] frontend serving passed")
     test_relational_presets()
     print("  [PASS] relational presets passed")
+    test_ddl_topological_order_and_sqlite_fk_execution()
+    print("  [PASS] ddl topological order and sqlite fk execution passed")
     test_bqnf_simulation()
     print("  [PASS] bqnf simulation passed")
     test_compiler_lowering()

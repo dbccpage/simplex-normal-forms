@@ -466,7 +466,7 @@ function renderCompilerResults(data) {
 
 
 // -----------------------------------------------------------------------------
-// Module 4: AI Context LossLedger Gateway
+// Module 4: Token Budget Audit (Experimental)
 // -----------------------------------------------------------------------------
 
 async function executeAiLossLedger() {
@@ -493,7 +493,7 @@ async function executeAiLossLedger() {
     });
     if (!res.ok) {
       const err = await res.json();
-      throw new Error(err.detail || 'AI LossLedger evaluation failed');
+      throw new Error(err.detail || 'Token budget audit evaluation failed');
     }
     const data = await res.json();
     renderAiResults(data);
