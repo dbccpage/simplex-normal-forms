@@ -62,8 +62,8 @@
           Synthesize lossless 3NF tables, inspect every chase step and spurious row on lossy splits, and compare PostgreSQL / SQL Server DDL.
         </p>
       </div>
-      <div class="flex flex-wrap items-center gap-1.5">
-        <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded px-2.5 py-1.5 font-mono">
+      <div class="flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+        <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="min-w-0 max-w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded px-2.5 py-1.5 font-mono">
           <option value="ecommerce">Preset: E-Commerce (3NF Synthesis)</option>
           <option value="lossy_decomposition">Preset: Lossy Split (Spurious Row)</option>
           <option value="supply_chain">Preset: Supply Chain (BCNF Split)</option>

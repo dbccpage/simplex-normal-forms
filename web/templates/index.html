@@ -105,9 +105,9 @@
               Derive candidate keys from functional dependencies, compute a minimal cover, synthesize dependency-preserving lossless-join 3NF tables, decompose into BCNF, and test join dependencies with a tableau chase that shows a spurious-row counterexample when a split is lossy.
             </p>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 min-w-0 max-w-full">
             <label for="relational-preset-select" class="text-xs text-slate-400 font-medium">Load Preset:</label>
-            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+            <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="min-w-0 flex-1 bg-slate-800 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:ring-2 focus:ring-cyan-500 focus:outline-none">
               <option value="ecommerce">E-Commerce Orders (3NF Violation)</option>
               <option value="supply_chain">Supply Chain Logistics Fleet</option>
               <option value="healthcare">Healthcare Attending Staff Wards</option>
