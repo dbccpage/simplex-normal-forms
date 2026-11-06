@@ -270,6 +270,51 @@ def test_ddl_live_postgresql_validation():
         text=True,
     )
     assert res_orphan.returncode != 0, "Expected PostgreSQL FOREIGN KEY violation on orphan row"
+    assert "foreign key" in (res_orphan.stderr + res_orphan.stdout).lower(), (
+        f"Expected foreign key constraint diagnostic from PostgreSQL, got: {res_orphan.stderr or res_orphan.stdout}"
+    )
+
+    hc = PRESETS["healthcare"]
+    r_hc = client.post(
+        "/api/relational/normalize",
+        json={"attributes": hc["attributes"], "dependencies": hc["dependencies"]},
+    )
+    assert r_hc.status_code == 200
+    pg_hc_ddl = r_hc.json()["sql_ddl_postgres"]
+    dup_ssn_sql = (
+        "BEGIN;\n"
+        + pg_hc_ddl
+        + '\nINSERT INTO "rel_3nf_table_1" ("ward_id", "ward_building", "head_nurse") VALUES (\'W1\', \'North\', \'Smith\');'
+        + '\nINSERT INTO "rel_3nf_table_2" ("patient_id", "patient_name", "ssn", "ward_id") VALUES (\'P1\', \'Ada\', \'123-45-6789\', \'W1\');'
+        + '\nINSERT INTO "rel_3nf_table_2" ("patient_id", "patient_name", "ssn", "ward_id") VALUES (\'P2\', \'Grace\', \'123-45-6789\', \'W1\');'
+        + "\nROLLBACK;\n"
+    )
+    res_dup_pg = subprocess.run(
+        ["psql", "-v", "ON_ERROR_STOP=1"],
+        input=dup_ssn_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_dup_pg.returncode != 0 and "unique" in (res_dup_pg.stderr + res_dup_pg.stdout).lower(), (
+        f"Expected PostgreSQL UNIQUE constraint violation on duplicate ssn, got: {res_dup_pg.stderr or res_dup_pg.stdout}"
+    )
+
+    null_ssn_sql = (
+        "BEGIN;\n"
+        + pg_hc_ddl
+        + '\nINSERT INTO "rel_3nf_table_1" ("ward_id", "ward_building", "head_nurse") VALUES (\'W1\', \'North\', \'Smith\');'
+        + '\nINSERT INTO "rel_3nf_table_2" ("patient_id", "patient_name", "ssn", "ward_id") VALUES (\'P3\', \'Alan\', NULL, \'W1\');'
+        + "\nROLLBACK;\n"
+    )
+    res_null_pg = subprocess.run(
+        ["psql", "-v", "ON_ERROR_STOP=1"],
+        input=null_ssn_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_null_pg.returncode != 0 and "null" in (res_null_pg.stderr + res_null_pg.stdout).lower(), (
+        f"Expected PostgreSQL NOT NULL constraint violation on null ssn, got: {res_null_pg.stderr or res_null_pg.stdout}"
+    )
 
 
 def test_ddl_live_sqlserver_validation():
@@ -357,6 +402,51 @@ def test_ddl_live_sqlserver_validation():
         text=True,
     )
     assert res_orphan.returncode != 0, "Expected SQL Server FOREIGN KEY violation on orphan row"
+    assert "foreign key" in (res_orphan.stderr + res_orphan.stdout).lower(), (
+        f"Expected foreign key constraint diagnostic from SQL Server, got: {res_orphan.stderr or res_orphan.stdout}"
+    )
+
+    hc = PRESETS["healthcare"]
+    r_hc = client.post(
+        "/api/relational/normalize",
+        json={"attributes": hc["attributes"], "dependencies": hc["dependencies"]},
+    )
+    assert r_hc.status_code == 200
+    ms_hc_ddl = r_hc.json()["sql_ddl_sqlserver"]
+    dup_ssn_ms_sql = (
+        "BEGIN TRANSACTION;\n"
+        + ms_hc_ddl
+        + "\nINSERT INTO [rel_3nf_table_1] ([ward_id], [ward_building], [head_nurse]) VALUES ('W1', 'North', 'Smith');"
+        + "\nINSERT INTO [rel_3nf_table_2] ([patient_id], [patient_name], [ssn], [ward_id]) VALUES ('P1', 'Ada', '123-45-6789', 'W1');"
+        + "\nINSERT INTO [rel_3nf_table_2] ([patient_id], [patient_name], [ssn], [ward_id]) VALUES ('P2', 'Grace', '123-45-6789', 'W1');"
+        + "\nROLLBACK TRANSACTION;\nGO\n"
+    )
+    res_dup_ms = subprocess.run(
+        base_cmd + ["-b"],
+        input=dup_ssn_ms_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_dup_ms.returncode != 0 and "unique" in (res_dup_ms.stderr + res_dup_ms.stdout).lower(), (
+        f"Expected SQL Server UNIQUE constraint violation on duplicate ssn, got: {res_dup_ms.stderr or res_dup_ms.stdout}"
+    )
+
+    null_ssn_ms_sql = (
+        "BEGIN TRANSACTION;\n"
+        + ms_hc_ddl
+        + "\nINSERT INTO [rel_3nf_table_1] ([ward_id], [ward_building], [head_nurse]) VALUES ('W1', 'North', 'Smith');"
+        + "\nINSERT INTO [rel_3nf_table_2] ([patient_id], [patient_name], [ssn], [ward_id]) VALUES ('P3', 'Alan', NULL, 'W1');"
+        + "\nROLLBACK TRANSACTION;\nGO\n"
+    )
+    res_null_ms = subprocess.run(
+        base_cmd + ["-b"],
+        input=null_ssn_ms_sql,
+        capture_output=True,
+        text=True,
+    )
+    assert res_null_ms.returncode != 0 and "null" in (res_null_ms.stderr + res_null_ms.stdout).lower(), (
+        f"Expected SQL Server NOT NULL constraint violation on null ssn, got: {res_null_ms.stderr or res_null_ms.stdout}"
+    )
 
 
 def test_live_mongodb_validation():

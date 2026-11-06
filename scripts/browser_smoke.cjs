@@ -250,6 +250,14 @@ async function copy(id) {
         return layout(`${width}px-${view}-layout`);
       });
     }
+    await page.goto(base + '/', { waitUntil: 'networkidle', timeout: 120000 });
+    await page.waitForFunction(() => document.querySelector('#relational-chase-status').innerText.includes('Lossless'));
+    for (const width of [1280, 768, 390, 320]) {
+      await step(`${width}px layout: front`, async () => {
+        await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
+        return layout(`${width}px-front-layout`);
+      });
+    }
     await step('Browser console, runtime and network errors', async () => {
       assert.deepEqual(report.page_errors, []);
       assert.deepEqual(report.failed_requests, []);
