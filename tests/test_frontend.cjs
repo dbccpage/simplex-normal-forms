@@ -40,6 +40,10 @@ vm.runInContext(fs.readFileSync(path.join(__dirname, '../web/static/app.js'), 'u
     assert.deepEqual(submitted.custom_components, [['A', 'B'], ['B', 'C']]);
     assert.match(getElement('relational-chase-status').innerHTML, /Lossy Join/);
     assert.match(getElement('chase-witness-box').innerHTML, /a_C/);
+    assert.match(
+      getElement('chase-witness-box').innerHTML,
+      /this row is in the join of the pieces but not in the original/
+    );
     assert.match(getElement('chase-steps-tbody').innerHTML, /no distinguished row/);
     assert.equal(getElement('btn-run-relational').disabled, false);
   }

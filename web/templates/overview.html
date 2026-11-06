@@ -3,300 +3,216 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="BQNF on one screen: change a row of a sales table and see which parts of a stored answer can be fixed from the change alone.">
-  <title>Simplex Normal Forms | smplxnf.anomalon.com</title>
+  <title>Simplex Normal Forms Studio | smplxnf.anomalon.com</title>
   <link rel="icon" type="image/svg+xml" href="/static/anomalon-favicon.svg">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
   <link rel="stylesheet" href="/static/anomalon.css">
-  <style>
-/* Layout: one pane. Left = the change. Right = the table, the stored answer, and what each system does. Light only, by choice. */
-:root {
-  --bg: #fbfbf9; --surface: #ffffff; --ink: #15202c; --ink-2: #4b5664; --ink-3: #66717d;
-  --line: #e2e4e1; --line-strong: #c9cdc8;
-  --accent: #12706c; --accent-soft: #e2f0ee;
-  --ok: #1f7a4a; --ok-soft: #e1f1e7; --warn: #8a5a00; --warn-soft: #f7ecd2; --bad: #b3261e; --bad-soft: #f8e1de;
-  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
-  color-scheme: light;
-}
-* { box-sizing: border-box; }
-body.an { background: var(--bg); color: var(--ink); font: 15px/1.45 var(--sans); }
-.wrap { max-width: var(--an-w-tool); margin: 0 auto; padding-block: 14px 12px;
-  padding-left: max(var(--an-s5), env(safe-area-inset-left, 0px)); padding-right: max(var(--an-s5), env(safe-area-inset-right, 0px));
-  display: flex; flex-direction: column; gap: 12px; }
-.an .wrap h1 { margin: 0; font-size: 1.6rem; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
-.lede { margin: 2px 0 0; color: var(--ink-2); }
-.query { font: 13px/1.4 var(--mono); color: var(--ink-2); background: var(--surface); border: 1px solid var(--line);
-  border-radius: 6px; padding: 8px 12px; overflow-wrap: anywhere; }
-.query b { color: var(--ink-3); font-weight: 500; font-family: var(--sans); margin-right: 10px; }
-.pane { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 16px; align-items: start; }
-.col { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
-.label { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
-button.change { all: unset; cursor: pointer; display: grid; grid-template-columns: 26px 1fr; gap: 2px 10px; align-items: start;
-  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 6px; padding: 10px 12px; }
-button.change:hover { border-color: var(--accent); }
-button.change:focus-visible { outline: 3px solid rgba(18,112,108,.35); outline-offset: 1px; }
-button.change .n { grid-row: span 2; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center;
-  background: var(--accent-soft); color: var(--accent); font-weight: 600; font-size: 13px; }
-button.change .t { font-weight: 500; }
-button.change code { font: 12px/1.35 var(--mono); color: var(--ink-3); }
-button.change[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
-button.change[aria-pressed="true"] .n { background: var(--accent); color: #fff; }
-button.change.done { opacity: .55; cursor: default; }
-button.change.done:hover { border-color: var(--line-strong); }
-.reset { all: unset; cursor: pointer; color: var(--accent); font-size: 14px; padding: 2px 0; align-self: flex-start; }
-.reset:focus-visible { outline: 3px solid rgba(18,112,108,.35); }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-th, td { padding: 5px 14px; text-align: left; border-bottom: 1px solid var(--line); }
-tr:last-child td { border-bottom: 0; }
-th { font-size: 12px; font-weight: 600; color: var(--ink-3); letter-spacing: .04em; text-transform: uppercase; }
-td.num, th.num { text-align: right; font-family: var(--mono); }
-td.chk { width: 36px; text-align: center; color: var(--ok); font-weight: 600; }
-td .delta { display: inline-block; margin-right: 8px; font-size: 12px; padding: 1px 6px; border-radius: 4px; background: var(--ok-soft); color: var(--ok); }
-td .delta.neg { background: var(--warn-soft); color: var(--warn); }
-td.hit { background: var(--accent-soft); transition: background .6s; }
-td.withheld { background: var(--bad-soft); color: var(--bad); }
-th.id, td.id { width: 56px; font-family: var(--mono); color: var(--ink-2); }
-.src { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
-.src .card { min-width: 0; }
-.src .tname { font: 500 12px var(--mono); color: var(--ink-3); padding: 7px 12px 0; }
-.src th, .src td { padding: 6px 10px; font: 12px/1.35 var(--mono); white-space: nowrap; }
-.src td.wrap { white-space: normal; }
-.src th { font: 600 11px var(--mono); text-transform: none; letter-spacing: 0; }
-.src td.chg { background: var(--accent-soft); color: var(--ink); }
-.src td.lost { background: var(--bad-soft); color: var(--bad); }
-.src s { color: var(--ink-3); }
-.src .arrow { color: var(--ink-3); margin: 0 4px; }
-.src .tag { display: block; font: 11px var(--sans); color: var(--bad); }
-.moves { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.moves div { padding: 7px 14px; display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
-.moves div + div { border-left: 1px solid var(--line); }
-.moves b { font-size: 13px; letter-spacing: .04em; }
-.moves span { font-size: 13px; color: var(--ink-2); }
-.moves .k b { color: var(--ink-2); } .moves .f b { color: var(--ok); } .moves .r b { color: var(--accent); }
-.cmp td { vertical-align: top; padding: 7px 14px; }
-.cmp td.who { width: 220px; font-weight: 500; }
-.cmp td.what { color: var(--ink-2); }
-.cmp td.q { width: 70px; text-align: right; font: 600 1.15rem/1.2 var(--mono); }
-.cmp tr.us td.who { color: var(--accent); }
-.cmp tr.us td.q { color: var(--accent); }
-.cmp .word { font-weight: 600; letter-spacing: .03em; margin-right: 8px; }
-.cmp .word.kept { color: var(--ink-2); } .cmp .word.fixed { color: var(--ok); }
-.cmp .word.refused { color: var(--bad); } .cmp .word.rebuilt { color: var(--accent); }
-.cmp th.q { text-align: right; }
-.foot { font-size: 12px; color: var(--ink-3); }
-@media (max-width: 820px) { .pane, .src, .moves { grid-template-columns: 1fr; } .moves div + div { border-left: 0; border-top: 1px solid var(--line); } .src .card { overflow-x: auto; } .cmp td.who { width: auto; } }
-@media (prefers-reduced-motion: reduce) { td.hit { transition: none; } }
-.src td.gone { color: var(--ink-3); text-decoration: line-through; background: var(--warn-soft); }
-.src td.new { background: var(--accent-soft); }
-.nfs { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); }
-.nfs div { padding: 8px 14px; display: flex; flex-direction: column; gap: 1px; }
-.nfs div + div { border-left: 1px solid var(--line); }
-.nfs b { font-size: 13px; letter-spacing: .02em; }
-.nfs span { font-size: 13px; color: var(--ink-2); }
-.nfs .bq b { color: var(--accent); }
-td.agg { font-size: 12px; color: var(--ink-3); }
-@media (max-width: 820px) { .nfs { grid-template-columns: 1fr; } .nfs div + div { border-left: 0; border-top: 1px solid var(--line); } }
-</style>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script>
+    const teal = {50:'#e2f0ee',100:'#e2f0ee',200:'#0d5b58',300:'#0d5b58',400:'#12706c',500:'#12706c',600:'#0d5b58',700:'#3f9792',800:'#9fcbc6',900:'#cfe6e3',950:'#e2f0ee'};
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            white: '#15202c',
+            black: '#ffffff',
+            slate: {50:'#15202c',100:'#15202c',200:'#15202c',300:'#3a4450',400:'#4b5664',500:'#6f7884',600:'#9aa1aa',700:'#c9cdc8',800:'#e2e4e1',850:'#ffffff',900:'#ffffff',950:'#fbfbf9'},
+            cyan: teal, sky: teal, blue: teal, indigo: teal, brand: teal,
+            emerald: {300:'#1a6a40',400:'#1f7a4a',500:'#1f7a4a',800:'#a9d4b9',900:'#cfe8d8',950:'#e1f1e7'},
+            rose:    {300:'#9c2019',400:'#b3261e',500:'#b3261e',800:'#e7b3ad',900:'#f0cbc6',950:'#f8e1de'},
+            amber:   {300:'#7a4f00',400:'#8a5a00',500:'#8a5a00',800:'#e3c98f',900:'#efdcae',950:'#f7ecd2'}
+          },
+          fontFamily: {
+            sans: ['"IBM Plex Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'ui-monospace', 'Consolas', 'monospace']
+          },
+          borderRadius: { md: '6px', lg: '6px', xl: '6px', '2xl': '6px' },
+          boxShadow: { sm: 'none', DEFAULT: 'none', md: 'none', lg: 'none', xl: 'none', '2xl': 'none' }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/static/style.css">
 </head>
-<body class="an">
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
   <header class="an-header">
-    <div class="an-header__in">
-      <a class="an-brand" href="https://anomalon.com/"><svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 15.5 11 6l5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="11" cy="12.6" r="1.7" fill="var(--an-accent)"/></svg>Anomalon <span class="an-brand__tool">/ Simplex Normal Forms</span></a>
-      <nav class="an-nav an-nav--inline" aria-label="Site">
-        <a href="/studio/">Full studio</a>
+    <div class="an-header__in" style="padding-top: 7px; padding-bottom: 7px;">
+      <a class="an-brand" href="https://www.anomalon.com/">
+        <svg viewBox="0 0 22 22" aria-hidden="true"><rect x="1" y="1" width="20" height="20" rx="4" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M6 15.5 11 6l5 9.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><circle cx="11" cy="12.6" r="1.7" fill="var(--an-accent)"/></svg>
+        Anomalon <span class="an-brand__tool">/ Simplex-NF Studio</span>
+      </a>
+      <button class="an-btn an-btn--ghost an-nav__toggle" aria-expanded="false" aria-controls="an-nav">Menu</button>
+      <nav class="an-nav" id="an-nav" aria-label="Site">
+        <a href="/studio/">Full Studio</a>
         <a href="https://github.com/dbccpage/simplex-normal-forms">Source</a>
-        <a href="https://anomalon.com/">All tools</a>
+        <a href="https://www.anomalon.com/">All tools</a>
       </nav>
     </div>
   </header>
-  <div class="wrap">
-  <header>
-    <h1>The normal forms you know keep stored rows clean. BQNF keeps stored answers correct.</h1>
-    <p class="lede">Change one row of <code>sales</code>. Watch which parts of the stored answer can be fixed from the change alone, and which need extra state.</p>
-  </header>
 
-  <div class="card nfs">
-    <div><b>1NF to BCNF</b><span>No update, insert or delete anomalies in the rows you store.</span></div>
-    <div class="bq"><b>BQNF, Boundary-Quotient Normal Form</b><span>Every change to the rows can be applied to the stored answer as a difference, with no rescan. Where an aggregate can't, it names the extra state that makes it possible.</span></div>
-  </div>
-
-  <div class="card moves">
-    <div class="k"><b>KEEP</b><span>The change can't move this number.</span></div>
-    <div class="f"><b>FIX IN PLACE</b><span>Apply the difference, or read the extra state.</span></div>
-    <div class="r"><b>REREAD</b><span>No difference and no extra state: rescan the group.</span></div>
-  </div>
-
-  <div class="query"><b>Stored answer</b>SELECT region, SUM(amount), MAX(amount) FROM sales WHERE status = 'paid' GROUP BY region</div>
-
-  <div class="pane">
-    <section class="col" aria-label="Make a change">
-      <div class="label">Make a change</div>
-      <button class="change" id="c1" data-step="1" aria-pressed="false"><span class="n">1</span><span class="t">Add a $45 sale in North</span><code>INSERT INTO sales VALUES (6, 'North', 45, 'paid')</code></button>
-      <button class="change" id="c2" data-step="2" aria-pressed="false"><span class="n">2</span><span class="t">Raise that sale to $75</span><code>UPDATE sales SET amount = 75 WHERE id = 6</code></button>
-      <button class="change" id="c3" data-step="3" aria-pressed="false"><span class="n">3</span><span class="t">Delete North's biggest sale</span><code>DELETE FROM sales WHERE id = 4</code></button>
-      <button class="change" id="c4" data-step="4" aria-pressed="false"><span class="n">4</span><span class="t">Delete another sale, with the extra state switched off</span><code>DELETE FROM sales WHERE id = 3</code></button>
-      <button class="reset" id="reset">Start over</button>
-    </section>
-
-    <section class="col" aria-label="Result">
-      <div class="label">The table</div>
-      <div class="src">
-        <div class="card"><div class="tname">sales</div><table>
-          <thead><tr><th class="id">id</th><th>region</th><th class="num">amount</th><th>status</th></tr></thead>
-          <tbody id="sales"></tbody></table></div>
-        <div class="card"><div class="tname">extra state BQNF asks for: North's amounts, sorted</div><table>
-          <tbody id="heap"></tbody></table></div>
+  <main class="flex-1 max-w-7xl w-full mx-auto px-3 sm:px-5 py-2.5 space-y-2.5">
+    <!-- Top bar: one-line summary + preset buttons -->
+    <div class="bg-slate-900 border border-slate-800 rounded-lg px-3.5 py-2 flex flex-col md:flex-row md:items-center justify-between gap-2">
+      <div>
+        <h1 class="text-sm font-semibold text-white">
+          Relational 3NF / BCNF Normalization, Tableau Chase &amp; Incremental <code class="font-mono text-cyan-400">MAX</code> Maintenance
+        </h1>
+        <p class="text-xs text-slate-400">
+          Synthesize lossless 3NF tables, inspect every chase step and spurious row on lossy splits, and compare PostgreSQL / SQL Server DDL.
+        </p>
       </div>
-      <div class="label">The stored answer</div>
-      <div class="card">
-        <table>
-          <thead><tr><th>Region</th><th class="num">SUM stored</th><th class="num">MAX stored</th><th class="num">Database says</th><th></th></tr></thead>
-          <tbody id="rows"></tbody>
-        </table>
+      <div class="flex flex-wrap items-center gap-1.5 min-w-0 max-w-full">
+        <select id="relational-preset-select" onchange="loadRelationalPreset(this.value)" class="min-w-0 max-w-full bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded px-2.5 py-1.5 font-mono">
+          <option value="ecommerce">Preset: E-Commerce (3NF Synthesis)</option>
+          <option value="lossy_decomposition">Preset: Lossy Split (Spurious Row)</option>
+          <option value="supply_chain">Preset: Supply Chain (BCNF Split)</option>
+          <option value="healthcare">Preset: Healthcare (Two Keys)</option>
+        </select>
+        <button type="button" onclick="document.getElementById('relational-preset-select').value='lossy_decomposition'; loadRelationalPreset('lossy_decomposition')" class="px-2.5 py-1.5 text-xs font-medium rounded border border-rose-800 bg-rose-950 text-rose-400">
+          Show Lossy Split
+        </button>
+        <a href="/studio/" class="px-2.5 py-1.5 text-xs font-medium rounded border border-slate-700 bg-slate-950 text-cyan-400">
+          Open /studio/
+        </a>
       </div>
-      <div class="label">What each one does with this change</div>
-      <div class="card">
-        <table class="cmp">
-          <thead><tr><th>System</th><th>What it does</th><th class="q">Rows read</th></tr></thead>
-          <tbody>
-            <tr><td class="who">SQL Server indexed view</td><td class="what" id="w-ss">Can't hold this answer: an indexed view may not contain MAX.</td><td class="q" id="q-ss">n/a</td></tr>
-            <tr><td class="who">Postgres materialized view</td><td class="what" id="w-mv">Keeps the old answer until REFRESH reruns the whole query.</td><td class="q" id="q-mv">0</td></tr>
-            <tr class="us"><td class="who">BQNF</td><td class="what" id="w-us" aria-live="polite">Pick a change on the left. Every answer is checked against the table.</td><td class="q" id="q-us">0</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-  </div>
+    </div>
 
-  <p class="foot">The rows and moves match the simplex-normal-forms BQNF simulator (financial ledger preset). The materialized view is counted as refreshed after each change. Rows read are for this demo only, not a benchmark. <a href="https://smplcache.anomalon.com/">SmplCache</a> is the cache engine built on BQNF.</p>
-</div>
-  <footer class="an-footer">
-    <div class="an-footer__in">
-      <span>Anomalon · Simplex Normal Forms</span>
-      <a href="/studio/">Full studio</a>
+    <!-- Single-pane 12-column grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5">
+      <!-- Left column (4 cols): Schema Input + MAX Indexed View Case -->
+      <div class="lg:col-span-4 space-y-2.5">
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-3 space-y-2">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">1. Schema &amp; Functional Dependencies</h2>
+            <span id="relational-mincover-badge" class="text-[11px] font-mono text-cyan-400"></span>
+          </div>
+          <div>
+            <label for="relational-attributes-input" class="block text-[11px] font-medium text-slate-300 mb-0.5">Columns (comma-separated)</label>
+            <input type="text" id="relational-attributes-input" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-cyan-300" placeholder="order_id, customer_id, zip_code, city">
+          </div>
+          <div>
+            <label for="relational-dependencies-input" class="block text-[11px] font-medium text-slate-300 mb-0.5">Functional Dependencies (<code class="font-mono">X -&gt; Y</code> per line)</label>
+            <textarea id="relational-dependencies-input" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-slate-200"></textarea>
+          </div>
+          <div>
+            <label for="relational-components-input" class="block text-[11px] font-medium text-slate-300 mb-0.5">Custom Table Split to Chase (blank = 3NF synthesis)</label>
+            <input type="text" id="relational-components-input" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-xs font-mono text-slate-300" placeholder="(A, B), (B, C)">
+          </div>
+          <button onclick="executeRelationalNormalize()" id="btn-run-relational" class="w-full py-1.5 px-3 bg-cyan-500 hover:bg-cyan-600 text-black font-semibold text-xs rounded transition">
+            Normalize
+          </button>
+        </div>
+
+        <!-- MAX aggregate sorted-list-per-group panel -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2.5 space-y-1">
+          <div class="flex items-center justify-between">
+            <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">2. Why Indexed Views Cannot Hold <code class="font-mono">MAX</code></h2>
+            <span class="text-[10px] font-mono text-emerald-400">Sorted List per Group</span>
+          </div>
+          <p class="text-[11px] text-slate-300 leading-snug">
+            A SQL Server indexed view (<code class="font-mono">WITH SCHEMABINDING</code>) forbids <code class="font-mono">MAX()</code> and <code class="font-mono">MIN()</code> because deleting a group's current maximum cannot be repaired from the single stored scalar without rescanning the group.
+          </p>
+          <div class="p-1.5 bg-slate-950 border border-slate-800 rounded text-[11px] font-mono space-y-0.5">
+            <div><span class="text-slate-500">Query:</span> SELECT region, SUM(amount), MAX(amount) FROM sales WHERE status = 'paid' GROUP BY region</div>
+            <div><span class="text-slate-500">Sorted list (North):</span> [25, 60, 75, 120, 250] &rarr; <span class="text-rose-400">DELETE 250</span> &rarr; next <span class="text-emerald-400 font-semibold">MAX = 120</span> (0 table scans)</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column (8 cols): Keys, Scorecard, 3NF Tables, Chase Steps & Spurious Row, PostgreSQL & SQL Server DDL -->
+      <div class="lg:col-span-8 space-y-2">
+        <div class="grid grid-cols-3 gap-1.5">
+          <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Candidate Keys</div>
+            <div id="relational-cand-keys" class="text-[11px] font-mono text-cyan-400 font-bold mt-0.5">—</div>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Key Columns</div>
+            <div id="relational-prime-attrs" class="text-[11px] font-mono text-emerald-400 font-bold mt-0.5">—</div>
+          </div>
+          <div class="bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5">
+            <div class="text-[10px] uppercase tracking-wider text-slate-400 font-medium">Chase Status</div>
+            <div id="relational-chase-status" class="text-[11px] font-mono text-amber-400 font-bold mt-0.5">—</div>
+          </div>
+        </div>
+
+        <!-- Normal Forms + 3NF Tables side by side -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-2">
+          <div class="md:col-span-5 bg-slate-900 border border-slate-800 rounded-lg p-2">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Normal Form Checks</h3>
+            <div id="relational-nf-scorecard" class="grid grid-cols-5 gap-1"></div>
+          </div>
+          <div class="md:col-span-7 bg-slate-900 border border-slate-800 rounded-lg p-2">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Synthesized 3NF Tables (Primary Keys)</h3>
+            <div id="relational-3nf-tables" class="space-y-1 max-h-24 overflow-y-auto"></div>
+          </div>
+        </div>
+
+        <!-- Chase Steps & Spurious Witness -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 space-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Tableau Chase Steps (FD Applied &amp; Cells Changed)</h3>
+            <span id="chase-result-pill" class="text-[11px] px-2 py-0.5 rounded font-mono hidden"></span>
+          </div>
+          <div id="chase-witness-box" class="hidden p-2 rounded border text-xs font-mono"></div>
+          <div id="chase-steps-container" class="overflow-x-auto max-h-28 border border-slate-800 rounded text-xs font-mono">
+            <table class="w-full text-left border-collapse">
+              <thead class="bg-slate-950 text-slate-400 text-[10px] border-b border-slate-800 sticky top-0">
+                <tr>
+                  <th class="p-1.5">Step</th>
+                  <th class="p-1.5">FD Applied</th>
+                  <th class="p-1.5">Rows Equated</th>
+                  <th class="p-1.5">Column</th>
+                  <th class="p-1.5">Cells Changed</th>
+                </tr>
+              </thead>
+              <tbody id="chase-steps-tbody" class="divide-y divide-slate-850 text-slate-300">
+                <tr><td colspan="5" class="p-2 text-center text-slate-500">Loading preset...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Two-Target DDL: PostgreSQL & SQL Server -->
+        <div class="bg-slate-900 border border-slate-800 rounded-lg p-2 space-y-1">
+          <div class="flex items-center justify-between">
+            <h3 class="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Generated DDL: PostgreSQL &amp; SQL Server (PK, UNIQUE, FK)</h3>
+            <button onclick="copyToClipboard('relational-sql-ddl')" class="text-[11px] text-cyan-400 hover:text-cyan-300 font-mono">Copy SQL</button>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div class="min-w-0">
+              <div class="text-[10px] font-mono text-slate-400 mb-0.5">PostgreSQL</div>
+              <pre id="relational-sql-ddl-postgres" class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-emerald-400 overflow-x-auto max-h-24">-- PostgreSQL DDL</pre>
+            </div>
+            <div class="min-w-0">
+              <div class="text-[10px] font-mono text-slate-400 mb-0.5">SQL Server</div>
+              <pre id="relational-sql-ddl-sqlserver" class="bg-slate-950 p-1.5 rounded border border-slate-800 font-mono text-[10px] text-emerald-400 overflow-x-auto max-h-24">-- SQL Server DDL</pre>
+            </div>
+          </div>
+          <pre id="relational-sql-ddl" class="hidden"></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="an-footer" style="margin-top: auto;">
+    <div class="an-footer__in" style="padding-top: 8px; padding-bottom: 8px;">
+      <span>Anomalon · Simplex-NF Studio</span>
+      <span>Experimental tools (Streaming Delta Repair, Trigger Compiler, Token Budget Audit) live at <a href="/studio/">/studio/</a></span>
       <a href="https://github.com/dbccpage/simplex-normal-forms">Source</a>
-      <a href="https://anomalon.com/about/">About</a>
-      <a href="https://anomalon.com/contact/">Contact</a>
     </div>
   </footer>
-  <script>
-(() => {
-  const START = [
-    { id: 1, region: "North", amount: 25 }, { id: 2, region: "North", amount: 60 },
-    { id: 3, region: "North", amount: 120 }, { id: 4, region: "North", amount: 250 },
-    { id: 5, region: "South", amount: 80 },
-  ];
-  let rows, stored, s, timer;
-  const usd = n => "$" + n.toLocaleString("en-US");
-  const live = () => rows.filter(r => !r.gone);
-  const truth = () => {
-    const t = {};
-    for (const r of live()) {
-      t[r.region] ??= { sum: 0, max: -Infinity };
-      t[r.region].sum += r.amount; t[r.region].max = Math.max(t[r.region].max, r.amount);
-    }
-    return t;
-  };
 
-  function reset() {
-    clearTimeout(timer);
-    rows = START.map(r => ({ ...r }));
-    s = { done: {}, mv: 0, us: 0, last: null, mark: {} };
-    stored = truth();
-    render();
-    us("", "", "Pick a change on the left. Every answer is checked against the table.");
-    other("Can't hold this answer: an indexed view may not contain MAX.", "Keeps the old answer until REFRESH reruns the whole query.");
-    document.querySelectorAll("button.change").forEach(b => { b.classList.remove("done"); b.setAttribute("aria-pressed", "false"); });
-  }
+  <template id="studio-tabs-catalog">
+    <span>Relational Synthesis & Chase</span>
+    <span>Streaming BQNF Delta Repair</span>
+    <span>NF-IR Compiler Explorer</span>
+    <span>AI Context LossLedger Gateway</span>
+    <span>Quickstart & Import Guide</span>
+  </template>
 
-  function render(withheld) {
-    const db = truth();
-    document.getElementById("sales").innerHTML = rows.map(r => {
-      const m = s.mark[r.id] || "";
-      const amt = m.startsWith("chg:") ? `<s>${m.slice(4)}</s><span class="arrow">→</span>${r.amount}` : r.amount;
-      const cls = r.gone ? "gone" : m === "new" ? "new" : m.startsWith("chg:") ? "chg" : "";
-      return `<tr><td class="id ${cls}">${r.id}</td><td class="${cls}">${r.region}</td><td class="num ${cls}">${amt}</td><td class="${cls}">paid</td></tr>`;
-    }).join("");
-    const north = live().filter(r => r.region === "North").map(r => r.amount).sort((a, b) => b - a);
-    document.getElementById("heap").innerHTML = s.off
-      ? `<tr><td class="lost">switched off for change 4</td></tr>`
-      : `<tr><td>${north.map((a, i) => i === 0 ? `<b>${a}</b>` : a).join(" · ")}</td></tr><tr><td class="agg">The top of this list is MAX. Deleting it leaves the next one on top.</td></tr>`;
-    document.getElementById("rows").innerHTML = ["North", "South"].map(g => {
-      const st = stored[g], d = db[g];
-      const hs = s.hit?.[g]?.sum ? "num hit" : "num", hm = withheld === g ? "num withheld" : s.hit?.[g]?.max ? "num hit" : "num";
-      const ok = withheld === g ? "" : (st.sum === d.sum && st.max === d.max ? "✓" : "✗");
-      return `<tr><td>${g}</td><td class="${hs}">${usd(st.sum)}</td><td class="${hm}">${withheld === g ? "withheld" : usd(st.max)}</td><td class="num">${usd(d.sum)} · ${usd(d.max)}</td><td class="chk">${ok}</td></tr>`;
-    }).join("");
-    document.getElementById("q-mv").textContent = s.mv;
-    document.getElementById("q-us").textContent = s.us;
-  }
-  function us(kind, word, text) { document.getElementById("w-us").innerHTML = (word ? `<span class="word ${kind}">${word}</span>` : "") + text; }
-  function other(ss, mv) { document.getElementById("w-ss").textContent = ss; document.getElementById("w-mv").textContent = mv; }
-
-  function apply(step) {
-    if (s.done[step]) return;
-    clearTimeout(timer);
-    document.querySelectorAll("button.change").forEach(b => b.setAttribute("aria-pressed", "false"));
-    const btn = document.getElementById("c" + step);
-    btn.setAttribute("aria-pressed", "true");
-    s.done[step] = true; s.mark = {}; s.hit = {}; s.off = false;
-    const before = truth().North;
-    const ss = "Can't hold this answer: an indexed view may not contain MAX. You'd drop MAX or rerun the query.";
-
-    if (step === 2 && !s.done[1]) {
-      s.done[2] = false; btn.setAttribute("aria-pressed", "false");
-      us("kept", "WAIT", "Add the $45 sale first (change 1). Row 6 doesn't exist yet."); return;
-    }
-    if (step === 1) {
-      rows.push({ id: 6, region: "North", amount: 45 }); s.mark[6] = "new";
-      stored.North.sum += 45; s.hit.North = { sum: true };
-      us("fixed", "FIX + KEEP", "SUM: add 45. MAX: 45 is below 250, so MAX can't move. No rows read.");
-      other(ss, "Shows North $45 short until REFRESH rereads every row.");
-    } else if (step === 2) {
-      const r = rows.find(x => x.id === 6); s.mark[6] = "chg:" + r.amount; const diff = 75 - r.amount; r.amount = 75;
-      stored.North.sum += diff; s.hit.North = { sum: true };
-      us("fixed", "FIX + KEEP", `SUM: the change shows 45 before and 75 after, so add ${diff}. MAX: 75 is below 250, so it can't move. No rows read.`);
-      other(ss, `Shows North $${diff} short until REFRESH rereads every row.`);
-    } else if (step === 3) {
-      const r = rows.find(x => x.id === 4); r.gone = true; s.mark[4] = "gone";
-      const after = truth().North;
-      stored.North.sum -= 250; stored.North.max = after.max; s.hit.North = { sum: true, max: true };
-      us("fixed", "FIX IN PLACE", `SUM: subtract 250. MAX: subtraction can't tell you the next largest sale, so BQNF keeps North's amounts sorted. Drop 250 from the top and ${after.max} is next. No rows read.`);
-      other(ss, "Shows the deleted $250 as North's MAX until REFRESH rereads every row.");
-    } else if (step === 4) {
-      const r = rows.find(x => x.id === 3); const wasMax = before.max === 120; r.gone = true; s.mark[3] = "gone"; s.off = true;
-      const after = truth().North;
-      stored.North.sum -= 120; s.hit.North = { sum: true };
-      if (!wasMax) {
-        s.hit.North.max = false;
-        us("kept", "FIX + KEEP", `SUM: subtract 120. MAX: 120 wasn't the largest (${before.max} is), so MAX can't move, even with no extra state. No rows read.`);
-      } else {
-        const n = live().filter(x => x.region === "North").length;
-        s.mv += live().length; // REFRESH rereads every row the query touches
-        render("North");
-        us("refused", "REREAD", `SUM: subtract 120. MAX: 120 was the largest and the sorted list is switched off, so nothing says what's next. BQNF won't guess. It stops serving North's MAX.`);
-        other(ss, "Shows the deleted $120 as North's MAX until REFRESH rereads every row.");
-        const finish = () => {
-          s.us += n; stored.North.max = after.max; s.hit.North = { sum: true, max: true };
-          render();
-          us("rebuilt", "REREAD", `Rescanned North's ${n} rows: MAX is ${after.max}. That's the cost of not keeping the list. South wasn't touched.`);
-        };
-        btn.classList.add("done");
-        if (matchMedia("(prefers-reduced-motion: reduce)").matches) finish(); else timer = setTimeout(finish, 1400);
-        return;
-      }
-      other(ss, "Shows North $120 high until REFRESH rereads every row.");
-    }
-    s.mv += live().length; // REFRESH rereads every row the query touches
-    render();
-    btn.classList.add("done");
-  }
-
-  document.querySelectorAll("button.change").forEach(b => b.addEventListener("click", () => apply(+b.dataset.step)));
-  document.getElementById("reset").addEventListener("click", reset);
-  reset();
-})();
-</script>
+  <script src="/static/app.js"></script>
+  <script src="/static/anomalon.js" defer></script>
 </body>
 </html>

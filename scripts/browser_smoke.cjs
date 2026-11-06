@@ -115,6 +115,10 @@ async function copy(id) {
     page.on('response', r => { if (r.status() >= 400) report.http_errors.push({ url: r.url(), status: r.status() }); });
     page.on('dialog', async dialog => { report.page_errors.push(`Dialog: ${dialog.message()}`); await dialog.dismiss(); });
     await step('Application identity, assets and initial rendering', async () => {
+      const front = await page.goto(base + '/', { waitUntil: 'networkidle', timeout: 120000 });
+      assert.equal(front.status(), 200);
+      assert.match(await page.title(), /Simplex Normal Forms Studio/);
+      await page.waitForFunction(() => document.querySelector('#relational-chase-status').innerText.includes('Lossless'));
       const r = await page.goto(base + '/studio/', { waitUntil: 'networkidle', timeout: 120000 });
       assert.equal(r.status(), 200);
       assert.match(await page.title(), /Simplex Normal Forms Studio/);
@@ -125,7 +129,7 @@ async function copy(id) {
       assert.equal(health.status(), 200);
       report.health = await health.json();
       assert.equal(report.health.service, 'smplxnf-studio');
-      for (const [urlPath, local] of [['/studio/', 'web/templates/index.html'], ['/', 'web/templates/overview.html'], ['/static/app.js', 'web/static/app.js'], ['/static/style.css', 'web/static/style.css']]) {
+      for (const [urlPath, local] of [['/', 'web/templates/front.html'], ['/', 'web/templates/overview.html'], ['/studio/', 'web/templates/index.html'], ['/static/app.js', 'web/static/app.js'], ['/static/style.css', 'web/static/style.css']]) {
         const response = await context.request.get(base + urlPath);
         assert.equal(response.status(), 200);
         const bytes = await response.body();
@@ -244,6 +248,14 @@ async function copy(id) {
       for (const view of ['relational','bqnf','compiler','ai','quickstart']) await step(`${width}px layout: ${view}`, async () => {
         await tab(view);
         return layout(`${width}px-${view}-layout`);
+      });
+    }
+    await page.goto(base + '/', { waitUntil: 'networkidle', timeout: 120000 });
+    await page.waitForFunction(() => document.querySelector('#relational-chase-status').innerText.includes('Lossless'));
+    for (const width of [1280, 768, 390, 320]) {
+      await step(`${width}px layout: front`, async () => {
+        await page.setViewportSize({ width, height: width < 768 ? 844 : 900 });
+        return layout(`${width}px-front-layout`);
       });
     }
     await step('Browser console, runtime and network errors', async () => {

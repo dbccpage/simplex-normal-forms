@@ -1,0 +1,5 @@
+{
+  "domInteractiveMs": 345,
+  "loadEventEndMs": 347,
+  "wallClockFirstResultMs": 1538
+}

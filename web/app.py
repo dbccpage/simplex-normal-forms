@@ -42,6 +42,7 @@ from normal_forms.domain.relational import (
 from normal_forms.domain.relational_advanced import (
     check_eknf,
     decompose_bcnf_tree,
+    project_functional_dependencies,
     synthesize_3nf_bernstein,
 )
 from normal_forms.domain.bqnf_validator import (
@@ -375,7 +376,9 @@ async def normalize_relational_schema(payload: RelationalNormalizeRequest) -> Di
         synthesized_raw = synthesize_3nf_bernstein(schema)
         synthesized_3nf: List[Dict[str, Any]] = []
         for idx, sub_attrs in enumerate(synthesized_raw, 1):
-            sub_keys = [sorted(k) for k in cand_keys if frozenset(k).issubset(sub_attrs)]
+            proj_fds = frozenset(project_functional_dependencies(schema.dependencies, sub_attrs))
+            sub_schema = RelationalSchema(attributes=sub_attrs, dependencies=proj_fds)
+            sub_keys = [sorted(k) for k in sub_schema.candidate_keys()]
             synthesized_3nf.append({
                 "table_name": f"rel_3nf_table_{idx}",
                 "attributes": sorted(sub_attrs),
@@ -405,8 +408,20 @@ async def normalize_relational_schema(payload: RelationalNormalizeRequest) -> Di
             components=components_to_chase,
         )
 
+        sim_tab = [dict(r) for r in chase_res.initial_tableau]
         steps_data: List[Dict[str, Any]] = []
         for s in chase_res.steps:
+            changed_cells: List[Dict[str, Any]] = []
+            for r_idx, row in enumerate(sim_tab):
+                for col in chase_res.heading:
+                    if row.get(col) == s.old_symbol:
+                        row[col] = s.new_symbol
+                        changed_cells.append({
+                            "row": r_idx + 1,
+                            "column": col,
+                            "from": s.old_symbol,
+                            "to": s.new_symbol,
+                        })
             steps_data.append({
                 "step_number": s.step_number,
                 "fd": str(s.fd_applied),
@@ -414,15 +429,110 @@ async def normalize_relational_schema(payload: RelationalNormalizeRequest) -> Di
                 "attribute_equated": s.attribute_equated,
                 "old_symbol": s.old_symbol,
                 "new_symbol": s.new_symbol,
+                "changed_cells": changed_cells,
             })
 
-        # Generate SQL DDL
-        sql_ddl_statements: List[str] = []
+        spurious_explanation = (
+            "this row is in the join of the pieces but not in the original"
+            if (not chase_res.is_implied and chase_res.spurious_tuple_witness)
+            else None
+        )
+
+        # Generate SQL DDL for PostgreSQL and SQL Server
+        pg_statements: List[str] = ["-- Target 1: PostgreSQL DDL"]
+        mssql_statements: List[str] = [
+            "-- Target 2: SQL Server DDL",
+            "-- Note (MAX aggregate): A SQL Server indexed view (WITH SCHEMABINDING) cannot include MAX() or MIN() because deleting the current maximum row cannot be repaired from the stored scalar alone without rescanning the group; maintain a sorted list of values per group instead.",
+        ]
+
+        # Topologically order parent tables before child tables that reference them via foreign keys
+        table_by_name = {t["table_name"]: t for t in synthesized_3nf}
+        fk_targets_by_table: Dict[str, List[Dict[str, Any]]] = {t["table_name"]: [] for t in synthesized_3nf}
         for table in synthesized_3nf:
-            cols = ", ".join(f'"{col}" TEXT' for col in table["attributes"])
-            pk_cols = ", ".join(f'"{c}"' for c in table["candidate_keys"][0]) if table["candidate_keys"] else ""
-            pk_clause = f", PRIMARY KEY ({pk_cols})" if pk_cols else ""
-            sql_ddl_statements.append(f'CREATE TABLE "{table["table_name"]}" ({cols}{pk_clause});')
+            tname = table["table_name"]
+            tattrs_set = set(table["attributes"])
+            pk_set = set(table["candidate_keys"][0] if table["candidate_keys"] else table["attributes"])
+            for other in synthesized_3nf:
+                oname = other["table_name"]
+                if oname == tname or not other["candidate_keys"]:
+                    continue
+                other_pk_set = set(other["candidate_keys"][0])
+                if other_pk_set.issubset(tattrs_set) and (other_pk_set != pk_set or oname < tname):
+                    fk_targets_by_table[tname].append(other)
+
+        def _table_sort_key(t: Dict[str, Any]) -> Tuple[int, int, str]:
+            return (
+                len(t["candidate_keys"][0]) if t["candidate_keys"] else 99,
+                len(t["attributes"]),
+                t["table_name"],
+            )
+
+        ordered_tables: List[Dict[str, Any]] = []
+        placed_names: set[str] = set()
+        remaining = sorted(synthesized_3nf, key=_table_sort_key)
+        while remaining:
+            ready = [
+                t for t in remaining
+                if all(dep["table_name"] in placed_names for dep in fk_targets_by_table[t["table_name"]])
+            ]
+            pick = ready[0] if ready else remaining[0]
+            ordered_tables.append(pick)
+            placed_names.add(pick["table_name"])
+            remaining = [t for t in remaining if t["table_name"] != pick["table_name"]]
+
+        created_tables: set[str] = set()
+        for table in ordered_tables:
+            tname = table["table_name"]
+            tattrs = table["attributes"]
+            pk = table["candidate_keys"][0] if table["candidate_keys"] else tattrs
+            secondary_keys = table["candidate_keys"][1:] if len(table["candidate_keys"]) > 1 else []
+            not_null_cols = (
+                {col for key in table["candidate_keys"] for col in key}
+                if table["candidate_keys"]
+                else set(tattrs)
+            )
+
+            # Foreign keys to already-created 3NF parent tables whose PK is a subset of this table's attributes
+            fk_clauses_pg: List[str] = []
+            fk_clauses_ms: List[str] = []
+            for other in fk_targets_by_table[tname]:
+                if other["table_name"] not in created_tables:
+                    continue
+                other_pk = other["candidate_keys"][0]
+                pg_cols = ", ".join(f'"{c}"' for c in other_pk)
+                ms_cols = ", ".join(f"[{c}]" for c in other_pk)
+                fk_clauses_pg.append(f'FOREIGN KEY ({pg_cols}) REFERENCES "{other["table_name"]}" ({pg_cols})')
+                fk_clauses_ms.append(f"FOREIGN KEY ({ms_cols}) REFERENCES [{other['table_name']}] ({ms_cols})")
+
+            pg_col_defs = [
+                f'"{col}" TEXT{" NOT NULL" if col in not_null_cols else ""}'
+                for col in tattrs
+            ]
+            ms_col_defs = [
+                f'[{col}] NVARCHAR(128){" NOT NULL" if col in not_null_cols else ""}'
+                for col in tattrs
+            ]
+
+            pg_pk = f'PRIMARY KEY ({", ".join(f"{chr(34)}{c}{chr(34)}" for c in pk)})'
+            ms_pk = f'PRIMARY KEY ({", ".join(f"[{c}]" for c in pk)})'
+
+            pg_uniques = [
+                f'UNIQUE ({", ".join(f"{chr(34)}{c}{chr(34)}" for c in uk)})'
+                for uk in secondary_keys
+            ]
+            ms_uniques = [
+                f'UNIQUE ({", ".join(f"[{c}]" for c in uk)})'
+                for uk in secondary_keys
+            ]
+
+            pg_all = pg_col_defs + [pg_pk] + pg_uniques + fk_clauses_pg
+            ms_all = ms_col_defs + [ms_pk] + ms_uniques + fk_clauses_ms
+            pg_statements.append(f'CREATE TABLE "{tname}" (\n  ' + ",\n  ".join(pg_all) + "\n);")
+            mssql_statements.append(f"CREATE TABLE [{tname}] (\n  " + ",\n  ".join(ms_all) + "\n);")
+            created_tables.add(tname)
+
+        sql_ddl_postgres = "\n".join(pg_statements)
+        sql_ddl_sqlserver = "\n".join(mssql_statements)
 
         return {
             "attributes": sorted(attrs),
@@ -450,8 +560,11 @@ async def normalize_relational_schema(payload: RelationalNormalizeRequest) -> Di
                 "final_tableau": list(chase_res.final_tableau),
                 "distinguished_row_index": chase_res.distinguished_row_index,
                 "spurious_tuple_witness": chase_res.spurious_tuple_witness,
+                "spurious_tuple_explanation": spurious_explanation,
             },
-            "sql_ddl": "\n".join(sql_ddl_statements),
+            "sql_ddl_postgres": sql_ddl_postgres,
+            "sql_ddl_sqlserver": sql_ddl_sqlserver,
+            "sql_ddl": sql_ddl_postgres + "\n\n" + sql_ddl_sqlserver,
         }
     except HTTPException:
         raise
@@ -939,13 +1052,16 @@ async def evaluate_ai_lossledger(payload: AiLossLedgerRequest) -> Dict[str, Any]
 
 
 # =============================================================================
-# Frontend SPA Route
+# Frontend Routes
 # =============================================================================
 
-@app.get("/", include_in_schema=False)
-async def serve_overview() -> FileResponse:
-    """One-screen BQNF overview. Plain HTML, not rendered through Jinja."""
-    return FileResponse(templates_dir / "overview.html", media_type="text/html")
+@app.get("/", response_class=HTMLResponse)
+async def serve_front(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="front.html",
+        headers={"Cache-Control": "no-cache"},
+    )
 
 
 @app.get("/studio", include_in_schema=False)
@@ -954,5 +1070,9 @@ async def redirect_studio() -> RedirectResponse:
 
 
 @app.get("/studio/", response_class=HTMLResponse)
-async def serve_index(request: Request):
-    return templates.TemplateResponse(request=request, name="index.html")
+async def serve_studio(request: Request):
+    return templates.TemplateResponse(
+        request=request,
+        name="index.html",
+        headers={"Cache-Control": "no-cache"},
+    )
